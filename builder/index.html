@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<!--
+Created By NadavTasher
+https://github.com/NadavTasher/WebAppBase/
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="description" content="Webappify Builder">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, minimal-ui"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#008080"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <meta name="apple-mobile-web-app-title" content="Builder"/>
+    <link rel="apple-touch-icon" href="images/icon_apple.png"/>
+    <link rel="icon" href="images/icon.png"/>
+    <link rel="manifest" href="resources/manifest.json"/>
+    <link rel="stylesheet" href="stylesheets/app.css"/>
+    <link rel="stylesheet" href="stylesheets/theme.css"/>
+    <link rel="stylesheet" href="stylesheets/template.css"/>
+    <script type="text/javascript" src="scripts/frontend/app.js"></script>
+    <script type="text/javascript" src="scripts/frontend/utils.js"></script>
+    <title>Builder</title>
+    <noscript></noscript>
+</head>
+<body onload="worker();load();">
+<div>
+    <div id="app">
+        <p id="output" class="title"></p>
+        <div id="welcome">
+            <p class="title">Create your own WebApp</p>
+            <button onclick="view('template');">Let's Begin!</button>
+        </div>
+        <div id="template">
+            <p class="title">Choose a template</p>
+            <select id="flavour" title="Flavour">
+            </select>
+            <button onclick="view('info-'+get('flavour').value.toLowerCase());view('info');">Fill Information</button>
+        </div>
+        <div id="info">
+        </div>
+        <div id="layout">
+            <div id="properties"></div>
+            <div id="menu">
+                <p class="title">Create Layout</p>
+                <button onclick="addText()">New Text</button>
+                <button onclick="addImage()">New Image</button>
+                <button onclick="addInput()">New Input</button>
+                <button onclick="addButton()">New Button</button>
+                <button onclick="view('finish');">Finish</button>
+            </div>
+        </div>
+        <div id="finish">
+            <p class="title">Finished!</p>
+            <p class="content">Suggested Setup:</p>
+            <table>
+                <tr>
+                    <th>Server</th>
+                    <th>OS</th>
+                    <th>PHP</th>
+                </tr>
+                <tr>
+                    <td>Apache2</td>
+                    <td>Ubuntu 18.04</td>
+                    <td>7.0+</td>
+                </tr>
+            </table>
+            <button onclick="generate()">Download</button>
+            <p class="content">Or</p>
+            <button onclick="host()">Host on Webappify</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

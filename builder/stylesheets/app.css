@@ -1,0 +1,26 @@
+body {
+    background-color: #008080;
+}
+
+#app {
+    width: 340px;
+    align-items: stretch;
+}
+
+table {
+    background-color: #67b8ed;
+    border-radius: 3vh;
+}
+
+img {
+    height: 25vw;
+    width: 25vw;
+}
+
+.title {
+    font-size: 225%;
+}
+
+.content {
+    font-size: 175%;
+}
