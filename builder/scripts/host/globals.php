@@ -1,7 +1,7 @@
 <?php
-const MASTER_LIST = __DIR__ . DIRECTORY_SEPARATOR . "../../files/templates.json";
-const FLAVOUR_DIRECTORY = __DIR__ . DIRECTORY_SEPARATOR . "../../files/flavours";
-const APPS_DIRECTORY = __DIR__ . DIRECTORY_SEPARATOR . "../../files/webapps";
+const MASTER_LIST = __DIR__ . DIRECTORY_SEPARATOR;
+const FLAVOUR_DIRECTORY = __DIR__ . DIRECTORY_SEPARATOR;
+const APPS_DIRECTORY = __DIR__ . DIRECTORY_SEPARATOR;
 function removeDirectory($directory)
 {
     if (!file_exists($directory)) {

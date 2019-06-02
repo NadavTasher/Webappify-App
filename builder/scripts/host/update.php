@@ -1,6 +1,6 @@
 <?php
 include "globals.php";
-const ASSORTMENT_URL = "https://raw.githubusercontent.com/NadavTasher/WebAppBuilder/master/files/assortment.json";
+const ASSORTMENT_URL = "https://raw.githubusercontent.com/NadavTasher/Webappify/master/builder/files/assortment.json";
 const TEMPORARY_DIRECTORY = "bundling";
 const TEMPORARY_FILE = "bundling.zip";
 const TEMPLATE_FILE = "template.json";

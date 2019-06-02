@@ -1,6 +1,6 @@
 <?php
 
-include "../internal/globals.php";
+include "../host/globals.php";
 
 const WEBAPP = "webapp";
 const REBUNDLE = WEBAPP . ".zip";
