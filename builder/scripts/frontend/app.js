@@ -98,12 +98,14 @@ function generate() {
     }).then(response => {
         response.text().then((result) => {
             let json = JSON.parse(result);
-            if (json.hasOwnProperty("build")){
-                if (json.build.hasOwnProperty("success")){
-                    if (json.build.success){
-                        if (json.build.hasOwnProperty("content")){
-                            download((!replacements.hasOwnProperty("name") || replacements.name === "" ? "WebAppBundle" : info.replacements.name) + ".zip", json.build.content, "application/zip", "base64");
-                            window.location += "/../";
+            if (json.hasOwnProperty("builder")) {
+                if (json.builder.hasOwnProperty("build")) {
+                    if (json.builder.build.hasOwnProperty("success")) {
+                        if (json.builder.build.success) {
+                            if (json.builder.build.hasOwnProperty("content")) {
+                                download((!replacements.hasOwnProperty("name") || replacements.name === "" ? "WebAppBundle" : replacements.name) + ".zip", json.builder.build.content, "application/zip", "base64");
+                                window.location.href = "../";
+                            }
                         }
                     }
                 }

@@ -15,6 +15,7 @@ $master = json_decode(file_get_contents(MASTER_LIST));
 
 function builder()
 {
+    global $master;
     if (isset($_POST["builder"])) {
         $information = json_decode(filter($_POST["builder"]));
         if (isset($information->action) && isset($information->parameters)) {
@@ -29,7 +30,7 @@ function builder()
                         if ($directory !== null) {
                             result(BUILDER_API, $action, "content", builder_bundle($directory));
                             result(BUILDER_API, $action, "success", true);
-                            builder_rmdir($directory);
+//                            builder_rmdir($directory);
                         }
                     }
                 }
@@ -38,22 +39,22 @@ function builder()
     }
 }
 
+function builder_bundle($directory)
+{
+    builder_zip($directory . DIRECTORY_SEPARATOR . REBUNDLE, $directory . DIRECTORY_SEPARATOR . WEBAPP);
+    return base64_encode(file_get_contents($directory . DIRECTORY_SEPARATOR . REBUNDLE));
+}
+
 function builder_create($flavour, $replacements)
 {
     $id = random(10);
-    $directory = APPS_DIRECTORY . $id;
+    $directory = APPS_DIRECTORY . DIRECTORY_SEPARATOR . $id;
     mkdir($directory);
-    if (builder_unzip(FLAVOUR_DIRECTORY . DIRECTORY_SEPARATOR . $flavour . ".zip", $directory)) {
+    if (builder_unzip(FLAVOUR_DIRECTORY . DIRECTORY_SEPARATOR . $flavour . ".zip", $directory . DIRECTORY_SEPARATOR . WEBAPP)) {
         builder_evaluate($directory, $flavour, $replacements);
         return $directory;
     }
     return null;
-}
-
-function builder_bundle($directory)
-{
-    builder_zip($directory . DIRECTORY_SEPARATOR . REBUNDLE, $directory);
-    return base64_encode(file_get_contents($directory . DIRECTORY_SEPARATOR . REBUNDLE));
 }
 
 function builder_evaluate($directory, $flavour, $info)
@@ -125,7 +126,8 @@ function builder_rmdir($directory)
 
 function builder_unzip($file, $directory)
 {
-    mkdir($directory);
+    if (!file_exists($directory))
+        mkdir($directory);
     $zip = new ZipArchive;
     if ($zip->open($file) === true) {
         $zip->extractTo($directory);
