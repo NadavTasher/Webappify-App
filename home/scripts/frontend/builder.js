@@ -15,31 +15,26 @@ function loadTemplates(callback) {
                     get("build-flavour").appendChild(option);
                     let information = document.createElement("div");
                     information.id = "build-properties-information-" + key.toLowerCase();
-                    let needsLayout = false;
                     let replacement;
                     for (let r = 0; replacement = replacements[r], r < replacements.length; r++) {
                         if (replacement.hasOwnProperty("name") && replacement.hasOwnProperty("description")) {
                             if (replacement.name === "layout") {
-                                needsLayout = true;
+                                let button = document.createElement("button");
+                                button.innerText = "Design Layout";
+                                button.onclick = () => {
+                                    layout = document.createElement("div");
+                                    view("build-layout-menu");
+                                    view("build-layout");
+                                };
+                                information.appendChild(button);
                             } else {
                                 let input = document.createElement("input");
                                 if (replacement.name === "theme") input.type = "color";
-                                input.id = "build-replacement-" + key.toLowerCase() + "-" + replacement.name;
+                                input.id = "build-properties-information-" + key.toLowerCase() + "-replacement-" + replacement.name;
                                 input.placeholder = replacement.description;
                                 information.appendChild(input);
                             }
                         }
-                    }
-
-                    if (needsLayout) {
-                        get("build-properties-next").onclick = () => {
-                            layout = document.createElement("div");
-                            view("build-layout");
-                        };
-                    } else {
-                        get("build-properties-next").onclick = () => {
-                            view("build-deploy");
-                        };
                     }
                     get("build-properties-information").appendChild(information);
                 }
@@ -56,7 +51,7 @@ function parameters() {
     let object;
     for (let o = 0; object = objects[o], o < objects.length; o++) {
         if (object.nodeName.toLowerCase() === "input") {
-            replacements[object.id.replace("build-replacement-" + flavour.toLowerCase() + "-", "")] = object.value;
+            replacements[object.id.replace("build-properties-information-" + flavour.toLowerCase() + "-replacement-", "")] = object.value;
         }
     }
     if (layout !== undefined) {
@@ -98,10 +93,11 @@ function buildDownload() {
 
 function empty(v) {
     let element = get(v);
-    let parent = element.parentNode;
-    for (let n = 0; n < parent.children.length; n++) {
-        if (parent.children[n].value.length !== 0) {
-            parent.children[n].value = 0;
+    for (let n = 0; n < element.children.length; n++) {
+        if (element.children[n].value !== undefined) {
+            if (element.children[n].value.length !== 0) {
+                element.children[n].value = "";
+            }
         }
     }
 }
@@ -123,6 +119,7 @@ function designText() {
     empty("build-layout-properties-text");
     get("build-layout-properties-add").onclick = add;
     view("build-layout-properties-text");
+    view("build-layout-properties");
 }
 
 function designButton() {
@@ -140,6 +137,7 @@ function designButton() {
     empty("build-layout-properties-button");
     get("build-layout-properties-add").onclick = add;
     view("build-layout-properties-button");
+    view("build-layout-properties");
 }
 
 function designInput() {
@@ -159,4 +157,5 @@ function designInput() {
     empty("build-layout-properties-input");
     get("build-layout-properties-add").onclick = add;
     view("build-layout-properties-input");
+    view("build-layout-properties");
 }

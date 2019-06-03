@@ -74,18 +74,18 @@ https://github.com/NadavTasher/WebAppBase/
                 <p class="title">Choose a template</p>
                 <select id="build-flavour" title="Flavour">
                 </select>
-                <button onclick="slide(this,false,true,()=>view('build-properties-information-'+get('build-flavour').value.toLowerCase()));view('build-properties');">
+                <button onclick="slide(this,false,true,()=>{view('build-properties-information-'+get('build-flavour').value.toLowerCase());view('build-properties');});">
                     Next
                 </button>
             </div>
             <div id="build-properties">
                 <p class="title">Fill Information</p>
                 <div id="build-properties-information"></div>
-                <button id="build-properties-next">Next</button>
+                <button onclick="view('build-deploy');">Next</button>
             </div>
             <div id="build-layout">
                 <div id="build-layout-properties">
-                    <p>Add to layout</p>
+                    <p class="title">Add to layout</p>
                     <div>
                         <div id="build-layout-properties-text">
                             <input id="build-layout-properties-text-id" placeholder="Text ID"/>
@@ -113,7 +113,7 @@ https://github.com/NadavTasher/WebAppBase/
                     <button onclick="designText()">New Text</button>
                     <button onclick="designInput()">New Input</button>
                     <button onclick="designButton()">New Button</button>
-                    <button onclick="view('build-deploy');">Next</button>
+                    <button onclick="view('build-properties');">Back</button>
                 </div>
             </div>
             <div id="build-deploy">
@@ -143,8 +143,8 @@ https://github.com/NadavTasher/WebAppBase/
 
         </div>
         <div id="home">
-            <p>Welcome to Webappify!</p>
-            <p>The one-stop all-in-one WebApp platform.</p>
+            <p class="title">Welcome to Webappify!</p>
+            <p class="content">The one-stop all-in-one WebApp platform.</p>
             <button onclick="slide(this, false, true, ()=>{loadBuilder();});">Create your app
             </button>
             <button onclick="slide(this, false, false, ()=>{loadDiscover();});">Discover others'
