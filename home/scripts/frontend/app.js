@@ -24,7 +24,7 @@ function loadDeploy(value) {
         slide(get("deploy-button"), false, true, () => {
             let email = get("deploy-email").value;
             if (validateEmail(email)) {
-                deploy(email, JSON.parse(atob(value)));
+                deploy(email, JSON.parse(decodeURIComponent(escape(atob(value)))));
             } else {
                 slide(get("deploy-button"), true, true, () => {
                     get("deploy-status").innerText = "Wrong email syntax";
