@@ -1,9 +1,13 @@
 <?php
-include "globals.php";
+include __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "backend" . DIRECTORY_SEPARATOR . "builder" . DIRECTORY_SEPARATOR . "api.php";
+
 const ASSORTMENT_URL = "https://raw.githubusercontent.com/NadavTasher/Webappify/master/builder/files/assortment.json";
+
 const TEMPORARY_DIRECTORY = "bundling";
 const TEMPORARY_FILE = "bundling.zip";
+
 const TEMPLATE_FILE = "template.json";
+
 echo "Downloading assortment from \"" . ASSORTMENT_URL . "\" - ";
 $assortment = json_decode(file_get_contents(ASSORTMENT_URL));
 echo "Done\n";

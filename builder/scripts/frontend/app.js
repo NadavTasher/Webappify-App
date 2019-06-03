@@ -89,7 +89,7 @@ function generate() {
         flavour: flavour,
         replacements: replacements
     };
-    body.append("info", JSON.stringify(info));
+    body.append("builder", JSON.stringify(info));
     fetch("scripts/backend/build.php", {
         method: "post",
         body: body
@@ -100,10 +100,10 @@ function generate() {
                 if (json.success) {
                     if (json.hasOwnProperty("content")) {
                         download((!replacements.hasOwnProperty("name") || replacements.name === "" ? "WebAppBundle" : info.replacements.name) + ".zip", json.content, "application/zip", "base64")
+                        window.location = "/../";
                     }
-                    view("about");
                 } else {
-                    output("Unable to build web-app");
+                    output("Unable to build");
                 }
             }
         });
