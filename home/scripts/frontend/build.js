@@ -44,7 +44,7 @@ function loadTemplates(callback) {
     });
 }
 
-function parameters() {
+function buildParameters() {
     let flavour = get("build-flavour").value;
     let replacements = {};
     let objects = get("build-properties-information-" + flavour.toLowerCase()).childNodes;
@@ -64,14 +64,15 @@ function parameters() {
 }
 
 function buildDeploy() {
-    window.location.href = "?host=" + btoa(JSON.stringify(parameters()));
+    window.location.href = "?host=" + btoa(JSON.stringify(buildParameters()));
 }
 
 function buildDownload() {
+    let parameters = buildParameters();
     let body = new FormData;
     body.append("builder", JSON.stringify({
         action: "build",
-        parameters: parameters()
+        parameters: parameters
     }));
     fetch("scripts/backend/builder/builder.php", {
         method: "post",
@@ -84,7 +85,7 @@ function buildDownload() {
                     if (json.builder.build.hasOwnProperty("success")) {
                         if (json.builder.build.success) {
                             if (json.builder.build.hasOwnProperty("content")) {
-                                download((!parameters().replacements.hasOwnProperty("name") || parameters().replacements.name === "" ? "WebAppBundle" : replacements.name) + ".zip", json.builder.build.content, "application/zip", "base64");
+                                download((!parameters.replacements.hasOwnProperty("name") || parameters.replacements.name === "" ? "WebAppBundle" : parameters.replacements.name) + ".zip", json.builder.build.content, "application/zip", "base64");
                                 window.location.reload(true);
                             }
                         }
