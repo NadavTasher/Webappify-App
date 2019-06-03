@@ -6,7 +6,7 @@ https://github.com/NadavTasher/WebAppBase/
 <html lang="en">
 <head>
     <meta charset="UTF-8"/>
-    <meta name="description" content="Create your own WebApp with Webappify">
+    <meta name="description" content="Create your WebApp with Webappify">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, minimal-ui"/>
     <meta name="endpoint" content="scripts/backend/accounts/accounts.php"/>
     <meta name="startpoint" content=""/>
@@ -23,6 +23,7 @@ https://github.com/NadavTasher/WebAppBase/
     <link rel="stylesheet" href="stylesheets/template.css"/>
     <script type="text/javascript" src="scripts/frontend/accounts/api.js"></script>
     <script type="text/javascript" src="scripts/frontend/app.js"></script>
+    <script type="text/javascript" src="scripts/frontend/builder.js"></script>
     <script type="text/javascript" src="scripts/frontend/utils.js"></script>
     <title>Webappify</title>
     <noscript></noscript>
@@ -64,10 +65,91 @@ https://github.com/NadavTasher/WebAppBase/
         </div>
     </div>
     <div id="app">
-        <p>Welcome to Webappify!</p>
-        <p>The one-stop WebApp platform</p>
-        <button onclick="slide(this, false, true, ()=>{window.location.href = '../builder';});">Create your own</button>
-        <button onclick="slide(this, false, false, ()=>{window.location.href = '../apps';});">Discover other's</button>
+        <div id="build">
+            <div id="build-welcome">
+                <p class="title">Create your WebApp</p>
+                <button onclick="slide(this,false,true,()=>view('build-template'));">Let's Begin!</button>
+            </div>
+            <div id="build-template">
+                <p class="title">Choose a template</p>
+                <select id="build-flavour" title="Flavour">
+                </select>
+                <button onclick="slide(this,false,true,()=>view('build-properties-information-'+get('build-flavour').value.toLowerCase()));view('build-properties');">
+                    Next
+                </button>
+            </div>
+            <div id="build-properties">
+                <p class="title">Fill Information</p>
+                <div id="build-properties-information"></div>
+                <button id="build-properties-next">Next</button>
+            </div>
+            <div id="build-layout">
+                <div id="build-layout-properties">
+                    <p>Add to layout</p>
+                    <div>
+                        <div id="build-layout-properties-text">
+                            <input id="build-layout-properties-text-id" placeholder="Text ID"/>
+                            <input id="build-layout-properties-text-text" placeholder="Text Text"/>
+                            <input id="build-layout-properties-text-color" type="color" placeholder="Text Color"/>
+                            <input id="build-layout-properties-text-size" placeholder="Text Size"/>
+                        </div>
+                        <div id="build-layout-properties-input">
+                            <input id="build-layout-properties-input-id" placeholder="Input ID"/>
+                            <input id="build-layout-properties-input-text" placeholder="Input Text"/>
+                            <input id="build-layout-properties-input-type" placeholder="Input Type"/>
+                            <input id="build-layout-properties-input-placeholder" placeholder="Placeholder"/>
+                        </div>
+                        <div id="build-layout-properties-button">
+                            <input id="build-layout-properties-button-id" placeholder="Button ID"/>
+                            <input id="build-layout-properties-button-text" placeholder="Button Text"/>
+                            <input id="build-layout-properties-button-onclick" placeholder="OnClick Code"/>
+                        </div>
+                    </div>
+                    <button onclick="view('build-layout-menu');">Back</button>
+                    <button id="build-layout-properties-add">Add</button>
+                </div>
+                <div id="build-layout-menu">
+                    <p class="title">Layout design</p>
+                    <button onclick="designText()">New Text</button>
+                    <button onclick="designInput()">New Input</button>
+                    <button onclick="designButton()">New Button</button>
+                    <button onclick="view('build-deploy');">Next</button>
+                </div>
+            </div>
+            <div id="build-deploy">
+                <p class="title">Finished!</p>
+                <p class="content">Suggested Setup:</p>
+                <table>
+                    <tr>
+                        <th>Server</th>
+                        <th>OS</th>
+                        <th>PHP</th>
+                    </tr>
+                    <tr>
+                        <td>Apache2</td>
+                        <td>Ubuntu 18.04</td>
+                        <td>7.0+</td>
+                    </tr>
+                </table>
+                <button onclick="buildDownload()">Download</button>
+                <p class="content">Or</p>
+                <button onclick="buildDeploy()">Host on Webappify</button>
+            </div>
+        </div>
+        <div id="discover">
+
+        </div>
+        <div id="host">
+
+        </div>
+        <div id="home">
+            <p>Welcome to Webappify!</p>
+            <p>The one-stop all-in-one WebApp platform.</p>
+            <button onclick="slide(this, false, true, ()=>{loadBuilder();});">Create your app
+            </button>
+            <button onclick="slide(this, false, false, ()=>{loadDiscover();});">Discover others'
+            </button>
+        </div>
     </div>
 </div>
 </body>
