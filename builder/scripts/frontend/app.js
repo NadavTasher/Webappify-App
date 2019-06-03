@@ -85,25 +85,27 @@ function generate() {
     if (layout !== undefined) {
         replacements.layout = layout.innerHTML;
     }
-    let info = {
-        flavour: flavour,
-        replacements: replacements
-    };
-    body.append("builder", JSON.stringify(info));
+    body.append("builder", JSON.stringify({
+        action:"build",
+        parameters:{
+            flavour: flavour,
+            replacements: replacements
+        }
+    }));
     fetch("scripts/backend/build.php", {
         method: "post",
         body: body
     }).then(response => {
         response.text().then((result) => {
             let json = JSON.parse(result);
-            if (json.hasOwnProperty("success")) {
-                if (json.success) {
-                    if (json.hasOwnProperty("content")) {
-                        download((!replacements.hasOwnProperty("name") || replacements.name === "" ? "WebAppBundle" : info.replacements.name) + ".zip", json.content, "application/zip", "base64")
-                        window.location = "/../";
+            if (json.hasOwnProperty("build")){
+                if (json.build.hasOwnProperty("success")){
+                    if (json.build.success){
+                        if (json.build.hasOwnProperty("content")){
+                            download((!replacements.hasOwnProperty("name") || replacements.name === "" ? "WebAppBundle" : info.replacements.name) + ".zip", json.build.content, "application/zip", "base64");
+                            window.location += "/../";
+                        }
                     }
-                } else {
-                    output("Unable to build");
                 }
             }
         });
