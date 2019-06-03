@@ -1,5 +1,5 @@
 function deploy(email, parameters) {
-    let body = new FormData;
+    let body = fillForm();
     body.append("deployer", JSON.stringify({
         action: "deploy",
         parameters: {
