@@ -1,7 +1,7 @@
 <?php
 include __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "backend" . DIRECTORY_SEPARATOR . "builder" . DIRECTORY_SEPARATOR . "api.php";
 
-const ASSORTMENT_URL = "https://raw.githubusercontent.com/NadavTasher/Webappify/master/builder/files/assortment.json";
+const ASSORTMENT_URL = "https://raw.githubusercontent.com/NadavTasher/Webappify/master/home/files/builder/assortment.json";
 
 const TEMPORARY_DIRECTORY = "bundling";
 const TEMPORARY_FILE = "bundling.zip";
