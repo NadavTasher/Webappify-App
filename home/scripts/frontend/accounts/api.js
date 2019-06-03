@@ -2,16 +2,28 @@ const certificateCookie = "certificate";
 let success, failure;
 
 function accounts(callback) {
-    view("accounts");
+    if (exists("accounts")) view("accounts");
     success = (loggedIn = false) => {
-        hide("accounts");
+        if (exists("accounts")) hide("accounts");
         callback(loggedIn);
     };
-    failure = () => view("login");
-    if (hasCookie(certificateCookie))
+    failure = () => {
+        if (exists("accounts") && exists("login")) {
+            view("login");
+        } else {
+            let startpoint = document.getElementsByName("startpoint")[0].getAttribute("content");
+            if (startpoint.length === 0) {
+                success(false);
+            } else {
+                window.location.href = document.getElementsByName("startpoint")[0].getAttribute("content");
+            }
+        }
+    };
+    if (hasCookie(certificateCookie)) {
         verify(success, failure);
-    else
-        view("login");
+    } else {
+        failure();
+    }
 }
 
 function fillForm(form = new FormData()) {

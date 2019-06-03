@@ -30,6 +30,10 @@ function clear(v) {
     }
 }
 
+function exists(v) {
+    return get(v) !== null;
+}
+
 function title(title) {
     document.title = title;
 }

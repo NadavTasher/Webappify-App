@@ -9,6 +9,7 @@ https://github.com/NadavTasher/WebAppBase/
     <meta name="description" content="Webappify Hosting">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, minimal-ui"/>
     <meta name="endpoint" content="../home/scripts/backend/accounts/accounts.php"/>
+    <meta name="startpoint" content="../home"/>
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#008080"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -29,7 +30,19 @@ https://github.com/NadavTasher/WebAppBase/
 <body onload="worker();accounts(load);">
 <div>
     <div id="app">
-        <!--Your App Body-->
+        <div id="introduction">
+            <p id="title"></p>
+            <p>We'll need your email, so that we could send you renewing emails.</p>
+            <input id="email" type="email" placeholder="Email"/>
+            <button onclick="view('disclaimer');">Host!</button>
+        </div>
+        <div id="disclaimer">
+            <p>By clicking "Host!" you are agreeing to our terms:</p>
+            <p>1. Your app will be visible on our "Discover" page for other people to see.</p>
+            <p>2. You are taking responsibility for any damage caused by your app usage.</p>
+            <p>3. For hosting to continue after one month, you will be asked to renew the app via an email.</p>
+            <button onclick="host();">Host!</button>
+        </div>
     </div>
 </div>
 </body>
