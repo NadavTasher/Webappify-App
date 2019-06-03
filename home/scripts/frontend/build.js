@@ -63,6 +63,10 @@ function parameters() {
     };
 }
 
+function buildDeploy() {
+    window.location.href = "?host=" + btoa(JSON.stringify(parameters()));
+}
+
 function buildDownload() {
     let body = new FormData;
     body.append("builder", JSON.stringify({
@@ -80,8 +84,8 @@ function buildDownload() {
                     if (json.builder.build.hasOwnProperty("success")) {
                         if (json.builder.build.success) {
                             if (json.builder.build.hasOwnProperty("content")) {
-                                download((!replacements.hasOwnProperty("name") || replacements.name === "" ? "WebAppBundle" : replacements.name) + ".zip", json.builder.build.content, "application/zip", "base64");
-                                window.location.href = "../";
+                                download((!parameters().replacements.hasOwnProperty("name") || parameters().replacements.name === "" ? "WebAppBundle" : replacements.name) + ".zip", json.builder.build.content, "application/zip", "base64");
+                                window.location.reload(true);
                             }
                         }
                     }

@@ -23,7 +23,8 @@ https://github.com/NadavTasher/WebAppBase/
     <link rel="stylesheet" href="stylesheets/template.css"/>
     <script type="text/javascript" src="scripts/frontend/accounts/api.js"></script>
     <script type="text/javascript" src="scripts/frontend/app.js"></script>
-    <script type="text/javascript" src="scripts/frontend/builder.js"></script>
+    <script type="text/javascript" src="scripts/frontend/build.js"></script>
+    <script type="text/javascript" src="scripts/frontend/deploy.js"></script>
     <script type="text/javascript" src="scripts/frontend/utils.js"></script>
     <title>Webappify</title>
     <noscript></noscript>
@@ -81,7 +82,7 @@ https://github.com/NadavTasher/WebAppBase/
             <div id="build-properties">
                 <p class="title">Fill Information</p>
                 <div id="build-properties-information"></div>
-                <button onclick="view('build-deploy');">Next</button>
+                <button onclick="slide(this,false,true,()=>view('build-deploy'));">Next</button>
             </div>
             <div id="build-layout">
                 <div id="build-layout-properties">
@@ -90,8 +91,8 @@ https://github.com/NadavTasher/WebAppBase/
                         <div id="build-layout-properties-text">
                             <input id="build-layout-properties-text-id" placeholder="Text ID"/>
                             <input id="build-layout-properties-text-text" placeholder="Text Text"/>
-                            <input id="build-layout-properties-text-color" type="color" placeholder="Text Color"/>
                             <input id="build-layout-properties-text-size" placeholder="Text Size"/>
+                            <input id="build-layout-properties-text-color" type="color" placeholder="Text Color"/>
                         </div>
                         <div id="build-layout-properties-input">
                             <input id="build-layout-properties-input-id" placeholder="Input ID"/>
@@ -131,16 +132,27 @@ https://github.com/NadavTasher/WebAppBase/
                         <td>7.0+</td>
                     </tr>
                 </table>
-                <button onclick="buildDownload()">Download</button>
+                <button onclick="slide(this, false, true, ()=>buildDownload());">Download</button>
                 <p class="content">Or</p>
-                <button onclick="buildDeploy()">Host on Webappify</button>
+                <button onclick="slide(this, false, false, ()=>buildDeploy());">Deploy on Webappify</button>
             </div>
         </div>
         <div id="discover">
 
         </div>
-        <div id="host">
-
+        <div id="deploy">
+            <p class="title">Deploy on Webappify</p>
+            <p class="content">Looks like you are ready to deploy your app on Webappify!</p>
+            <p class="content">We have some rules you'll need to follow, but they are not much of a hustle.</p>
+            <p class="content">1. A deployed app must <b>NOT</b> cause any damage to the server nor to the clients.</p>
+            <p class="content">2. By deploying your app, you are agreeing to us displaying it on the "Discover"
+                page.</p>
+            <p class="content">3. Your app will have a 30-Day life span, and will be removed if not renewed before end
+                of the grace period, using the link in the email sent to you.</p>
+            <p class="content">Finally, an email will be sent with your app details and an activation link.</p>
+            <p id="deploy-status"></p>
+            <input id="deploy-email" type="email" placeholder="Email for deployment and renewment"/>
+            <button id="deploy-button">Deploy</button>
         </div>
         <div id="home">
             <p class="title">Welcome to Webappify!</p>
@@ -149,6 +161,11 @@ https://github.com/NadavTasher/WebAppBase/
             </button>
             <button onclick="slide(this, false, false, ()=>{loadDiscover();});">Discover others'
             </button>
+            <button onclick="slide(this, false, true, ()=>view('about'));" style="font-size: medium;">About
+            </button>
+        </div>
+        <div id="about">
+
         </div>
     </div>
 </div>

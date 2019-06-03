@@ -31,7 +31,7 @@ function builder()
                         if ($directory !== null) {
                             result(BUILDER_API, $action, "content", builder_bundle($directory));
                             result(BUILDER_API, $action, "success", true);
-//                            builder_rmdir($directory);
+                            builder_rmdir($directory);
                         }
                     }
                 }
