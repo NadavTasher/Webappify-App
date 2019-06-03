@@ -78,12 +78,12 @@ function builder_evaluate($directory, $flavour, $info)
                 if (!$change) {
                     if (isset($replacement->default)) {
                         foreach ($replacement->haystacks as $haystack) {
-                            builder_replace($directory . DIRECTORY_SEPARATOR . $haystack, $replacement->needle, $replacement->default);
+                            builder_replace($directory . DIRECTORY_SEPARATOR . WEBAPP . DIRECTORY_SEPARATOR . $haystack, $replacement->needle, $replacement->default);
                         }
                     }
                 } else {
                     foreach ($replacement->haystacks as $haystack) {
-                        builder_replace($directory . DIRECTORY_SEPARATOR . $haystack, $replacement->needle, $info->$name);
+                        builder_replace($directory . DIRECTORY_SEPARATOR . WEBAPP . DIRECTORY_SEPARATOR . $haystack, $replacement->needle, $info->$name);
                     }
                 }
             }
