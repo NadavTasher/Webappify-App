@@ -18,7 +18,7 @@ function deploy(email, parameters) {
                     if (json.deployer.deploy.hasOwnProperty("success")) {
                         if (json.deployer.deploy.success) {
                             get("deploy-status").innerText = "Cool! Check your email for further instructions!";
-                            setTimeout(() => window.location.reload(true), 10000);
+                            setTimeout(() => window.location.href = "/", 10000);
                         }
                     }
                 }
