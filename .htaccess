@@ -1,2 +1,2 @@
 Redirect /index.html /home/
-Redirect /unlock/index.html /home/scripts/backend/deployer/unlock.php
+Redirect /unlock /home/scripts/backend/deployer/unlock.php
