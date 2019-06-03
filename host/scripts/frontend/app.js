@@ -1,3 +1,2 @@
 function load() {
-    view("app");
 }

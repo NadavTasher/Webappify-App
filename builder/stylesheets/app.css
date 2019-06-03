@@ -2,8 +2,11 @@ body {
     background-color: #008080;
 }
 
+body > div {
+    max-width: 460px;
+}
+
 #app {
-    width: 340px;
     align-items: stretch;
 }
 

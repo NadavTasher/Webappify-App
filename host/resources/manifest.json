@@ -1,7 +1,7 @@
 {
-  "name": "Webappify",
-  "short_name": "Webappify",
-  "description": "Create your own WebApp with Webappify",
+  "name": "Host",
+  "short_name": "Host",
+  "description": "Webappify Hosting",
   "start_url": "../index.html",
   "background_color": "#008080",
   "theme_color": "#008080",

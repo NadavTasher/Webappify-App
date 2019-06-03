@@ -6,14 +6,14 @@ https://github.com/NadavTasher/WebAppBase/
 <html lang="en">
 <head>
     <meta charset="UTF-8"/>
-    <meta name="description" content="AppDescription">
+    <meta name="description" content="Create your own WebApp with Webappify">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, minimal-ui"/>
     <meta name="endpoint" content="scripts/backend/accounts/accounts.php"/>
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#FFFFFF"/>
+    <meta name="theme-color" content="#008080"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-    <meta name="apple-mobile-web-app-title" content="AppName"/>
+    <meta name="apple-mobile-web-app-title" content="Webappify"/>
     <link rel="apple-touch-icon" href="images/icon_apple.png"/>
     <link rel="icon" href="images/icon.png"/>
     <link rel="manifest" href="resources/manifest.json"/>
@@ -23,14 +23,14 @@ https://github.com/NadavTasher/WebAppBase/
     <script type="text/javascript" src="scripts/frontend/accounts/api.js"></script>
     <script type="text/javascript" src="scripts/frontend/app.js"></script>
     <script type="text/javascript" src="scripts/frontend/utils.js"></script>
-    <title>AppName</title>
+    <title>Webappify</title>
     <noscript></noscript>
 </head>
 <body onload="worker();accounts(load);">
 <div>
     <div id="accounts">
         <div id="login">
-            <p>Login To AppName</p>
+            <p>Login To Webappify</p>
             <p id="login-error" style="font-size: large; color: red;"></p>
             <div>
                 <input id="login-name" type="text" placeholder="Name"/>
@@ -46,7 +46,7 @@ https://github.com/NadavTasher/WebAppBase/
             </div>
         </div>
         <div id="register">
-            <p>Register To AppName</p>
+            <p>Register To Webappify</p>
             <p id="register-error" style="font-size: large; color: red;"></p>
             <div>
                 <input id="register-name" type="text" placeholder="Name"/>
@@ -63,7 +63,10 @@ https://github.com/NadavTasher/WebAppBase/
         </div>
     </div>
     <div id="app">
-        <!--Your App Body-->
+        <p>Welcome to Webappify!</p>
+        <p>The one-stop WebApp platform</p>
+        <button onclick="slide(this, false, true, ()=>{window.location.href = '../builder';});">Create your own</button>
+        <button onclick="slide(this, false, false, ()=>{window.location.href = '../apps';});">Discover other's</button>
     </div>
 </div>
 </body>

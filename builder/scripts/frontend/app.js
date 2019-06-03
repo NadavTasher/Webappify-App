@@ -71,6 +71,29 @@ function output(text) {
     view(p);
 }
 
+function parameters() {
+    let flavour = get("flavour").value;
+    let replacements = {};
+    let objects = get("info-" + flavour.toLowerCase()).childNodes;
+    let object;
+    for (let o = 0; object = objects[o], o < objects.length; o++) {
+        if (object.nodeName.toLowerCase() === "input") {
+            replacements[object.id.replace("input-", "")] = object.value;
+        }
+    }
+    if (layout !== undefined) {
+        replacements.layout = layout.innerHTML;
+    }
+    return {
+        flavour: flavour,
+        replacements: replacements
+    };
+}
+
+function host() {
+    window.location.href = "../host/?host=" + btoa(JSON.stringify(parameters()));
+}
+
 function generate() {
     let body = new FormData;
     let flavour = get("flavour").value;
@@ -86,11 +109,8 @@ function generate() {
         replacements.layout = layout.innerHTML;
     }
     body.append("builder", JSON.stringify({
-        action:"build",
-        parameters:{
-            flavour: flavour,
-            replacements: replacements
-        }
+        action: "build",
+        parameters: parameters()
     }));
     fetch("scripts/backend/build.php", {
         method: "post",
