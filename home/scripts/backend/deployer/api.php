@@ -84,6 +84,7 @@ function deployer_unlock($appId, $appKey)
 {
     global $deployer_database;
     if (file_exists(DEPLOYMENT_DIRECTORY . DIRECTORY_SEPARATOR . $appId) && isset($deployer_database->$appId)) {
+        if (!isset($deployer_database->$appId->unlock)) return true;
         if ($deployer_database->$appId->unlock === $appKey) {
             unset($deployer_database->$appId->unlock);
             unlink(DEPLOYMENT_DIRECTORY . DIRECTORY_SEPARATOR . $appId . DIRECTORY_SEPARATOR . ".htaccess");

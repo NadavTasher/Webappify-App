@@ -70,7 +70,7 @@ function builder_evaluate($directory, $flavour, $info)
                 if (!empty($info->$name)) {
                     if ($info->$name !== $replacement->needle) {
                         if (strpos($info->$name, $replacement->needle) === false) {
-                            if (preg_match("/^" . $replacement->pattern . "$/", $info->$name)) {
+                            if (preg_match("/^" . $replacement->pattern . "$/m", $info->$name)) {
                                 $change = true;
                             }
                         }

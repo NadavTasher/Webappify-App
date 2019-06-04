@@ -1,5 +1,5 @@
 let layout = undefined;
-let style = undefined;
+let stylesheet = undefined;
 let code = {
     load: undefined,
     app: undefined
@@ -51,11 +51,11 @@ function loadTemplates(callback) {
                                     view("build-code");
                                 };
                                 codes.appendChild(button);
-                            } else if (replacement.name === "style") {
+                            } else if (replacement.name === "stylesheet") {
                                 let button = document.createElement("button");
-                                button.innerText = "Design Style";
+                                button.innerText = "Design Stylesheet";
                                 button.onclick = () => {
-                                    view("build-style");
+                                    view("build-stylesheet");
                                 };
                                 information.appendChild(button);
                             } else {
@@ -88,8 +88,8 @@ function buildParameters() {
             replacements[object.id.replace("build-properties-information-" + flavour.toLowerCase() + "-replacement-", "")] = object.value;
         }
     }
-    if (style !== undefined) {
-        replacements.style = style;
+    if (stylesheet !== undefined) {
+        replacements.stylesheet = stylesheet;
     }
     if (layout !== undefined) {
         replacements.layout = layout.innerHTML;

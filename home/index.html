@@ -103,7 +103,7 @@ https://github.com/NadavTasher/WebAppBase/
                         <div id="build-layout-properties-button">
                             <input id="build-layout-properties-button-id" placeholder="Button ID"/>
                             <input id="build-layout-properties-button-text" placeholder="Button Text"/>
-                            <input id="build-layout-properties-button-onclick" placeholder="OnClick Code"/>
+                            <input id="build-layout-properties-button-onclick" placeholder="On-Click Code"/>
                         </div>
                     </div>
                     <button onclick="view('build-layout-menu');">Back</button>
@@ -118,18 +118,18 @@ https://github.com/NadavTasher/WebAppBase/
                 </div>
             </div>
             <div id="build-code">
-                <p class="title">Write App Code</p>
+                <p class="title">Write app code</p>
                 <textarea oninput="code.app = this.value" placeholder="JS App Code" title="App Code"></textarea>
                 <button onclick="view('build-properties');">Back</button>
             </div>
             <div id="build-load">
-                <p class="title">Write Load Code</p>
+                <p class="title">Write load code</p>
                 <textarea oninput="code.load = this.value" placeholder="JS Load Code" title="Load Code"></textarea>
                 <button onclick="view('build-properties');">Back</button>
             </div>
-            <div id="build-style">
-                <p class="title">Style design</p>
-                <textarea oninput="style = this.value" placeholder="CSS Style" title="Style"></textarea>
+            <div id="build-stylesheet">
+                <p class="title">Stylesheet design</p>
+                <textarea oninput="stylesheet = this.value" placeholder="CSS Style" title="Style"></textarea>
                 <button onclick="view('build-properties');">Back</button>
             </div>
             <div id="build-deploy">
