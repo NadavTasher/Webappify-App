@@ -31,3 +31,7 @@ img {
 input {
     width: auto;
 }
+
+textarea {
+    height: 30vh;
+}
