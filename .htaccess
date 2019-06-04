@@ -1,3 +1,8 @@
+# Redirects
 Redirect /index.html /home/
 Redirect /unlock /home/scripts/backend/deployer/unlock.php
 Redirect /apps/index.html /home/
+# No Cache
+Header set Pragma "no-cache"
+Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+Header set Expires "Thu, 1 Jan 1970 00:00:00 GMT"
