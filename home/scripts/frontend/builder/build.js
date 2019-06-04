@@ -1,4 +1,7 @@
 let layout = undefined;
+let style = undefined;
+let loadcode = undefined;
+let appcode = undefined;
 
 function loadTemplates(callback) {
     fetch("files/builder/templates.json", {
@@ -22,9 +25,37 @@ function loadTemplates(callback) {
                                 let button = document.createElement("button");
                                 button.innerText = "Design Layout";
                                 button.onclick = () => {
-                                    layout = document.createElement("div");
+                                    if (layout === undefined)
+                                        layout = document.createElement("div");
                                     view("build-layout-menu");
                                     view("build-layout");
+                                };
+                                information.appendChild(button);
+                            } else if (replacement.name === "load") {
+                                let button = document.createElement("button");
+                                button.innerText = "Design Load Code";
+                                button.onclick = () => {
+                                    if (loadcode === undefined)
+                                        loadcode = "";
+                                    view("build-load");
+                                };
+                                information.appendChild(button);
+                            } else if (replacement.name === "code") {
+                                let button = document.createElement("button");
+                                button.innerText = "Design Code";
+                                button.onclick = () => {
+                                    if (appcode === undefined)
+                                        appcode = "";
+                                    view("build-code");
+                                };
+                                information.appendChild(button);
+                            } else if (replacement.name === "style") {
+                                let button = document.createElement("button");
+                                button.innerText = "Design Style";
+                                button.onclick = () => {
+                                    if (style === undefined)
+                                        style = "";
+                                    view("build-style");
                                 };
                                 information.appendChild(button);
                             } else {
