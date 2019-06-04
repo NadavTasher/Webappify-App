@@ -1,7 +1,9 @@
 let layout = undefined;
 let style = undefined;
-let loadcode = undefined;
-let appcode = undefined;
+let code = {
+    load: undefined,
+    app: undefined
+};
 
 function loadTemplates(callback) {
     fetch("files/builder/templates.json", {
@@ -18,6 +20,10 @@ function loadTemplates(callback) {
                     get("build-flavour").appendChild(option);
                     let information = document.createElement("div");
                     information.id = "build-properties-information-" + key.toLowerCase();
+
+                    let codes = document.createElement("div");
+                    codes.classList.add("sideways");
+
                     let replacement;
                     for (let r = 0; replacement = replacements[r], r < replacements.length; r++) {
                         if (replacement.hasOwnProperty("name") && replacement.hasOwnProperty("description")) {
@@ -33,28 +39,22 @@ function loadTemplates(callback) {
                                 information.appendChild(button);
                             } else if (replacement.name === "load") {
                                 let button = document.createElement("button");
-                                button.innerText = "Design Load Code";
+                                button.innerText = "Load Code";
                                 button.onclick = () => {
-                                    if (loadcode === undefined)
-                                        loadcode = "";
                                     view("build-load");
                                 };
-                                information.appendChild(button);
+                                codes.appendChild(button);
                             } else if (replacement.name === "code") {
                                 let button = document.createElement("button");
-                                button.innerText = "Design Code";
+                                button.innerText = "App Code";
                                 button.onclick = () => {
-                                    if (appcode === undefined)
-                                        appcode = "";
                                     view("build-code");
                                 };
-                                information.appendChild(button);
+                                codes.appendChild(button);
                             } else if (replacement.name === "style") {
                                 let button = document.createElement("button");
                                 button.innerText = "Design Style";
                                 button.onclick = () => {
-                                    if (style === undefined)
-                                        style = "";
                                     view("build-style");
                                 };
                                 information.appendChild(button);
@@ -66,6 +66,9 @@ function loadTemplates(callback) {
                                 information.appendChild(input);
                             }
                         }
+                    }
+                    if (codes.children.length > 0) {
+                        information.appendChild(codes);
                     }
                     get("build-properties-information").appendChild(information);
                 }
@@ -85,8 +88,17 @@ function buildParameters() {
             replacements[object.id.replace("build-properties-information-" + flavour.toLowerCase() + "-replacement-", "")] = object.value;
         }
     }
+    if (style !== undefined) {
+        replacements.style = style;
+    }
     if (layout !== undefined) {
         replacements.layout = layout.innerHTML;
+    }
+    if (code.app !== undefined) {
+        replacements.code = code.app;
+    }
+    if (code.load !== undefined) {
+        replacements.load = code.load;
     }
     return {
         flavour: flavour,

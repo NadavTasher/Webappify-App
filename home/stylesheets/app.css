@@ -6,10 +6,6 @@ body > div {
     max-width: 460px;
 }
 
-#app {
-    align-items: stretch;
-}
-
 table {
     background-color: #67b8ed;
     border-radius: 3vh;
@@ -26,6 +22,15 @@ img {
 
 .content {
     font-size: 175%;
+}
+
+.sideways {
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.sideways > * {
+    width: inherit;
 }
 
 input {

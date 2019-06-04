@@ -118,10 +118,14 @@ https://github.com/NadavTasher/WebAppBase/
                 </div>
             </div>
             <div id="build-code">
-
+                <p class="title">Write App Code</p>
+                <textarea oninput="code.app = this.value" placeholder="JS App Code" title="App Code"></textarea>
+                <button onclick="view('build-properties');">Back</button>
             </div>
             <div id="build-load">
-
+                <p class="title">Write Load Code</p>
+                <textarea oninput="code.load = this.value" placeholder="JS Load Code" title="Load Code"></textarea>
+                <button onclick="view('build-properties');">Back</button>
             </div>
             <div id="build-style">
                 <p class="title">Style design</p>
