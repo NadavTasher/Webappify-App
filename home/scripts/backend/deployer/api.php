@@ -45,7 +45,7 @@ function deployer()
                                 rename($directory . DIRECTORY_SEPARATOR . WEBAPP, DEPLOYMENT_DIRECTORY . DIRECTORY_SEPARATOR . $appId);
                                 builder_rmdir($directory);
                                 deployer_app_add($appId, $user->id, $appKey, $parameters->email);
-                                file_put_contents(DEPLOYMENT_DIRECTORY . DIRECTORY_SEPARATOR . $appId . DIRECTORY_SEPARATOR . ".htaccess", DEPLOYER_HTACCESS_CONTENT);
+                                file_put_contents(DEPLOYMENT_DIRECTORY . DIRECTORY_SEPARATOR . $appId . DIRECTORY_SEPARATOR . ".applock", DEPLOYER_HTACCESS_CONTENT);
                                 deployer_mail($user, $parameters->email, "Deployment Activation", "Hi " . explode(" ", $user->name)[0] . ",\nYour app has been deployed on Webappify.org.\nIn order to activate it, go to the following link: https://webappify.org/unlock?app=$appId&key=$appKey\nYour app url: https://webappify.org/apps/$appId\nBest Regards, The Webappify Team.");
                                 result(DEPLOYER_API, $action, "success", true);
                             }
@@ -87,7 +87,7 @@ function deployer_unlock($appId, $appKey)
         if (!isset($deployer_database->$appId->unlock)) return true;
         if ($deployer_database->$appId->unlock === $appKey) {
             unset($deployer_database->$appId->unlock);
-            unlink(DEPLOYMENT_DIRECTORY . DIRECTORY_SEPARATOR . $appId . DIRECTORY_SEPARATOR . ".htaccess");
+            unlink(DEPLOYMENT_DIRECTORY . DIRECTORY_SEPARATOR . $appId . DIRECTORY_SEPARATOR . ".applock");
             deployer_save();
             return true;
         }
