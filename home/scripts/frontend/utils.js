@@ -64,24 +64,25 @@ function slide(v, motion = true, direction = true, callback = undefined) {
         left: -(get(v).getBoundingClientRect().left + get(v).offsetWidth)
     };
     let offset = direction ? offsets.right : offsets.left;
-    animate(v, motion ? offset : 0, !motion ? offset : 0, 1, "left", callback);
+    animate(v, (motion ? offset : 0) + "px", (!motion ? offset : 0) + "px", 1, "left", callback);
 }
 
 function animate(v, from, to, seconds, property, callback = undefined) {
     let view = get(v);
     view.style.removeProperty(property);
     view.style.position = "relative";
-    setTimeout(() => {
-        view.style[property] = from + "px";
-        view.style.transition = seconds + "s";
-        setTimeout(() => {
-            view.style[property] = to + "px";
-            setTimeout(() => {
-                if (callback !== undefined)
-                    callback();
-            }, 1000 * seconds + 100);
-        }, 100);
-    }, 0);
+    view.style.animationTimingFunction = "linear";
+    let fromFrame = {}, toFrame = {};
+    fromFrame[property] = from;
+    toFrame[property] = to;
+    let animation = view.animate([fromFrame, toFrame], {duration: seconds * 1000});
+    animation.onfinish = () => {
+        view.style[property] = to;
+        view.style.position = null;
+        view.style.animationTimingFunction = null;
+        if (callback !== undefined)
+            callback();
+    };
 }
 
 function gestures(up, down, left, right, upgoing, downgoing, leftgoing, rightgoing) {
