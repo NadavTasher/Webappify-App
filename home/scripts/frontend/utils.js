@@ -79,7 +79,7 @@ function animate(v, from, to, seconds, property, callback = undefined) {
             setTimeout(() => {
                 if (callback !== undefined)
                     callback();
-            }, 1000 * seconds - 100);
+            }, 1000 * seconds + 100);
         }, 100);
     }, 0);
 }
