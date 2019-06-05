@@ -156,18 +156,30 @@ https://github.com/NadavTasher/WebAppBase/
 
         </div>
         <div id="deploy">
-            <p class="title">Deploy on Webappify</p>
-            <p class="content">Looks like you are ready to deploy your app on Webappify!</p>
-            <p class="content">We have some rules you'll need to follow, but they are not much of a hustle.</p>
-            <p class="content">1. A deployed app must <b>NOT</b> cause any damage to the server nor to the clients.</p>
-            <p class="content">2. By deploying your app, you are agreeing to us displaying it on the "Discover"
-                page.</p>
-            <p class="content">3. Your app will have a 30-Day life span, and will be removed if not renewed before end
-                of the grace period, using the link in the email sent to you.</p>
-            <p class="content">Finally, an email will be sent with your app details and an activation link.</p>
-            <p id="deploy-status"></p>
-            <input id="deploy-email" type="email" placeholder="Email for deployment and renewment"/>
-            <button id="deploy-button">Deploy</button>
+            <div id="deploy-deploy">
+                <p class="title">Deploy on Webappify</p>
+                <p class="content">
+                    Looks like you are ready to deploy your app on Webappify!<br/>
+                    We have some rules you'll need to follow, but they are not much of a hustle.
+                </p>
+                <p class="content">
+                    1. A deployed app must <b>NOT</b> cause any damage to the server nor to the clients.<br/>
+                    2. By deploying your app, you are agreeing to us displaying it on the "Discover" page.<br/>
+                    3. Your app will have a 30-Day life span, and will be removed if not renewed before end of the grace
+                    period, using the link in the email sent to you.
+                </p>
+                <p id="deploy-deploy-status"></p>
+                <input id="deploy-deploy-email" type="email" placeholder="Email for deployment and renewment"/>
+                <button id="deploy-deploy-button">Deploy</button>
+            </div>
+            <div id="deploy-unlock">
+                <p class="title">Deployment Activation</p>
+                <button id="deploy-unlock-button">Activate</button>
+            </div>
+            <div id="deploy-renew">
+                <p class="title">Deployment Renewal</p>
+                <button id="deploy-renew-button">Renew</button>
+            </div>
         </div>
         <div id="home">
             <p class="title">Welcome to Webappify!</p>

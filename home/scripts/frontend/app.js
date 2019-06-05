@@ -1,11 +1,15 @@
 function load(loggedIn) {
     view("app");
-    if (parameter("host") !== undefined) {
+    if (parameter("deploy") !== undefined) {
         if (loggedIn) {
-            loadDeploy(parameter("host"));
+            loadDeploy("deploy", parameter("deploy"));
         } else {
             accounts(load);
         }
+    } else if (parameter("unlock") !== undefined && parameter("key") !== undefined) {
+        loadUnlock(parameter("unlock"), parameter("key"));
+    } else if (parameter("renew") !== undefined && parameter("key") !== undefined) {
+        loadRenew(parameter("renew"), parameter("key"));
     } else {
         view("home");
     }
@@ -20,16 +24,89 @@ function loadBuilder() {
 
 function loadDeploy(value) {
     view("deploy");
-    get("deploy-button").onclick = () => {
-        slide(get("deploy-button"), false, true, () => {
-            let email = get("deploy-email").value;
+    view("deploy-deploy");
+    get("deploy-deploy-button").onclick = () => {
+        slide(get("deploy-deploy-button"), false, true, () => {
+            let email = get("deploy-deploy-email").value;
             if (validateEmail(email)) {
                 deploy(email, JSON.parse(decodeURIComponent(escape(atob(value)))));
             } else {
-                slide(get("deploy-button"), true, true, () => {
-                    get("deploy-status").innerText = "Wrong email syntax";
+                slide(get("deploy-deploy-button"), true, true, () => {
+                    get("deploy-deploy-status").innerText = "Wrong email syntax";
                 });
             }
+        });
+    };
+}
+
+function loadUnlock(id, key) {
+    view("deploy");
+    view("deploy-unlock");
+    get("deploy-unlock-button").onclick = () => {
+        slide(get("deploy-unlock-button"), false, true, () => {
+            let body = new FormData;
+            body.append("deployer", JSON.stringify({
+                action: "unlock",
+                parameters: {
+                    id: id,
+                    key: key
+                }
+            }));
+            fetch("scripts/backend/deployer/deployer.php", {
+                method: "post",
+                body: body
+            }).then(response => {
+                response.text().then((result) => {
+                    let json = JSON.parse(result);
+                    if (json.hasOwnProperty("deployer")) {
+                        if (json.deployer.hasOwnProperty("unlock")) {
+                            if (json.deployer.unlock.hasOwnProperty("success")) {
+                                if (json.deployer.unlock.success) {
+                                    window.location.href = "../apps/" + id;
+                                } else {
+                                    window.location.href = "/";
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+        });
+    };
+}
+
+function loadRenew(id, key) {
+    view("deploy");
+    view("deploy-renew");
+    get("deploy-renew-button").onclick = () => {
+        slide(get("deploy-renew-button"), false, true, () => {
+            let body = new FormData;
+            body.append("deployer", JSON.stringify({
+                action: "renew",
+                parameters: {
+                    id: id,
+                    key: key
+                }
+            }));
+            fetch("scripts/backend/deployer/deployer.php", {
+                method: "post",
+                body: body
+            }).then(response => {
+                response.text().then((result) => {
+                    let json = JSON.parse(result);
+                    if (json.hasOwnProperty("deployer")) {
+                        if (json.deployer.hasOwnProperty("renew")) {
+                            if (json.deployer.renew.hasOwnProperty("success")) {
+                                if (json.deployer.renew.success) {
+                                    window.location.href = "../apps/" + id;
+                                } else {
+                                    window.location.href = "/";
+                                }
+                            }
+                        }
+                    }
+                });
+            });
         });
     };
 }

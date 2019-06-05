@@ -1,6 +1,5 @@
 # Redirects
 Redirect /index.html /home/
-Redirect /unlock /home/scripts/backend/deployer/unlock.php
 Redirect /apps/index.html /home/
 # No Cache
 Header set Pragma "no-cache"

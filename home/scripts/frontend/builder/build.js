@@ -107,7 +107,7 @@ function buildParameters() {
 }
 
 function buildDeploy() {
-    window.location.href = "?host=" + btoa(unescape(encodeURIComponent(JSON.stringify(buildParameters()))));
+    window.location.href = "?deploy=" + btoa(unescape(encodeURIComponent(JSON.stringify(buildParameters()))));
 }
 
 function buildDownload() {
