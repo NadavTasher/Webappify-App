@@ -80,7 +80,7 @@ function deployer_mail_renew($appId, $user)
 {
     global $deployer_database;
     $renewKey = $deployer_database->$appId->keys->renew;
-    deployer_mail($user, $deployer_database->$appId->email, "Deployment Renewal", "Hi " . explode(" ", $user->name)[0] . ",\nIt's been 30 days since you last renewed your app (https://webappify.org/apps/$appId).\nIt is now in it's grace period, and will be removed in 7 days unless renewed.\nIn order to renew it, open the following link: https://webappify.org/home/?renew=$appId&key=$renewKey\n\nBest Regards, The Webappify Team.");
+    deployer_mail($user, $deployer_database->$appId->email, "Deployment Renewal", "Hi " . explode(" ", $user->name)[0] . ",\nIt's been 30 days since you last renewed your app (https://webappify.org/apps/$appId).\nIt is now in it's grace period (7 days), and will be removed unless renewed.\nIn order to renew it, open the following link: https://webappify.org/home/?renew=$appId&key=$renewKey\n\nBest Regards, The Webappify Team.");
 }
 
 function deployer_mail($user, $email, $subject, $message)
