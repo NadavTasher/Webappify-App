@@ -15,7 +15,6 @@ use PHPMailer\PHPMailer\POP3;
 use PHPMailer\PHPMailer\OAuth;
 use PHPMailer\PHPMailer\Exception;
 
-
 const DEPLOYER_API = "deployer";
 const DEPLOYER_DIRECTORY = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "apps";
 const DEPLOYER_DATABASE = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "deployer" . DIRECTORY_SEPARATOR . "database.json";
@@ -31,9 +30,9 @@ $deployer_database = json_decode(file_get_contents(DEPLOYER_DATABASE));
 
 function deployer()
 {
-    if (isset($_POST["deployer"])) {
+    if (isset($_POST[DEPLOYER_API])) {
         // Not filtering because of HTML input
-        $information = json_decode($_POST["deployer"]);
+        $information = json_decode($_POST[DEPLOYER_API]);
         if (isset($information->action) && isset($information->parameters)) {
             $action = $information->action;
             $parameters = $information->parameters;

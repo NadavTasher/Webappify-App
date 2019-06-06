@@ -16,9 +16,9 @@ $master = json_decode(file_get_contents(MASTER_LIST));
 function builder()
 {
     global $master;
-    if (isset($_POST["builder"])) {
+    if (isset($_POST[BUILDER_API])) {
         // Not filtering because of HTML input
-        $information = json_decode($_POST["builder"]);
+        $information = json_decode($_POST[BUILDER_API]);
         if (isset($information->action) && isset($information->parameters)) {
             $action = $information->action;
             $parameters = $information->parameters;

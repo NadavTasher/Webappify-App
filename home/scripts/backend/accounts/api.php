@@ -19,8 +19,8 @@ $accounts_database = null;
 function accounts()
 {
     accounts_load();
-    if (isset($_POST["accounts"])) {
-        $information = json_decode(filter($_POST["accounts"]));
+    if (isset($_POST[ACCOUNTS_API])) {
+        $information = json_decode(filter($_POST[ACCOUNTS_API]));
         if (isset($information->action) && isset($information->parameters)) {
             $action = $information->action;
             $parameters = $information->parameters;
