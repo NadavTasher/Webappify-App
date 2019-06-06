@@ -22,7 +22,7 @@ function deploy(email, parameters) {
                             slide("deploy-deploy-status", true, false);
                             get("deploy-deploy-status").innerText = "Check your email for further instructions.";
                             pushCookie(deployCookie, "");
-                            setTimeout(() => window.location.href = "/", 10000);
+                            setTimeout(() => window.location = "", 10000);
                         }
                     }
                 }
@@ -32,21 +32,27 @@ function deploy(email, parameters) {
 }
 
 function loadDeploy(parameters) {
-    accounts((loggedIn)=>{
-        if(loggedIn){
-        view("deploy");
-        view("deploy-deploy");
-        get("deploy-deploy-button").onclick = () => {
-            slide("deploy-deploy-button", false, true, () => {
-                let email = get("deploy-deploy-email").value;
-                if (validateEmail(email)) {
-                    deploy(email, parameters);
-                } else {
-                    slide(get("deploy-deploy-button"), true, true, () => {
-                        get("deploy-deploy-status").innerText = "Wrong email syntax";
-                    });
-                }
-            });
-        };}});
+    accounts((loggedIn) => {
+        if (loggedIn) {
+            view("deploy");
+            view("deploy-deploy");
+            get("deploy-deploy-button").onclick = () => {
+                slide("deploy-deploy-email", false, false);
+                slide("deploy-deploy-button", false, true, () => {
+                    let email = get("deploy-deploy-email").value;
+                    if (validateEmail(email)) {
+                        deploy(email, parameters);
+                    } else {
+                        slide("deploy-deploy-email", true, false);
+                        slide(get("deploy-deploy-button"), true, true, () => {
+                            get("deploy-deploy-status").innerText = "Wrong email syntax";
+                        });
+                    }
+                });
+            };
+        } else {
+            loadDeploy(parameters);
+        }
+    });
 
 }

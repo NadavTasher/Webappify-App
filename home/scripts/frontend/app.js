@@ -41,7 +41,7 @@ function loadUnlock(id, key) {
                                 if (json.deployer.unlock.success) {
                                     window.location.href = "../apps/" + id;
                                 } else {
-                                    window.location.href = "/";
+                                    window.location = "";
                                 }
                             }
                         }
@@ -77,7 +77,7 @@ function loadRenew(id, key) {
                                 if (json.deployer.renew.success) {
                                     window.location.href = "../apps/" + id;
                                 } else {
-                                    window.location.href = "/";
+                                    window.location = "";
                                 }
                             }
                         }

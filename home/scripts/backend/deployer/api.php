@@ -17,8 +17,11 @@ use PHPMailer\PHPMailer\Exception;
 
 
 const DEPLOYER_API = "deployer";
-const DEPLOYMENT_DIRECTORY = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "apps";
+const DEPLOYER_DIRECTORY = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "apps";
 const DEPLOYER_DATABASE = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "deployer" . DIRECTORY_SEPARATOR . "database.json";
+const DEPLOYER_RENEW_MAIL = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "resources" . DIRECTORY_SEPARATOR . "deployer" . DIRECTORY_SEPARATOR . "renew.html";
+const DEPLOYER_ACTIVATE_MAIL = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "resources" . DIRECTORY_SEPARATOR . "deployer" . DIRECTORY_SEPARATOR . "activate.html";
+const DEPLOYER_STYLESHEET = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "stylesheets" . DIRECTORY_SEPARATOR . "theme.css";
 const DEPLOYER_LIFECYCLE = 30 * 24 * 60 * 60;
 const DEPLOYER_GRACE = 7 * 24 * 60 * 60;
 const DEPLOYER_APPLOCK_CONTENT = "Deny from all";
@@ -28,7 +31,6 @@ $deployer_database = json_decode(file_get_contents(DEPLOYER_DATABASE));
 
 function deployer()
 {
-
     if (isset($_POST["deployer"])) {
         // Not filtering because of HTML input
         $information = json_decode($_POST["deployer"]);
@@ -45,11 +47,11 @@ function deployer()
                             $appId = random(12);
                             $directory = builder_create($appParameters->flavour, $appParameters->replacements);
                             if ($directory !== null) {
-                                rename($directory . DIRECTORY_SEPARATOR . WEBAPP, DEPLOYMENT_DIRECTORY . DIRECTORY_SEPARATOR . $appId);
+                                rename($directory . DIRECTORY_SEPARATOR . WEBAPP, DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $appId);
                                 builder_rmdir($directory);
                                 if (deployer_create($appId, $user->id, $parameters->email)) {
                                     deployer_mail_activate($appId, $user);
-                                    file_put_contents(DEPLOYMENT_DIRECTORY . DIRECTORY_SEPARATOR . $appId . DIRECTORY_SEPARATOR . DEPLOYER_APPLOCK_FILE, DEPLOYER_APPLOCK_CONTENT);
+                                    file_put_contents(DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $appId . DIRECTORY_SEPARATOR . DEPLOYER_APPLOCK_FILE, DEPLOYER_APPLOCK_CONTENT);
                                     result(DEPLOYER_API, $action, "success", true);
                                 }
                             }
@@ -73,14 +75,26 @@ function deployer_mail_activate($appId, $user)
 {
     global $deployer_database;
     $unlockKey = $deployer_database->$appId->keys->unlock;
-    deployer_mail($user, $deployer_database->$appId->email, "Deployment Activation", "Hi " . explode(" ", $user->name)[0] . ",\nYour app has been deployed on Webappify.org.\nIn order to activate it, open the following link: https://webappify.org/home/?unlock=$appId&key=$unlockKey\nYour app's url: https://webappify.org/apps/$appId\n\nBest Regards, The Webappify Team.");
+
+    $mail = file_get_contents(DEPLOYER_ACTIVATE_MAIL);
+    $mail = str_replace("FirstName", explode(" ", $user->name)[0], $mail);
+    $mail = str_replace("AppID", $appId, $mail);
+    $mail = str_replace("Key", $unlockKey, $mail);
+
+    deployer_mail($user, $deployer_database->$appId->email, "Deployment Activation #" . count((array)$deployer_database), $mail);
 }
 
 function deployer_mail_renew($appId, $user)
 {
     global $deployer_database;
     $renewKey = $deployer_database->$appId->keys->renew;
-    deployer_mail($user, $deployer_database->$appId->email, "Deployment Renewal", "Hi " . explode(" ", $user->name)[0] . ",\nIt's been 30 days since you last renewed your app (https://webappify.org/apps/$appId).\nIt is now in it's grace period (7 days), and will be removed unless renewed.\nIn order to renew it, open the following link: https://webappify.org/home/?renew=$appId&key=$renewKey\n\nBest Regards, The Webappify Team.");
+
+    $mail = file_get_contents(DEPLOYER_RENEW_MAIL);
+    $mail = str_replace("FirstName", explode(" ", $user->name)[0], $mail);
+    $mail = str_replace("AppID", $appId, $mail);
+    $mail = str_replace("Key", $renewKey, $mail);
+
+    deployer_mail($user, $deployer_database->$appId->email, "Deployment Renewal #" . ($deployer_database->$appId->renews + 1), $mail);
 }
 
 function deployer_mail($user, $email, $subject, $message)
@@ -98,6 +112,7 @@ function deployer_mail($user, $email, $subject, $message)
         $mail->AddAddress($email, $user->name);
         $mail->SetFrom("noreply@webappify.org", "Webappify");
         $mail->Subject = $subject;
+        $mail->isHTML(true);
         $mail->Body = $message;
         $mail->Send();
         return true;
@@ -109,6 +124,7 @@ function deployer_mail($user, $email, $subject, $message)
 function deployer_scan()
 {
     global $deployer_database;
+    accounts_load();
     $time = time();
     foreach ($deployer_database as $appId => $app) {
         if ($time > $app->times->renew) {
@@ -127,6 +143,7 @@ function deployer_renew($appId, $renewKey)
     if (isset($deployer_database->$appId) && $deployer_database->$appId->keys->renew === $renewKey) {
         $deployer_database->$appId->times->renew = time() + DEPLOYER_LIFECYCLE;
         $deployer_database->$appId->keys->renew = random(32);
+        $deployer_database->$appId->renews += 1;
         deployer_save();
         return true;
     } else {
@@ -137,9 +154,9 @@ function deployer_renew($appId, $renewKey)
 function deployer_unlock($appId, $unlockKey)
 {
     global $deployer_database;
-    if (file_exists(DEPLOYMENT_DIRECTORY . DIRECTORY_SEPARATOR . $appId . DIRECTORY_SEPARATOR . DEPLOYER_APPLOCK_FILE)) {
+    if (file_exists(DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $appId . DIRECTORY_SEPARATOR . DEPLOYER_APPLOCK_FILE)) {
         if (isset($deployer_database->$appId) && $deployer_database->$appId->keys->unlock === $unlockKey) {
-            unlink(DEPLOYMENT_DIRECTORY . DIRECTORY_SEPARATOR . $appId . DIRECTORY_SEPARATOR . DEPLOYER_APPLOCK_FILE);
+            unlink(DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $appId . DIRECTORY_SEPARATOR . DEPLOYER_APPLOCK_FILE);
         } else {
             return false;
         }
@@ -158,6 +175,7 @@ function deployer_create($appId, $userId, $deployEmail)
     $deployer_database->$appId->times = new stdClass();
     $deployer_database->$appId->times->deploy = time();
     $deployer_database->$appId->times->renew = time();
+    $deployer_database->$appId->renews = 0;
     $deployer_database->$appId->owner = $userId;
     $deployer_database->$appId->email = $deployEmail;
     deployer_save();
@@ -168,7 +186,7 @@ function deployer_remove($appId)
 {
     global $deployer_database;
     if (isset($deployer_database->$appId)) unset($deployer_database->$appId);
-    builder_rmdir(DEPLOYMENT_DIRECTORY . DIRECTORY_SEPARATOR . $appId);
+    builder_rmdir(DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $appId);
     deployer_save();
 }
 
