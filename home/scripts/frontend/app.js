@@ -9,13 +9,6 @@ function load(loggedIn) {
     }
 }
 
-function loadBuilder() {
-    loadTemplates(() => {
-        view("build");
-        view("build-welcome");
-    });
-}
-
 function loadUnlock(id, key) {
     view("deploy");
     view("deploy-unlock");

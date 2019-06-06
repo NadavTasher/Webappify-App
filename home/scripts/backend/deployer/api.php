@@ -41,15 +41,15 @@ function deployer()
             if ($action === "deploy") {
                 $user = accounts();
                 if ($user !== null) {
-                    if (isset($parameters->email) && isset($parameters->parameters)) {
-                        if (filter_var($parameters->email, FILTER_VALIDATE_EMAIL)) {
+                    if (isset($parameters->mail) && isset($parameters->parameters)) {
+                        if (filter_var($parameters->mail, FILTER_VALIDATE_EMAIL)) {
                             $appParameters = $parameters->parameters;
                             $appId = random(12);
                             $directory = builder_create($appParameters->flavour, $appParameters->replacements);
                             if ($directory !== null) {
                                 rename($directory . DIRECTORY_SEPARATOR . WEBAPP, DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $appId);
                                 builder_rmdir($directory);
-                                if (deployer_create($appId, $user->id, $parameters->email)) {
+                                if (deployer_create($appId, $user->id, isset($appParameters->name) ? $appParameters->name : "Unknown", isset($appParameters->description) ? $appParameters->description : "Unknown", $parameters->mail)) {
                                     deployer_mail_activate($appId, $user);
                                     file_put_contents(DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $appId . DIRECTORY_SEPARATOR . DEPLOYER_APPLOCK_FILE, DEPLOYER_APPLOCK_CONTENT);
                                     result(DEPLOYER_API, $action, "success", true);
@@ -81,7 +81,7 @@ function deployer_mail_activate($appId, $user)
     $mail = str_replace("AppID", $appId, $mail);
     $mail = str_replace("Key", $unlockKey, $mail);
 
-    deployer_mail($user, $deployer_database->$appId->email, "Deployment Activation #" . count((array)$deployer_database), $mail);
+    deployer_mail($user, $deployer_database->$appId->credentials->mail, "Deployment Activation #" . count((array)$deployer_database), $mail);
 }
 
 function deployer_mail_renew($appId, $user)
@@ -94,7 +94,7 @@ function deployer_mail_renew($appId, $user)
     $mail = str_replace("AppID", $appId, $mail);
     $mail = str_replace("Key", $renewKey, $mail);
 
-    deployer_mail($user, $deployer_database->$appId->email, "Deployment Renewal #" . ($deployer_database->$appId->renews + 1), $mail);
+    deployer_mail($user, $deployer_database->$appId->credentials->mail, "Deployment Renewal #" . ($deployer_database->$appId->renews + 1), $mail);
 }
 
 function deployer_mail($user, $email, $subject, $message)
@@ -131,7 +131,7 @@ function deployer_scan()
             if ($time > $app->times->renew + DEPLOYER_GRACE) {
                 deployer_remove($appId);
             } else {
-                deployer_mail_renew($appId, accounts_user($app->owner));
+                deployer_mail_renew($appId, accounts_user($app->credentials->owner));
             }
         }
     }
@@ -164,7 +164,7 @@ function deployer_unlock($appId, $unlockKey)
     return true;
 }
 
-function deployer_create($appId, $userId, $deployEmail)
+function deployer_create($appId, $userId, $appName, $appDescription, $deployEmail)
 {
     global $deployer_database;
     if (isset($deployer_database->$appId)) return false;
@@ -175,9 +175,12 @@ function deployer_create($appId, $userId, $deployEmail)
     $deployer_database->$appId->times = new stdClass();
     $deployer_database->$appId->times->deploy = time();
     $deployer_database->$appId->times->renew = time();
+    $deployer_database->$appId->credentials = new stdClass();
+    $deployer_database->$appId->credentials->owner = $userId;
+    $deployer_database->$appId->credentials->mail = $deployEmail;
+    $deployer_database->$appId->name = $appName;
+    $deployer_database->$appId->description = $appDescription;
     $deployer_database->$appId->renews = 0;
-    $deployer_database->$appId->owner = $userId;
-    $deployer_database->$appId->email = $deployEmail;
     deployer_save();
     return true;
 }

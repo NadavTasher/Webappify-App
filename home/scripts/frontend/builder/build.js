@@ -5,6 +5,13 @@ let code = {
     app: undefined
 };
 
+function loadBuilder() {
+    loadTemplates(() => {
+        view("build");
+        view("build-template");
+    });
+}
+
 function loadTemplates(callback) {
     fetch("files/builder/templates.json", {
         method: "get"

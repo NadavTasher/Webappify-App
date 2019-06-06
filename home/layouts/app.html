@@ -1,8 +1,4 @@
 <div id="build">
-    <div id="build-welcome">
-        <p class="title">Create your WebApp</p>
-        <button onclick="slide(this,false,true,()=>view('build-template'));">Let's Begin!</button>
-    </div>
     <div id="build-template">
         <p class="title">Choose a template</p>
         <select id="build-flavour" title="Flavour">
@@ -82,6 +78,11 @@
         <button onclick="slide(this, false, true, ()=>buildDownload());">Download</button>
         <p class="content">Or</p>
         <button onclick="slide(this, false, false, ()=>buildDeploy());">Deploy on Webappify</button>
+    </div>
+</div>
+<div id="edit">
+    <div id="edit-list">
+        <p class="title">Choose application to edit</p>
     </div>
 </div>
 <div id="discover">

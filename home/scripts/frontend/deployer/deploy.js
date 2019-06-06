@@ -1,12 +1,12 @@
 const deployCookie = "deployCookie";
 
-function deploy(email, parameters) {
+function deploy(mail, parameters) {
     let body = fillForm();
     body.append("deployer", JSON.stringify({
         action: "deploy",
         parameters: {
             parameters: parameters,
-            email: email
+            mail: mail
         }
     }));
     fetch("scripts/backend/deployer/deployer.php", {
