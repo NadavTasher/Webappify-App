@@ -53,17 +53,29 @@ function deployer()
                                     file_put_contents(DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $appId . DIRECTORY_SEPARATOR . DEPLOYER_APPLOCK_FILE, DEPLOYER_APPLOCK_CONTENT);
                                     result(DEPLOYER_API, $action, "success", true);
                                 }
+                            } else {
+                                error(DEPLOYER_API, $action, "Build failure");
                             }
+                        } else {
+                            error(DEPLOYER_API, $action, "Bad email syntax");
                         }
+                    } else {
+                        error(DEPLOYER_API, $action, "Missing information");
                     }
+                } else {
+                    error(DEPLOYER_API, $action, "User authentication failed");
                 }
             } else if ($action === "unlock") {
                 if (isset($parameters->id) && isset($parameters->key)) {
                     result(DEPLOYER_API, $action, "success", deployer_unlock($parameters->id, $parameters->key));
+                } else {
+                    error(DEPLOYER_API, $action, "Missing information");
                 }
             } else if ($action === "renew") {
                 if (isset($parameters->id) && isset($parameters->key)) {
                     result(DEPLOYER_API, $action, "success", deployer_renew($parameters->id, $parameters->key));
+                } else {
+                    error(DEPLOYER_API, $action, "Missing information");
                 }
             }
         }

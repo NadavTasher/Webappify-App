@@ -32,8 +32,14 @@ function builder()
                             result(BUILDER_API, $action, "content", builder_bundle($directory));
                             result(BUILDER_API, $action, "success", true);
                             builder_rmdir($directory);
+                        }else{
+                            error(BUILDER_API, $action, "Build failure");
                         }
+                    }else{
+                        error(BUILDER_API, $action, "Non existent template");
                     }
+                }else{
+                    error(BUILDER_API, $action, "Missing information");
                 }
             }
         }

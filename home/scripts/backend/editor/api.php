@@ -31,7 +31,11 @@ function editor()
                                     if ($valid) {
                                         file_put_contents(DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR . $parameters->file, $parameters->content);
                                         result(DEPLOYER_API, $action, "success", true);
+                                    } else {
+                                        error(EDITOR_API, $action, "Invalid file");
                                     }
+                                } else {
+                                    error(EDITOR_API, $action, "Missing information");
                                 }
                             } else if ($action === "read") {
                                 $filesystem = new stdClass();
@@ -46,8 +50,14 @@ function editor()
                                 result(EDITOR_API, $action, "filesystem", $filesystem);
                                 result(DEPLOYER_API, $action, "success", true);
                             }
+                        } else {
+                            error(EDITOR_API, $action, "Ownership verification failure");
                         }
+                    } else {
+                        error(EDITOR_API, $action, "App does not exist");
                     }
+                } else {
+                    error(EDITOR_API, $action, "Missing information");
                 }
             }
         }
