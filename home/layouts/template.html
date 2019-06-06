@@ -1,0 +1,37 @@
+<div id="accounts">
+    <div id="login">
+        <p>Login To AppName</p>
+        <p id="login-error" style="font-size: large; color: red;"></p>
+        <div>
+            <input id="login-name" type="text" placeholder="Name"/>
+            <input id="login-password" type="password" placeholder="Password"/>
+            <button onclick="login(get('login-name').value,get('login-password').value)">Login</button>
+        </div>
+        <div>
+            <p style="font-size: larger">Don't have an account?</p>
+            <button onclick="view('register')">Register</button>
+        </div>
+        <div>
+            <button onclick="force()">Continue Without Login</button>
+        </div>
+    </div>
+    <div id="register">
+        <p>Register To AppName</p>
+        <p id="register-error" style="font-size: large; color: red;"></p>
+        <div>
+            <input id="register-name" type="text" placeholder="Name"/>
+            <input id="register-password" type="password" placeholder="Password"/>
+            <button onclick="register(get('register-name').value,get('register-password').value)">Register</button>
+        </div>
+        <div>
+            <p style="font-size: larger">Already have an account?</p>
+            <button onclick="view('login')">Login</button>
+        </div>
+        <div>
+            <button onclick="force()">Continue Without Registration</button>
+        </div>
+    </div>
+</div>
+<div id="app">
+    <!--App Body-->
+</div>

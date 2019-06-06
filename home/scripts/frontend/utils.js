@@ -134,3 +134,20 @@ function worker(w = "worker.js") {
         });
     }
 }
+
+function html(callback = undefined) {
+    fetch("layouts/template.html", {
+        method: "get"
+    }).then(response => {
+        response.text().then((template) => {
+            fetch("layouts/app.html", {
+                method: "get"
+            }).then(response => {
+                response.text().then((app) => {
+                    document.body.children[0].innerHTML = template.replace("<!--App Body-->", app);
+                    if (callback !== undefined) callback();
+                });
+            });
+        });
+    });
+}
