@@ -24,6 +24,10 @@ img {
     font-size: 175%;
 }
 
+.fineprint{
+    font-size: 140%;
+}
+
 .sideways {
     flex-direction: row;
     justify-content: space-around;

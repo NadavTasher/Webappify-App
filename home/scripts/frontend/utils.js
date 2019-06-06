@@ -78,7 +78,6 @@ function animate(v, from, to, seconds, property, callback = undefined) {
     let animation = view.animate([fromFrame, toFrame], {duration: seconds * 1000});
     animation.onfinish = () => {
         view.style[property] = to;
-        view.style.position = null;
         view.style.animationTimingFunction = null;
         if (callback !== undefined)
             callback();

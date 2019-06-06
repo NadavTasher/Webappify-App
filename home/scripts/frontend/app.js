@@ -1,12 +1,6 @@
 function load(loggedIn) {
     view("app");
-    if (parameter("deploy") !== undefined) {
-        if (loggedIn) {
-            loadDeploy("deploy", parameter("deploy"));
-        } else {
-            accounts(load);
-        }
-    } else if (parameter("unlock") !== undefined && parameter("key") !== undefined) {
+    if (parameter("unlock") !== undefined && parameter("key") !== undefined) {
         loadUnlock(parameter("unlock"), parameter("key"));
     } else if (parameter("renew") !== undefined && parameter("key") !== undefined) {
         loadRenew(parameter("renew"), parameter("key"));
@@ -20,23 +14,6 @@ function loadBuilder() {
         view("build");
         view("build-welcome");
     });
-}
-
-function loadDeploy(value) {
-    view("deploy");
-    view("deploy-deploy");
-    get("deploy-deploy-button").onclick = () => {
-        slide(get("deploy-deploy-button"), false, true, () => {
-            let email = get("deploy-deploy-email").value;
-            if (validateEmail(email)) {
-                deploy(email, JSON.parse(decodeURIComponent(escape(atob(value)))));
-            } else {
-                slide(get("deploy-deploy-button"), true, true, () => {
-                    get("deploy-deploy-status").innerText = "Wrong email syntax";
-                });
-            }
-        });
-    };
 }
 
 function loadUnlock(id, key) {
