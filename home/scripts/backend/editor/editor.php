@@ -1,4 +1,4 @@
 <?php
 include "api.php";
-builder();
+editor();
 echo json_encode($result);
