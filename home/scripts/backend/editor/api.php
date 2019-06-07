@@ -15,7 +15,7 @@ function editor()
             if (isset($information->action) && isset($information->parameters)) {
                 $action = $information->action;
                 $parameters = $information->parameters;
-                result(DEPLOYER_API, $action, "success", false);
+                result(EDITOR_API, $action, "success", false);
                 if (isset($parameters->id)) {
                     $id = $parameters->id;
                     if (isset($deployer_database->$id)) {
@@ -30,7 +30,7 @@ function editor()
                                     }
                                     if ($valid) {
                                         file_put_contents(DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR . $parameters->file, $parameters->content);
-                                        result(DEPLOYER_API, $action, "success", true);
+                                        result(EDITOR_API, $action, "success", true);
                                     } else {
                                         error(EDITOR_API, $action, "Invalid file");
                                     }
@@ -48,7 +48,7 @@ function editor()
                                     }
                                 }
                                 result(EDITOR_API, $action, "filesystem", $filesystem);
-                                result(DEPLOYER_API, $action, "success", true);
+                                result(EDITOR_API, $action, "success", true);
                             }
                         } else {
                             error(EDITOR_API, $action, "Ownership verification failure");
