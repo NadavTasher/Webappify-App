@@ -17,6 +17,27 @@ $master = json_decode(file_get_contents(MASTER_LIST));
 function builder()
 {
     global $master;
+    api(BUILDER_API, function ($action, $parameters) {
+        if ($action === "build") {
+            if (isset($parameters->flavour)) {
+                $flavour = $parameters->flavour;
+                if (isset($master->$flavour)) {
+                    $directory = builder_create($flavour, $parameters->replacements);
+                    if ($directory !== null) {
+                        $result = builder_bundle($directory);
+                        builder_rmdir($directory);
+                        return [true, $result];
+                    } else {
+                        return [false, "Build failure"];
+                    }
+                } else {
+                    return [false, "Non existent template"];
+                }
+            } else {
+                return [false, "Missing information"];
+            }
+        }
+    }, false);
     if (isset($_POST[BUILDER_API])) {
         // Not filtering because of HTML input
         $information = json_decode($_POST[BUILDER_API]);
@@ -33,13 +54,13 @@ function builder()
                             result(BUILDER_API, $action, "content", builder_bundle($directory));
                             result(BUILDER_API, $action, "success", true);
                             builder_rmdir($directory);
-                        }else{
+                        } else {
                             error(BUILDER_API, $action, "Build failure");
                         }
-                    }else{
+                    } else {
                         error(BUILDER_API, $action, "Non existent template");
                     }
-                }else{
+                } else {
                     error(BUILDER_API, $action, "Missing information");
                 }
             }
