@@ -5,23 +5,16 @@ const EXPLORER_API = "explorer";
 
 function explorer()
 {
-    if (isset($_POST[EXPLORER_API])) {
-        $information = json_decode(filter($_POST[EXPLORER_API]));
-        if (isset($information->action) && isset($information->parameters)) {
-            $action = $information->action;
-            $parameters = $information->parameters;
-            result(EXPLORER_API, $action, "success", false);
-            if ($action === "list") {
-                result(EXPLORER_API, $action, "apps", explorer_list());
-                result(EXPLORER_API, $action, "success", true);
-            } else if ($action === "random") {
-                $array = explorer_list();
-                shuffle($array);
-                result(EXPLORER_API, $action, "app", $array[0]);
-                result(EXPLORER_API, $action, "success", true);
-            }
+    api(EXPLORER_API, function ($action, $parameters) {
+        if ($action === "list") {
+            return [true, explorer_list()];
+        } else if ($action === "random") {
+            $array = explorer_list();
+            shuffle($array);
+            return [true, $array[0]];
         }
-    }
+        return [false, null];
+    }, true);
 }
 
 function explorer_list()

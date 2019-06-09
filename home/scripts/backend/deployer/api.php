@@ -30,56 +30,50 @@ $deployer_database = json_decode(file_get_contents(DEPLOYER_DATABASE));
 
 function deployer()
 {
-    if (isset($_POST[DEPLOYER_API])) {
-        // Not filtering because of HTML input
-        $information = json_decode($_POST[DEPLOYER_API]);
-        if (isset($information->action) && isset($information->parameters)) {
-            $action = $information->action;
-            $parameters = $information->parameters;
-            result(DEPLOYER_API, $action, "success", false);
-            if ($action === "deploy") {
-                $user = accounts();
-                if ($user !== null) {
-                    if (isset($parameters->mail) && isset($parameters->parameters)) {
-                        if (filter_var($parameters->mail, FILTER_VALIDATE_EMAIL)) {
-                            $appParameters = $parameters->parameters;
-                            $appId = random(12);
-                            $directory = builder_create($appParameters->flavour, $appParameters->replacements);
-                            if ($directory !== null) {
-                                rename($directory . DIRECTORY_SEPARATOR . WEBAPP, DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $appId);
-                                builder_rmdir($directory);
-                                if (deployer_create($appId, $user->id, isset($appParameters->name) ? $appParameters->name : "Unknown", isset($appParameters->description) ? $appParameters->description : "Unknown", $parameters->mail)) {
-                                    deployer_mail_activate($appId, $user);
-                                    file_put_contents(DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $appId . DIRECTORY_SEPARATOR . DEPLOYER_APPLOCK_FILE, DEPLOYER_APPLOCK_CONTENT);
-                                    result(DEPLOYER_API, $action, "success", true);
-                                }
-                            } else {
-                                error(DEPLOYER_API, $action, "Build failure");
+    api(DEPLOYER_API, function ($action, $parameters) {
+        if ($action === "deploy") {
+            $user = accounts();
+            if ($user !== null) {
+                if (isset($parameters->mail) && isset($parameters->parameters)) {
+                    if (filter_var($parameters->mail, FILTER_VALIDATE_EMAIL)) {
+                        $appParameters = $parameters->parameters;
+                        $appId = random(12);
+                        $directory = builder_create($appParameters->flavour, $appParameters->replacements);
+                        if ($directory !== null) {
+                            rename($directory . DIRECTORY_SEPARATOR . WEBAPP, DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $appId);
+                            builder_rmdir($directory);
+                            if (deployer_create($appId, $user->id, isset($appParameters->name) ? $appParameters->name : "Unknown", isset($appParameters->description) ? $appParameters->description : "Unknown", $parameters->mail)) {
+                                deployer_mail_activate($appId, $user);
+                                file_put_contents(DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $appId . DIRECTORY_SEPARATOR . DEPLOYER_APPLOCK_FILE, DEPLOYER_APPLOCK_CONTENT);
+                                return [true, null];
                             }
                         } else {
-                            error(DEPLOYER_API, $action, "Bad email syntax");
+                            return [false, "Build failure"];
                         }
                     } else {
-                        error(DEPLOYER_API, $action, "Missing information");
+                        return [false, "Bad email syntax"];
                     }
                 } else {
-                    error(DEPLOYER_API, $action, "User authentication failed");
+                    return [false, "Missing information"];
                 }
-            } else if ($action === "unlock") {
-                if (isset($parameters->id) && isset($parameters->key)) {
-                    result(DEPLOYER_API, $action, "success", deployer_unlock($parameters->id, $parameters->key));
-                } else {
-                    error(DEPLOYER_API, $action, "Missing information");
-                }
-            } else if ($action === "renew") {
-                if (isset($parameters->id) && isset($parameters->key)) {
-                    result(DEPLOYER_API, $action, "success", deployer_renew($parameters->id, $parameters->key));
-                } else {
-                    error(DEPLOYER_API, $action, "Missing information");
-                }
+            } else {
+                return [false, "User authentication failed"];
+            }
+        } else if ($action === "unlock") {
+            if (isset($parameters->id) && isset($parameters->key)) {
+                return deployer_unlock($parameters->id, $parameters->key);
+            } else {
+                return [false, "Missing information"];
+            }
+        } else if ($action === "renew") {
+            if (isset($parameters->id) && isset($parameters->key)) {
+                return deployer_renew($parameters->id, $parameters->key);
+            } else {
+                return [false, "Missing information"];
             }
         }
-    }
+        return [false, null];
+    }, false);
 }
 
 function deployer_mail_activate($appId, $user)
@@ -156,9 +150,9 @@ function deployer_renew($appId, $renewKey)
         $deployer_database->$appId->keys->renew = random(32);
         $deployer_database->$appId->renews += 1;
         deployer_save();
-        return true;
+        return [true, null];
     } else {
-        return false;
+        return [false, "Wrong key or non existent app"];
     }
 }
 
@@ -168,11 +162,12 @@ function deployer_unlock($appId, $unlockKey)
     if (file_exists(DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $appId . DIRECTORY_SEPARATOR . DEPLOYER_APPLOCK_FILE)) {
         if (isset($deployer_database->$appId) && $deployer_database->$appId->keys->unlock === $unlockKey) {
             unlink(DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $appId . DIRECTORY_SEPARATOR . DEPLOYER_APPLOCK_FILE);
+            return [true, null];
         } else {
-            return false;
+            return [false, "Wrong key or non existent app"];
         }
     }
-    return true;
+    return [true, null];
 }
 
 function deployer_create($appId, $userId, $appName, $appDescription, $deployEmail)

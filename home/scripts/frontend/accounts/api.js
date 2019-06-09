@@ -1,39 +1,36 @@
-const certificateCookie = "certificate";
+const ACCOUNTS_CERTIFICATE_COOKIE = "certificate";
+const ACCOUNTS_ENDPOINT = document.getElementsByName("endpoint")[0].getAttribute("content");
+const ACCOUNTS_STARTPOINT = document.getElementsByName("startpoint")[0].getAttribute("content");
+const ACCOUNTS_API = "accounts";
 let success, failure;
 
-function accounts(callback) {
+function accounts(callback = null) {
     if (exists("accounts")) view("accounts");
     success = (loggedIn = false) => {
         if (exists("accounts")) hide("accounts");
-        callback(loggedIn);
+        if (callback !== null) callback(loggedIn);
     };
     failure = () => {
         if (exists("accounts") && exists("login")) {
             view("login");
         } else {
-            let startpoint = document.getElementsByName("startpoint")[0].getAttribute("content");
-            if (startpoint.length === 0) {
+            if (ACCOUNTS_STARTPOINT.length === 0) {
                 success(false);
             } else {
-                window.location.href = document.getElementsByName("startpoint")[0].getAttribute("content");
+                window.location.href = ACCOUNTS_STARTPOINT;
             }
         }
     };
-    if (hasCookie(certificateCookie)) {
+    if (hasCookie(ACCOUNTS_CERTIFICATE_COOKIE)) {
         verify(success, failure);
     } else {
         failure();
     }
 }
 
-function fillForm(form = new FormData()) {
-    if (hasCookie(certificateCookie)) {
-        form.append("accounts", JSON.stringify({
-            action: "verify",
-            parameters: {
-                certificate: pullCookie(certificateCookie)
-            }
-        }));
+function fillForm(form = body()) {
+    if (hasCookie(ACCOUNTS_CERTIFICATE_COOKIE)) {
+        form = body(ACCOUNTS_API, "verify", {certificate: pullCookie(ACCOUNTS_CERTIFICATE_COOKIE)}, form);
     }
     return form;
 }
@@ -47,40 +44,16 @@ function hasCookie(name) {
 }
 
 function login(name, password) {
-
-    function error(error) {
-        get("login-error").innerText = error;
-    }
-
-    let form = new FormData();
-    form.append("accounts", JSON.stringify({
-        action: "login",
-        parameters: {
-            name: name,
-            password: password
+    api(ACCOUNTS_ENDPOINT, ACCOUNTS_API, "login", {
+        name: name,
+        password: password
+    }, (success, result, error) => {
+        if (success) {
+            pushCookie(ACCOUNTS_CERTIFICATE_COOKIE, result);
+            window.location.reload();
+        } else {
+            get("login-error").innerText = error;
         }
-    }));
-    fetch(document.getElementsByName("endpoint")[0].getAttribute("content"), {
-        method: "post",
-        body: form
-    }).then(response => {
-        response.text().then((result) => {
-            let json = JSON.parse(result);
-            if (json.hasOwnProperty("accounts")) {
-                let accounts = json.accounts;
-                if (accounts.hasOwnProperty("login")) {
-                    if (accounts.login.hasOwnProperty("success")) {
-                        if (accounts.login.success) {
-                            if (accounts.login.hasOwnProperty("certificate")) {
-                                pushCookie(certificateCookie, accounts.login.certificate);
-                                window.location.reload();
-                            }
-                        }
-                    }
-                }
-                if (accounts.hasOwnProperty("errors") && accounts.errors.hasOwnProperty("login")) error(accounts.errors.login);
-            }
-        });
     });
 }
 
@@ -106,63 +79,24 @@ function pushCookie(name, value) {
 }
 
 function register(name, password) {
-
-    function error(error) {
-        get("register-error").innerText = error;
-    }
-
-    let form = new FormData();
-    form.append("accounts", JSON.stringify({
-        action: "register",
-        parameters: {
-            name: name,
-            password: password
+    api(ACCOUNTS_ENDPOINT, ACCOUNTS_API, "register", {
+        name: name,
+        password: password
+    }, (success, result, error) => {
+        if (success) {
+            login(name, password);
+        } else {
+            get("register-error").innerText = error
         }
-    }));
-    fetch(document.getElementsByName("endpoint")[0].getAttribute("content"), {
-        method: "post",
-        body: form
-    }).then(response => {
-        response.text().then((result) => {
-            let json = JSON.parse(result);
-            if (json.hasOwnProperty("accounts")) {
-                let accounts = json.accounts;
-                if (accounts.hasOwnProperty("register")) {
-                    if (accounts.register.hasOwnProperty("success")) {
-                        if (accounts.register.success) {
-                            login(name, password);
-                        }
-                    }
-                }
-                if (accounts.hasOwnProperty("errors") && accounts.errors.hasOwnProperty("register")) error(accounts.errors.register);
-            }
-        });
     });
 }
 
 function verify(success, failure) {
-    let form = fillForm();
-    fetch(document.getElementsByName("endpoint")[0].getAttribute("content"), {
-        method: "post",
-        body: form
-    }).then(response => {
-        response.text().then((result) => {
-            let json = JSON.parse(result);
-            if (json.hasOwnProperty("accounts")) {
-                let accounts = json.accounts;
-                if (accounts.hasOwnProperty("verify")) {
-                    if (accounts.verify.hasOwnProperty("success")) {
-                        if (accounts.verify.success) {
-                            view("app");
-                            success(true);
-                        } else {
-                            failure();
-                        }
-                    }
-                } else {
-                    failure();
-                }
-            }
-        });
-    });
+    api(ACCOUNTS_ENDPOINT, ACCOUNTS_API, "verify", null, (status) => {
+        if (status) {
+            success(true);
+        } else {
+            failure();
+        }
+    }, fillForm());
 }

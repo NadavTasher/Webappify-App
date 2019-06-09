@@ -1,3 +1,6 @@
+const BUILDER_API = "builder";
+const BUILDER_ENDPOINT = "scripts/backend/builder/builder.php";
+
 let layout = undefined;
 let stylesheet = undefined;
 let code = {
@@ -5,14 +8,14 @@ let code = {
     app: undefined
 };
 
-function loadBuilder() {
-    loadTemplates(() => {
+function builder_load() {
+    builder_load_templates(() => {
         view("build");
         view("build-template");
     });
 }
 
-function loadTemplates(callback) {
+function builder_load_templates(callback) {
     fetch("files/builder/templates.json", {
         method: "get"
     }).then(response => {
@@ -85,7 +88,7 @@ function loadTemplates(callback) {
     });
 }
 
-function buildParameters() {
+function builder_compile_parameters() {
     let flavour = get("build-flavour").value;
     let replacements = {};
     let objects = get("build-properties-information-" + flavour.toLowerCase()).childNodes;
@@ -113,51 +116,22 @@ function buildParameters() {
     };
 }
 
-function buildDeploy() {
-    loadDeploy(buildParameters());
+function builder_deploy_deploy() {
+    loadDeploy(builder_compile_parameters());
 }
 
-function buildDownload() {
-    let parameters = buildParameters();
-    let body = new FormData;
-    body.append("builder", JSON.stringify({
-        action: "build",
-        parameters: parameters
-    }));
-    fetch("scripts/backend/builder/builder.php", {
-        method: "post",
-        body: body
-    }).then(response => {
-        response.text().then((result) => {
-            let json = JSON.parse(result);
-            if (json.hasOwnProperty("builder")) {
-                if (json.builder.hasOwnProperty("build")) {
-                    if (json.builder.build.hasOwnProperty("success")) {
-                        if (json.builder.build.success) {
-                            if (json.builder.build.hasOwnProperty("content")) {
-                                download((!parameters.replacements.hasOwnProperty("name") || parameters.replacements.name === "" ? "WebAppBundle" : parameters.replacements.name) + ".zip", json.builder.build.content, "application/zip", "base64");
-                                window.location.reload(true);
-                            }
-                        }
-                    }
-                }
-            }
-        });
+function builder_deploy_download() {
+    let parameters = builder_compile_parameters();
+    let name = (!parameters.replacements.hasOwnProperty("name") || parameters.replacements.name === "" ? "WebAppBundle" : parameters.replacements.name);
+    api(BUILDER_ENDPOINT, BUILDER_API, "build", parameters, (success, result, error) => {
+        if(success) {
+            download(name + ".zip", result, "application/zip", "base64");
+            window.location.reload(true);
+        }
     });
 }
 
-function empty(v) {
-    let element = get(v);
-    for (let n = 0; n < element.children.length; n++) {
-        if (element.children[n].value !== undefined) {
-            if (element.children[n].value.length !== 0) {
-                element.children[n].value = "";
-            }
-        }
-    }
-}
-
-function designText() {
+function builder_design_text() {
     let add = () => {
         let paragraph = document.createElement("p");
         let id = get("build-layout-properties-text-id");
@@ -177,7 +151,7 @@ function designText() {
     view("build-layout-properties");
 }
 
-function designButton() {
+function builder_design_button() {
     let add = () => {
         let button = document.createElement("button");
         let id = get("build-layout-properties-button-id");
@@ -195,7 +169,7 @@ function designButton() {
     view("build-layout-properties");
 }
 
-function designInput() {
+function builder_design_input() {
     let add = () => {
         let input = document.createElement("input");
         let id = get("build-layout-properties-input-id");

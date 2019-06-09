@@ -39,9 +39,9 @@
         </div>
         <div id="build-layout-menu">
             <p class="title">Layout design</p>
-            <button onclick="designText()">New Text</button>
-            <button onclick="designInput()">New Input</button>
-            <button onclick="designButton()">New Button</button>
+            <button onclick="builder_design_text()">New Text</button>
+            <button onclick="builder_design_input()">New Input</button>
+            <button onclick="builder_design_button()">New Button</button>
             <button onclick="view('build-properties');">Back</button>
         </div>
     </div>
@@ -75,9 +75,9 @@
                 <td>7.0+</td>
             </tr>
         </table>
-        <button onclick="slide(this, false, true, ()=>buildDownload());">Download</button>
+        <button onclick="slide(this, false, true, ()=>builder_deploy_download());">Download</button>
         <p class="content">Or</p>
-        <button onclick="slide(this, false, false, ()=>buildDeploy());">Deploy on Webappify</button>
+        <button onclick="slide(this, false, false, ()=>builder_deploy_deploy());">Deploy on Webappify</button>
     </div>
 </div>
 <div id="edit">
@@ -123,7 +123,7 @@
 <div id="home">
     <p class="title">Welcome to Webappify!</p>
     <p class="content">The one-stop all-in-one WebApp platform.</p>
-    <button onclick="slide(this, false, true, ()=>{loadBuilder();});">Create your app
+    <button onclick="slide(this, false, true, ()=>{builder_load();});">Create your app
     </button>
     <button onclick="slide(this, false, false, ()=>{loadEditor();});">Edit your apps
     </button>

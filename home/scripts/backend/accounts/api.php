@@ -14,52 +14,47 @@ const ACCOUNTS_REGISTER_ENABLED = true;
 const ACCOUNTS_VERIFY_ENABLED = true;
 const ACCOUNTS_LOGIN_ENABLED = true;
 
+$accounts_database_file = ACCOUNTS_DATABASE;
 $accounts_database = null;
 
 function accounts()
 {
     accounts_load();
-    if (isset($_POST[ACCOUNTS_API])) {
-        $information = json_decode(filter($_POST[ACCOUNTS_API]));
-        if (isset($information->action) && isset($information->parameters)) {
-            $action = $information->action;
-            $parameters = $information->parameters;
-            switch ($action) {
-                case "login":
-                    if (isset($parameters->name) && isset($parameters->password)) {
-                        if (ACCOUNTS_LOGIN_ENABLED)
-                            accounts_login($parameters->name, $parameters->password);
-                        else
-                            error(ACCOUNTS_API, "login", "Login disabled");
-                    } else {
-                        error(ACCOUNTS_API, "login", "Missing information");
-                    }
-                    break;
-                case "register":
-                    if (isset($parameters->name) && isset($parameters->password)) {
-                        if (ACCOUNTS_REGISTER_ENABLED)
-                            accounts_register($parameters->name, $parameters->password);
-                        else
-                            error(ACCOUNTS_API, "register", "Registration disabled");
-                    } else {
-                        error(ACCOUNTS_API, "register", "Missing information");
-                    }
-                    break;
-                case "verify":
-                    if (isset($parameters->certificate)) {
-                        if (ACCOUNTS_VERIFY_ENABLED)
-                            return accounts_verify($parameters->certificate);
-                        else
-                            error(ACCOUNTS_API, "verify", "Verify disabled");
-                    } else {
-                        error(ACCOUNTS_API, "verify", "Missing information");
-                    }
-                    break;
-            }
-            accounts_save();
+    return api(ACCOUNTS_API, function ($action, $parameters) {
+        switch ($action) {
+            case "login":
+                if (isset($parameters->name) && isset($parameters->password)) {
+                    if (ACCOUNTS_LOGIN_ENABLED)
+                        return accounts_login($parameters->name, $parameters->password);
+                    else
+                        return [false, "Login disabled"];
+                } else {
+                    return [false, "Missing information"];
+                }
+                break;
+            case "register":
+                if (isset($parameters->name) && isset($parameters->password)) {
+                    if (ACCOUNTS_REGISTER_ENABLED)
+                        return accounts_register($parameters->name, $parameters->password);
+                    else
+                        return [false, "Registration disabled"];
+                } else {
+                    return [false, "Missing information"];
+                }
+                break;
+            case "verify":
+                if (isset($parameters->certificate)) {
+                    if (ACCOUNTS_VERIFY_ENABLED)
+                        return accounts_verify($parameters->certificate);
+                    else
+                        return [false, "Verification disabled"];
+                } else {
+                    return [false, "Missing information"];
+                }
+                break;
         }
-    }
-    return null;
+        return [false, null];
+    }, true);
 }
 
 function accounts_certificate()
@@ -72,6 +67,12 @@ function accounts_certificate()
         }
     }
     return $random;
+}
+
+function accounts_database($database)
+{
+    global $accounts_database_file;
+    $accounts_database_file = $database;
 }
 
 function accounts_hashed($password, $saltA, $saltB, $onion = 0)
@@ -89,10 +90,11 @@ function accounts_id()
     return $random;
 }
 
-function accounts_load($database = ACCOUNTS_DATABASE)
+function accounts_load()
 {
-    global $accounts_database;
-    $accounts_database = json_decode(file_get_contents($database));
+    global $accounts_database, $accounts_database_file;
+    if ($accounts_database === null)
+        $accounts_database = json_decode(file_get_contents($accounts_database_file));
 }
 
 function accounts_lock($id)
@@ -114,28 +116,25 @@ function accounts_lockout($id)
 function accounts_login($name, $password)
 {
     global $accounts_database;
-    $found = false;
-    result(ACCOUNTS_API, "login", "success", false);
     foreach ($accounts_database as $id => $account) {
         if ($account->name === $name) {
-            $found = true;
             if (!accounts_lockout($id)) {
                 if (accounts_password($id, $password)) {
                     $certificate = accounts_certificate();
                     array_push($account->certificates, $certificate);
-                    result(ACCOUNTS_API, "login", "certificate", $certificate);
-                    result(ACCOUNTS_API, "login", "success", true);
+                    accounts_save();
+                    return [true, $certificate];
                 } else {
                     accounts_lock($id);
-                    error(ACCOUNTS_API, "login", "Incorrect password");
+                    accounts_save();
+                    return [false, "Incorrect password"];
                 }
             } else {
-                error(ACCOUNTS_API, "login", "Account locked");
+                return [false, "Account locked"];
             }
         }
     }
-    if (!$found)
-        error(ACCOUNTS_API, "login", "Account not found");
+    return [false, "Account not found"];
 }
 
 function accounts_name($name)
@@ -157,7 +156,6 @@ function accounts_password($id, $password)
 function accounts_register($name, $password)
 {
     global $accounts_database;
-    result(ACCOUNTS_API, "register", "success", false);
     if (!accounts_name($name)) {
         if (strlen($password) >= ACCOUNTS_MINIMUM_PASSWORD_LENGTH) {
             $account = new stdClass();
@@ -168,14 +166,14 @@ function accounts_register($name, $password)
             $account->saltA = accounts_salt();
             $account->saltB = accounts_salt();
             $account->hashed = accounts_hashed($password, $account->saltA, $account->saltB, ACCOUNTS_ONION);
-            $id = accounts_id();
-            $accounts_database->$id = $account;
-            result(ACCOUNTS_API, "register", "success", true);
+            $accounts_database->{accounts_id()} = $account;
+            accounts_save();
+            return [true, null];
         } else {
-            error(ACCOUNTS_API, "register", "Password too short");
+            return [false, "Password too short"];
         }
     } else {
-        error(ACCOUNTS_API, "register", "Name already taken");
+        return [false, "Name already taken"];
     }
 }
 
@@ -184,10 +182,10 @@ function accounts_salt()
     return random(128);
 }
 
-function accounts_save($database = ACCOUNTS_DATABASE)
+function accounts_save()
 {
-    global $accounts_database;
-    file_put_contents($database, json_encode($accounts_database));
+    global $accounts_database, $accounts_database_file;
+    file_put_contents($accounts_database_file, json_encode($accounts_database));
 }
 
 function accounts_user($id)
@@ -205,16 +203,13 @@ function accounts_user($id)
 function accounts_verify($certificate)
 {
     global $accounts_database;
-    result(ACCOUNTS_API, "verify", "success", false);
     foreach ($accounts_database as $id => $account) {
         foreach ($account->certificates as $current) {
             if ($current === $certificate) {
-                result(ACCOUNTS_API, "verify", "name", $account->name);
-                result(ACCOUNTS_API, "verify", "success", true);
-                return accounts_user($id);
+                return [true, accounts_user($id)];
             }
         }
     }
-    return null;
+    return [false, "Invalid certificate"];
 }
 

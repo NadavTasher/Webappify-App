@@ -16,8 +16,8 @@ $master = json_decode(file_get_contents(MASTER_LIST));
 
 function builder()
 {
-    global $master;
     api(BUILDER_API, function ($action, $parameters) {
+        global $master;
         if ($action === "build") {
             if (isset($parameters->flavour)) {
                 $flavour = $parameters->flavour;
@@ -37,35 +37,8 @@ function builder()
                 return [false, "Missing information"];
             }
         }
+        return [false, null];
     }, false);
-    if (isset($_POST[BUILDER_API])) {
-        // Not filtering because of HTML input
-        $information = json_decode($_POST[BUILDER_API]);
-        if (isset($information->action) && isset($information->parameters)) {
-            $action = $information->action;
-            $parameters = $information->parameters;
-            result(BUILDER_API, $action, "success", false);
-            if ($action === "build") {
-                if (isset($parameters->flavour)) {
-                    $flavour = $parameters->flavour;
-                    if (isset($master->$flavour)) {
-                        $directory = builder_create($flavour, $parameters->replacements);
-                        if ($directory !== null) {
-                            result(BUILDER_API, $action, "content", builder_bundle($directory));
-                            result(BUILDER_API, $action, "success", true);
-                            builder_rmdir($directory);
-                        } else {
-                            error(BUILDER_API, $action, "Build failure");
-                        }
-                    } else {
-                        error(BUILDER_API, $action, "Non existent template");
-                    }
-                } else {
-                    error(BUILDER_API, $action, "Missing information");
-                }
-            }
-        }
-    }
 }
 
 function builder_bundle($directory)

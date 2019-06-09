@@ -6,62 +6,57 @@ const EDITOR_FILES = ["layouts/app.html", "stylesheets/app.css", "scripts/fronte
 
 function editor()
 {
-    global $deployer_database;
-    $user = accounts();
-    if ($user !== null) {
-        if (isset($_POST[EDITOR_API])) {
-            // Not filtering because of HTML input
-            $information = json_decode($_POST[EDITOR_API]);
-            if (isset($information->action) && isset($information->parameters)) {
-                $action = $information->action;
-                $parameters = $information->parameters;
-                result(EDITOR_API, $action, "success", false);
-                if (isset($parameters->id)) {
-                    $id = $parameters->id;
-                    if (isset($deployer_database->$id)) {
-                        if ($deployer_database->$id->credentials->owner === $user->id) {
-                            if ($action === "write") {
-                                if (isset($parameters->file) && isset($parameters->content)) {
-                                    $valid = false;
-                                    foreach (EDITOR_FILES as $allowed) {
-                                        if ($parameters->file === $allowed) {
-                                            $valid = true;
-                                        }
-                                    }
-                                    if ($valid) {
-                                        file_put_contents(DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR . $parameters->file, $parameters->content);
-                                        result(EDITOR_API, $action, "success", true);
-                                    } else {
-                                        error(EDITOR_API, $action, "Invalid file");
-                                    }
-                                } else {
-                                    error(EDITOR_API, $action, "Missing information");
-                                }
-                            } else if ($action === "read") {
-                                $filesystem = new stdClass();
-                                if (isset($parameters->file)) {
-                                    $file = $parameters->file;
-                                    editor_load_to_filesystem($id, $file, $filesystem);
-                                } else {
-                                    foreach (EDITOR_FILES as $file) {
-                                        editor_load_to_filesystem($id, $file, $filesystem);
+    api(EDITOR_API, function ($action, $parameters) {
+        global $deployer_database;
+        $user = accounts();
+        if ($user !== null) {
+            if (isset($parameters->id)) {
+                $id = $parameters->id;
+                if (isset($deployer_database->$id)) {
+                    if ($deployer_database->$id->credentials->owner === $user->id) {
+                        if ($action === "write") {
+                            if (isset($parameters->file) && isset($parameters->content)) {
+                                $valid = false;
+                                foreach (EDITOR_FILES as $allowed) {
+                                    if ($parameters->file === $allowed) {
+                                        $valid = true;
                                     }
                                 }
-                                result(EDITOR_API, $action, "filesystem", $filesystem);
-                                result(EDITOR_API, $action, "success", true);
+                                if ($valid) {
+                                    file_put_contents(DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR . $parameters->file, $parameters->content);
+                                    return [true, null];
+                                } else {
+                                    return [false, "Invalid file"];
+                                }
+                            } else {
+                                return [false, "Missing information"];
                             }
-                        } else {
-                            error(EDITOR_API, $action, "Ownership verification failure");
+                        } else if ($action === "read") {
+                            $filesystem = new stdClass();
+                            if (isset($parameters->file)) {
+                                $file = $parameters->file;
+                                editor_load_to_filesystem($id, $file, $filesystem);
+                            } else {
+                                foreach (EDITOR_FILES as $file) {
+                                    editor_load_to_filesystem($id, $file, $filesystem);
+                                }
+                            }
+                            return [true, $filesystem];
                         }
                     } else {
-                        error(EDITOR_API, $action, "App does not exist");
+                        return [false, "Ownership verification failure"];
                     }
                 } else {
-                    error(EDITOR_API, $action, "Missing information");
+                    return [false, "App does not exist"];
                 }
+            } else {
+                return [false, "Missing information"];
             }
+        } else {
+            return [false, "User authentication failure"];
         }
-    }
+        return [false, null];
+    }, false);
 }
 
 function editor_load_to_filesystem($id, $file, $filesystem)
