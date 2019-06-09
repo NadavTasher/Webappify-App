@@ -37,6 +37,19 @@ img {
     width: inherit;
 }
 
+.background {
+    margin: 1vh;
+    transition-duration: 0.4s;
+    background-color: #ddddee;
+    border-radius: 1vh;
+    border-color: transparent;
+    color: #333;
+}
+
+.background:hover {
+    background-color: #bbbbcc;
+}
+
 .scrolly {
     justify-content: stretch;
     overflow-y: -moz-scrollbars-none;

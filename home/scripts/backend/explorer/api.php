@@ -7,13 +7,15 @@ function explorer()
 {
     api(EXPLORER_API, function ($action, $parameters) {
         if ($action === "list") {
-            return [true, explorer_list()];
+            $array = explorer_list();
+            shuffle($array);
+            return [true, $array];
         } else if ($action === "random") {
             $array = explorer_list();
             if (count($array) > 0) {
                 shuffle($array);
                 return [true, $array[0]];
-            }else{
+            } else {
                 return [false, "No apps"];
             }
         }
