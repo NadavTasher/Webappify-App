@@ -24,7 +24,7 @@ img {
     font-size: 175%;
 }
 
-.fineprint{
+.fineprint {
     font-size: 140%;
 }
 
@@ -35,6 +35,18 @@ img {
 
 .sideways > * {
     width: inherit;
+}
+
+.scrolly {
+    justify-content: stretch;
+    overflow-y: -moz-scrollbars-none;
+    overflow-y: auto;
+    min-height: 60vh;
+    max-height: 60vh;
+}
+
+.scrolly::-webkit-scrollbar {
+    width: 0;
 }
 
 input {

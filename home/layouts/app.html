@@ -89,10 +89,14 @@
     <div id="explorer-home">
         <p class="title">Explore apps on Webappify</p>
         <p class="fineprint">Welcome to the explore page!<br/>Here, you'll be able to find interesting apps created by
-            other
-            users.</p>
+            other users.</p>
         <button onclick="slide(this, false, true, explorer_random);">Pick a random app</button>
         <button onclick="slide(this, false, false, explorer_list);">View complete list</button>
+    </div>
+    <div id="explorer-list">
+        <p class="title">List of deployed apps</p>
+        <p class="fineprint">Explore a list of every deployed app on Webappify, in a random order.</p>
+        <div id="explorer-list-list" class="scrolly"></div>
     </div>
 </div>
 <div id="deployer">
@@ -128,7 +132,7 @@
     <p class="content">The one-stop all-in-one WebApp platform.</p>
     <button onclick="slide(this, false, true, builder_load);">Create your app
     </button>
-    <button onclick="slide(this, false, false, ()=>{loadEditor();});">Edit your apps
+    <button onclick="slide(this, false, false, editor_load);">Edit your apps
     </button>
     <button onclick="slide(this, false, true, explorer_load);">Discover others'
     </button>

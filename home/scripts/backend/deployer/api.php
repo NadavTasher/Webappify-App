@@ -43,7 +43,7 @@ function deployer()
                         if ($directory !== null) {
                             rename($directory . DIRECTORY_SEPARATOR . BUILDER_WEBAPP, DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $appId);
                             builder_rmdir($directory);
-                            if (deployer_create($appId, $user->id, isset($appParameters->name) ? $appParameters->name : "Unknown", isset($appParameters->description) ? $appParameters->description : "Unknown", $parameters->mail)) {
+                            if (deployer_create($appId, $user->id, isset($appParameters->replacements->name) ? $appParameters->replacements->name : "Unknown", isset($appParameters->replacements->description) ? $appParameters->replacements->description : "Unknown", $parameters->mail)) {
                                 deployer_mail_activate($appId, $user);
                                 file_put_contents(DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $appId . DIRECTORY_SEPARATOR . DEPLOYER_APPLOCK_FILE, DEPLOYER_APPLOCK_CONTENT);
                                 return [true, null];
