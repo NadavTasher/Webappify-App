@@ -41,3 +41,41 @@ function deployer_load(parameters) {
         }
     });
 }
+
+function deployer_unlock_load(id, key) {
+    view("deployer");
+    view("deployer-unlock");
+    get("deployer-unlock-button").onclick = () => {
+        slide("deployer-unlock-button", false, true, () => {
+            api(DEPLOYER_ENDPOINT, DEPLOYER_API, "unlock", {
+                id: id,
+                key: key
+            }, (success, result, error) => {
+                if (success) {
+                    window.location.href = "../apps/" + id;
+                } else {
+                    window.location.href = "./";
+                }
+            });
+        });
+    };
+}
+
+function deployer_renew_load(id, key) {
+    view("deployer");
+    view("deployer-renew");
+    get("deployer-renew-button").onclick = () => {
+        slide("deployer-unlock-button", false, true, () => {
+            api(DEPLOYER_ENDPOINT, DEPLOYER_API, "renew", {
+                id: id,
+                key: key
+            }, (success, result, error) => {
+                if (success) {
+                    window.location.href = "../apps/" + id;
+                } else {
+                    window.location.href = "./";
+                }
+            });
+        });
+    };
+}

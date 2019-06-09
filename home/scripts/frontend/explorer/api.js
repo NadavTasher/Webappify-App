@@ -21,18 +21,17 @@ function explorer_list() {
         if (success) {
             for (let a = 0; a < result.length; a++) {
                 let app = result[a];
-                let div = document.createElement("div");
+                let button = document.createElement("button");
                 let name = document.createElement("p");
                 let description = document.createElement("p");
-                div.classList.add("background");
-                name.classList.add("content");
-                description.classList.add("fineprint");
+                button.classList.add("background");
+                name.style.fontSize = "120%";
                 name.innerText = app.name;
                 description.innerText = app.description;
-                div.onclick = () => window.location.href = "../apps/" + app.id;
-                div.appendChild(name);
-                div.appendChild(description);
-                get("explorer-list-list").appendChild(div);
+                button.onclick = () => window.location.href = "../apps/" + app.id;
+                button.appendChild(name);
+                button.appendChild(description);
+                get("explorer-list-list").appendChild(button);
             }
         }
     });

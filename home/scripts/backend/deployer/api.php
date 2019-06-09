@@ -181,7 +181,7 @@ function deployer_create($appId, $userId, $appName, $appDescription, $deployEmai
     $deployer_database->$appId->keys->renew = random(32);
     $deployer_database->$appId->times = new stdClass();
     $deployer_database->$appId->times->deploy = time();
-    $deployer_database->$appId->times->renew = time();
+    $deployer_database->$appId->times->renew = time() + DEPLOYER_LIFECYCLE;
     $deployer_database->$appId->credentials = new stdClass();
     $deployer_database->$appId->credentials->owner = $userId;
     $deployer_database->$appId->credentials->mail = $deployEmail;
