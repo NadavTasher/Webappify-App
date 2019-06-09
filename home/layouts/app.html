@@ -1,66 +1,66 @@
-<div id="build">
-    <div id="build-template">
+<div id="builder">
+    <div id="builder-template">
         <p class="title">Choose a template</p>
-        <select id="build-flavour" title="Flavour">
+        <select id="builder-flavour" title="Flavour">
         </select>
-        <button onclick="slide(this,false,true,()=>{view('build-properties-information-'+get('build-flavour').value.toLowerCase());view('build-properties');});">
+        <button onclick="slide(this,false,true,()=>{view('builder-properties-information-'+get('builder-flavour').value.toLowerCase());view('builder-properties');});">
             Next
         </button>
     </div>
-    <div id="build-properties">
+    <div id="builder-properties">
         <p class="title">Fill Information</p>
-        <div id="build-properties-information"></div>
-        <button onclick="slide(this,false,true,()=>view('build-deploy'));">Next</button>
+        <div id="builder-properties-information"></div>
+        <button onclick="slide(this,false,true,()=>view('builder-deploy'));">Next</button>
     </div>
-    <div id="build-layout">
-        <div id="build-layout-properties">
+    <div id="builder-layout">
+        <div id="builder-layout-properties">
             <p class="title">Add to layout</p>
             <div>
-                <div id="build-layout-properties-text">
-                    <input id="build-layout-properties-text-id" placeholder="Text ID"/>
-                    <input id="build-layout-properties-text-text" placeholder="Text Text"/>
-                    <input id="build-layout-properties-text-size" placeholder="Text Size"/>
-                    <input id="build-layout-properties-text-color" type="color" placeholder="Text Color"/>
+                <div id="builder-layout-properties-text">
+                    <input id="builder-layout-properties-text-id" placeholder="Text ID"/>
+                    <input id="builder-layout-properties-text-text" placeholder="Text Text"/>
+                    <input id="builder-layout-properties-text-size" placeholder="Text Size"/>
+                    <input id="builder-layout-properties-text-color" type="color" placeholder="Text Color"/>
                 </div>
-                <div id="build-layout-properties-input">
-                    <input id="build-layout-properties-input-id" placeholder="Input ID"/>
-                    <input id="build-layout-properties-input-text" placeholder="Input Text"/>
-                    <input id="build-layout-properties-input-type" placeholder="Input Type"/>
-                    <input id="build-layout-properties-input-placeholder" placeholder="Placeholder"/>
+                <div id="builder-layout-properties-input">
+                    <input id="builder-layout-properties-input-id" placeholder="Input ID"/>
+                    <input id="builder-layout-properties-input-text" placeholder="Input Text"/>
+                    <input id="builder-layout-properties-input-type" placeholder="Input Type"/>
+                    <input id="builder-layout-properties-input-placeholder" placeholder="Placeholder"/>
                 </div>
-                <div id="build-layout-properties-button">
-                    <input id="build-layout-properties-button-id" placeholder="Button ID"/>
-                    <input id="build-layout-properties-button-text" placeholder="Button Text"/>
-                    <input id="build-layout-properties-button-onclick" placeholder="On-Click Code"/>
+                <div id="builder-layout-properties-button">
+                    <input id="builder-layout-properties-button-id" placeholder="Button ID"/>
+                    <input id="builder-layout-properties-button-text" placeholder="Button Text"/>
+                    <input id="builder-layout-properties-button-onclick" placeholder="On-Click Code"/>
                 </div>
             </div>
-            <button onclick="view('build-layout-menu');">Back</button>
-            <button id="build-layout-properties-add">Add</button>
+            <button onclick="view('builder-layout-menu');">Back</button>
+            <button id="builder-layout-properties-add">Add</button>
         </div>
-        <div id="build-layout-menu">
+        <div id="builder-layout-menu">
             <p class="title">Layout design</p>
             <button onclick="builder_design_text()">New Text</button>
             <button onclick="builder_design_input()">New Input</button>
             <button onclick="builder_design_button()">New Button</button>
-            <button onclick="view('build-properties');">Back</button>
+            <button onclick="view('builder-properties');">Back</button>
         </div>
     </div>
-    <div id="build-code">
+    <div id="builder-code">
         <p class="title">Write app code</p>
         <textarea oninput="code.app = this.value" placeholder="JS App Code" title="App Code"></textarea>
-        <button onclick="view('build-properties');">Back</button>
+        <button onclick="view('builder-properties');">Back</button>
     </div>
-    <div id="build-load">
+    <div id="builder-load">
         <p class="title">Write load code</p>
         <textarea oninput="code.load = this.value" placeholder="JS Load Code" title="Load Code"></textarea>
-        <button onclick="view('build-properties');">Back</button>
+        <button onclick="view('builder-properties');">Back</button>
     </div>
-    <div id="build-stylesheet">
+    <div id="builder-stylesheet">
         <p class="title">Stylesheet design</p>
         <textarea oninput="stylesheet = this.value" placeholder="CSS Style" title="Style"></textarea>
-        <button onclick="view('build-properties');">Back</button>
+        <button onclick="view('builder-properties');">Back</button>
     </div>
-    <div id="build-deploy">
+    <div id="builder-deploy">
         <p class="title">Finished!</p>
         <p class="content">Suggested Setup:</p>
         <table>
@@ -80,20 +80,23 @@
         <button onclick="slide(this, false, false, ()=>builder_deploy_deploy());">Deploy on Webappify</button>
     </div>
 </div>
-<div id="edit">
-    <div id="edit-list">
+<div id="editor">
+    <div id="editor-list">
         <p class="title">Choose application to edit</p>
     </div>
 </div>
-<div id="explore">
-    <p class="title">Explore apps on Webappify</p>
-    <p class="fineprint">Welcome to the explore page!<br/>Here, you'll be able to find interesting apps created by other
-        users.</p>
-    <button onclick="exploreRandom();">Pick a random app</button>
-    <button onclick="exploreList();">View complete list</button>
+<div id="explorer">
+    <div id="explorer-home">
+        <p class="title">Explore apps on Webappify</p>
+        <p class="fineprint">Welcome to the explore page!<br/>Here, you'll be able to find interesting apps created by
+            other
+            users.</p>
+        <button onclick="explorer_random();">Pick a random app</button>
+        <button onclick="explorer_list();">View complete list</button>
+    </div>
 </div>
-<div id="deploy">
-    <div id="deploy-deploy">
+<div id="deployer">
+    <div id="deployer-deploy">
         <p class="title">Deploy on Webappify</p>
         <p class="fineprint">
             Looks like you are ready to deploy your app on Webappify!<br/>
@@ -105,19 +108,19 @@
             3. Your app will have a 30-Day life span, and will be removed if not renewed before end of the grace
             period, using the link in the email sent to you.
         </p>
-        <p id="deploy-deploy-status" style="min-height: 5vh" class="fineprint"></p>
-        <input id="deploy-deploy-email" type="email" placeholder="Email for deployment and renewment"/>
-        <button id="deploy-deploy-button">Deploy</button>
+        <p id="deployer-deploy-status" style="min-height: 5vh" class="fineprint"></p>
+        <input id="deployer-deploy-email" type="email" placeholder="Email for deployment and renewment"/>
+        <button id="deployer-deploy-button">Deploy</button>
     </div>
-    <div id="deploy-unlock">
+    <div id="deployer-unlock">
         <p class="title">Activate Deployment</p>
         <p class="fineprint">Click the button to activate your app.<br/>A renewal email will be sent every 30 days.</p>
-        <button id="deploy-unlock-button">Activate</button>
+        <button id="deployer-unlock-button">Activate</button>
     </div>
-    <div id="deploy-renew">
+    <div id="deployer-renew">
         <p class="title">Renew Deployment</p>
         <p class="fineprint">Click the button to renew your app.<br/>The next renewal will be in 30 days.</p>
-        <button id="deploy-renew-button">Renew</button>
+        <button id="deployer-renew-button">Renew</button>
     </div>
 </div>
 <div id="home">
@@ -127,7 +130,7 @@
     </button>
     <button onclick="slide(this, false, false, ()=>{loadEditor();});">Edit your apps
     </button>
-    <button onclick="slide(this, false, true, ()=>{loadExplorer();});">Discover others'
+    <button onclick="slide(this, false, true, ()=>{explorer_load();});">Discover others'
     </button>
     <button onclick="slide(this, false, false, ()=>view('about'));" style="font-size: medium;">About
     </button>

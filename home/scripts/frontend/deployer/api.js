@@ -1,58 +1,42 @@
-const deployCookie = "deployCookie";
+const DEPLOYER_API = "deployer";
+const DEPLOYER_ENDPOINT = "scripts/backend/deployer/deployer.php";
 
-function deploy(mail, parameters) {
-    let body = fillForm();
-    body.append("deployer", JSON.stringify({
-        action: "deploy",
-        parameters: {
-            parameters: parameters,
-            mail: mail
+function deployer_deploy(mail, parameters) {
+    api(DEPLOYER_ENDPOINT, DEPLOYER_API, "deploy", {
+        parameters: parameters,
+        mail: mail
+    }, (success, result, error) => {
+        if (success) {
+            slide("deployer-deploy-status", true, false);
+            get("deployer-deploy-status").innerText = "Check your email for further instructions.";
+            setTimeout(() => window.location = "", 10000);
         }
-    }));
-    fetch("scripts/backend/deployer/deployer.php", {
-        method: "post",
-        body: body
-    }).then(response => {
-        response.text().then((result) => {
-            let json = JSON.parse(result);
-            if (json.hasOwnProperty("deployer")) {
-                if (json.deployer.hasOwnProperty("deploy")) {
-                    if (json.deployer.deploy.hasOwnProperty("success")) {
-                        if (json.deployer.deploy.success) {
-                            slide("deploy-deploy-status", true, false);
-                            get("deploy-deploy-status").innerText = "Check your email for further instructions.";
-                            pushCookie(deployCookie, "");
-                            setTimeout(() => window.location = "", 10000);
-                        }
-                    }
-                }
-            }
-        });
-    });
+    }, fillForm());
 }
 
-function loadDeploy(parameters) {
+function deployer_load(parameters) {
     accounts((loggedIn) => {
         if (loggedIn) {
-            view("deploy");
-            view("deploy-deploy");
-            get("deploy-deploy-button").onclick = () => {
-                slide("deploy-deploy-email", false, false);
-                slide("deploy-deploy-button", false, true, () => {
-                    let email = get("deploy-deploy-email").value;
+            view("deployer");
+            view("deployer-deploy");
+            get("deployer-deploy-button").onclick = () => {
+                slide("deployer-deploy-status", false, false);
+                slide("deployer-deploy-email", false, false);
+                slide("deployer-deploy-button", false, true, () => {
+                    let email = get("deployer-deploy-email").value;
                     if (validateEmail(email)) {
-                        deploy(email, parameters);
+                        slide("deployer-deploy-status", false, false);
+                        deployer_deploy(email, parameters);
                     } else {
-                        slide("deploy-deploy-email", true, false);
-                        slide(get("deploy-deploy-button"), true, true, () => {
-                            get("deploy-deploy-status").innerText = "Wrong email syntax";
-                        });
+                        slide("deployer-deploy-status", true, false);
+                        get("deployer-deploy-status").innerText = "Wrong email syntax";
+                        slide("deployer-deploy-email", true, false);
+                        slide("deployer-deploy-button", true, true);
                     }
                 });
             };
         } else {
-            loadDeploy(parameters);
+            deployer_load(parameters);
         }
     });
-
 }

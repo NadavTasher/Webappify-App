@@ -10,10 +10,10 @@ function load(loggedIn) {
 }
 
 function loadUnlock(id, key) {
-    view("deploy");
-    view("deploy-unlock");
-    get("deploy-unlock-button").onclick = () => {
-        slide(get("deploy-unlock-button"), false, true, () => {
+    view("deployer");
+    view("deployer-unlock");
+    get("deployer-unlock-button").onclick = () => {
+        slide(get("deployer-unlock-button"), false, true, () => {
             let body = new FormData;
             body.append("deployer", JSON.stringify({
                 action: "unlock",
@@ -46,10 +46,10 @@ function loadUnlock(id, key) {
 }
 
 function loadRenew(id, key) {
-    view("deploy");
-    view("deploy-renew");
-    get("deploy-renew-button").onclick = () => {
-        slide(get("deploy-renew-button"), false, true, () => {
+    view("deployer");
+    view("deployer-renew");
+    get("deployer-renew-button").onclick = () => {
+        slide(get("deployer-renew-button"), false, true, () => {
             let body = new FormData;
             body.append("deployer", JSON.stringify({
                 action: "renew",

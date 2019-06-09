@@ -10,8 +10,8 @@ let code = {
 
 function builder_load() {
     builder_load_templates(() => {
-        view("build");
-        view("build-template");
+        view("builder");
+        view("builder-template");
     });
 }
 
@@ -27,9 +27,9 @@ function builder_load_templates(callback) {
                     let option = document.createElement("option");
                     option.innerText = key;
                     option.value = key;
-                    get("build-flavour").appendChild(option);
+                    get("builder-flavour").appendChild(option);
                     let information = document.createElement("div");
-                    information.id = "build-properties-information-" + key.toLowerCase();
+                    information.id = "builder-properties-information-" + key.toLowerCase();
 
                     let codes = document.createElement("div");
                     codes.classList.add("sideways");
@@ -43,35 +43,35 @@ function builder_load_templates(callback) {
                                 button.onclick = () => {
                                     if (layout === undefined)
                                         layout = document.createElement("div");
-                                    view("build-layout-menu");
-                                    view("build-layout");
+                                    view("builder-layout-menu");
+                                    view("builder-layout");
                                 };
                                 information.appendChild(button);
                             } else if (replacement.name === "load") {
                                 let button = document.createElement("button");
                                 button.innerText = "Load Code";
                                 button.onclick = () => {
-                                    view("build-load");
+                                    view("builder-load");
                                 };
                                 codes.appendChild(button);
                             } else if (replacement.name === "code") {
                                 let button = document.createElement("button");
                                 button.innerText = "App Code";
                                 button.onclick = () => {
-                                    view("build-code");
+                                    view("builder-code");
                                 };
                                 codes.appendChild(button);
                             } else if (replacement.name === "stylesheet") {
                                 let button = document.createElement("button");
                                 button.innerText = "Design Stylesheet";
                                 button.onclick = () => {
-                                    view("build-stylesheet");
+                                    view("builder-stylesheet");
                                 };
                                 information.appendChild(button);
                             } else {
                                 let input = document.createElement("input");
                                 if (replacement.name === "theme") input.type = "color";
-                                input.id = "build-properties-information-" + key.toLowerCase() + "-replacement-" + replacement.name;
+                                input.id = "builder-properties-information-" + key.toLowerCase() + "-replacement-" + replacement.name;
                                 input.placeholder = replacement.description;
                                 information.appendChild(input);
                             }
@@ -80,7 +80,7 @@ function builder_load_templates(callback) {
                     if (codes.children.length > 0) {
                         information.appendChild(codes);
                     }
-                    get("build-properties-information").appendChild(information);
+                    get("builder-properties-information").appendChild(information);
                 }
             }
             callback();
@@ -89,13 +89,13 @@ function builder_load_templates(callback) {
 }
 
 function builder_compile_parameters() {
-    let flavour = get("build-flavour").value;
+    let flavour = get("builder-flavour").value;
     let replacements = {};
-    let objects = get("build-properties-information-" + flavour.toLowerCase()).childNodes;
+    let objects = get("builder-properties-information-" + flavour.toLowerCase()).childNodes;
     let object;
     for (let o = 0; object = objects[o], o < objects.length; o++) {
         if (object.nodeName.toLowerCase() === "input") {
-            replacements[object.id.replace("build-properties-information-" + flavour.toLowerCase() + "-replacement-", "")] = object.value;
+            replacements[object.id.replace("builder-properties-information-" + flavour.toLowerCase() + "-replacement-", "")] = object.value;
         }
     }
     if (stylesheet !== undefined) {
@@ -117,7 +117,7 @@ function builder_compile_parameters() {
 }
 
 function builder_deploy_deploy() {
-    loadDeploy(builder_compile_parameters());
+    deployer_load(builder_compile_parameters());
 }
 
 function builder_deploy_download() {
@@ -134,57 +134,57 @@ function builder_deploy_download() {
 function builder_design_text() {
     let add = () => {
         let paragraph = document.createElement("p");
-        let id = get("build-layout-properties-text-id");
-        let size = get("build-layout-properties-text-size");
-        let text = get("build-layout-properties-text-text");
-        let color = get("build-layout-properties-text-color");
+        let id = get("builder-layout-properties-text-id");
+        let size = get("builder-layout-properties-text-size");
+        let text = get("builder-layout-properties-text-text");
+        let color = get("builder-layout-properties-text-color");
         if (id.value.length > 0) paragraph.setAttribute("id", id.value);
         if (text.value.length > 0) paragraph.innerText = text.value;
         if (size.value.length > 0) paragraph.style.fontSize = size.value;
         if (color.value.length > 0) paragraph.style.color = color.value;
         layout.appendChild(paragraph);
-        view("build-layout-menu");
+        view("builder-layout-menu");
     };
-    empty("build-layout-properties-text");
-    get("build-layout-properties-add").onclick = add;
-    view("build-layout-properties-text");
-    view("build-layout-properties");
+    empty("builder-layout-properties-text");
+    get("builder-layout-properties-add").onclick = add;
+    view("builder-layout-properties-text");
+    view("builder-layout-properties");
 }
 
 function builder_design_button() {
     let add = () => {
         let button = document.createElement("button");
-        let id = get("build-layout-properties-button-id");
-        let onclick = get("build-layout-properties-button-onclick");
-        let text = get("build-layout-properties-button-text");
+        let id = get("builder-layout-properties-button-id");
+        let onclick = get("builder-layout-properties-button-onclick");
+        let text = get("builder-layout-properties-button-text");
         if (id.value.length > 0) button.setAttribute("id", id.value);
         if (onclick.value.length > 0) button.setAttribute("onclick", onclick.value);
         if (text.value.length > 0) button.innerText = text.value;
         layout.appendChild(button);
-        view("build-layout-menu");
+        view("builder-layout-menu");
     };
-    empty("build-layout-properties-button");
-    get("build-layout-properties-add").onclick = add;
-    view("build-layout-properties-button");
-    view("build-layout-properties");
+    empty("builder-layout-properties-button");
+    get("builder-layout-properties-add").onclick = add;
+    view("builder-layout-properties-button");
+    view("builder-layout-properties");
 }
 
 function builder_design_input() {
     let add = () => {
         let input = document.createElement("input");
-        let id = get("build-layout-properties-input-id");
-        let placeholder = get("build-layout-properties-input-placeholder");
-        let type = get("build-layout-properties-input-type");
-        let value = get("build-layout-properties-input-text");
+        let id = get("builder-layout-properties-input-id");
+        let placeholder = get("builder-layout-properties-input-placeholder");
+        let type = get("builder-layout-properties-input-type");
+        let value = get("builder-layout-properties-input-text");
         if (id.value.length > 0) input.setAttribute("id", id.value);
         if (placeholder.value.length > 0) input.setAttribute("placeholder", placeholder.value);
         if (type.value.length > 0) input.setAttribute("type", type.value);
         if (value.value.length > 0) input.setAttribute("value", value.value);
         layout.appendChild(input);
-        view("build-layout-menu");
+        view("builder-layout-menu");
     };
-    empty("build-layout-properties-input");
-    get("build-layout-properties-add").onclick = add;
-    view("build-layout-properties-input");
-    view("build-layout-properties");
+    empty("builder-layout-properties-input");
+    get("builder-layout-properties-add").onclick = add;
+    view("builder-layout-properties-input");
+    view("builder-layout-properties");
 }

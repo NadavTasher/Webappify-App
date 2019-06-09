@@ -1,18 +1,17 @@
 <?php
 
 include_once __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "base" . DIRECTORY_SEPARATOR . "api.php";
-include_once __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "accounts" . DIRECTORY_SEPARATOR . "api.php";
 
 const BUILDER_API = "builder";
 
-const MASTER_LIST = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "builder" . DIRECTORY_SEPARATOR . "templates.json";
-const FLAVOUR_DIRECTORY = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "builder" . DIRECTORY_SEPARATOR . "flavours";
-const APPS_DIRECTORY = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "builder" . DIRECTORY_SEPARATOR . "webapps";
+const BUILDER_MASTER_LIST = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "builder" . DIRECTORY_SEPARATOR . "templates.json";
+const BUILDER_FLAVOUR_DIRECTORY = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "builder" . DIRECTORY_SEPARATOR . "flavours";
+const BUILDER_APPS_DIRECTORY = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "builder" . DIRECTORY_SEPARATOR . "webapps";
 
-const WEBAPP = "webapp";
-const REBUNDLE = WEBAPP . ".zip";
+const BUILDER_WEBAPP = "webapp";
+const BUILDER_REBUNDLE = BUILDER_WEBAPP . ".zip";
 
-$master = json_decode(file_get_contents(MASTER_LIST));
+$master = json_decode(file_get_contents(BUILDER_MASTER_LIST));
 
 function builder()
 {
@@ -43,16 +42,16 @@ function builder()
 
 function builder_bundle($directory)
 {
-    builder_zip($directory . DIRECTORY_SEPARATOR . REBUNDLE, $directory . DIRECTORY_SEPARATOR . WEBAPP);
-    return base64_encode(file_get_contents($directory . DIRECTORY_SEPARATOR . REBUNDLE));
+    builder_zip($directory . DIRECTORY_SEPARATOR . BUILDER_REBUNDLE, $directory . DIRECTORY_SEPARATOR . BUILDER_WEBAPP);
+    return base64_encode(file_get_contents($directory . DIRECTORY_SEPARATOR . BUILDER_REBUNDLE));
 }
 
 function builder_create($flavour, $replacements)
 {
     $id = random(10);
-    $directory = APPS_DIRECTORY . DIRECTORY_SEPARATOR . $id;
+    $directory = BUILDER_APPS_DIRECTORY . DIRECTORY_SEPARATOR . $id;
     mkdir($directory);
-    if (builder_unzip(FLAVOUR_DIRECTORY . DIRECTORY_SEPARATOR . $flavour . ".zip", $directory . DIRECTORY_SEPARATOR . WEBAPP)) {
+    if (builder_unzip(BUILDER_FLAVOUR_DIRECTORY . DIRECTORY_SEPARATOR . $flavour . ".zip", $directory . DIRECTORY_SEPARATOR . BUILDER_WEBAPP)) {
         builder_evaluate($directory, $flavour, $replacements);
         return $directory;
     }
@@ -80,12 +79,12 @@ function builder_evaluate($directory, $flavour, $info)
                 if (!$change) {
                     if (isset($replacement->default)) {
                         foreach ($replacement->haystacks as $haystack) {
-                            builder_replace($directory . DIRECTORY_SEPARATOR . WEBAPP . DIRECTORY_SEPARATOR . $haystack, $replacement->needle, $replacement->default);
+                            builder_replace($directory . DIRECTORY_SEPARATOR . BUILDER_WEBAPP . DIRECTORY_SEPARATOR . $haystack, $replacement->needle, $replacement->default);
                         }
                     }
                 } else {
                     foreach ($replacement->haystacks as $haystack) {
-                        builder_replace($directory . DIRECTORY_SEPARATOR . WEBAPP . DIRECTORY_SEPARATOR . $haystack, $replacement->needle, $info->$name);
+                        builder_replace($directory . DIRECTORY_SEPARATOR . BUILDER_WEBAPP . DIRECTORY_SEPARATOR . $haystack, $replacement->needle, $info->$name);
                     }
                 }
             }

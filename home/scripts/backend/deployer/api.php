@@ -6,8 +6,9 @@ include "mailer/POP3.php";
 include "mailer/SMTP.php";
 include "mailer/Exception.php";
 
-include __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "builder" . DIRECTORY_SEPARATOR . "api.php";
-include __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "accounts" . DIRECTORY_SEPARATOR . "api.php";
+include_once __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "base" . DIRECTORY_SEPARATOR . "api.php";
+include_once __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "builder" . DIRECTORY_SEPARATOR . "api.php";
+include_once __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "accounts" . DIRECTORY_SEPARATOR . "api.php";
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
@@ -40,7 +41,7 @@ function deployer()
                         $appId = random(12);
                         $directory = builder_create($appParameters->flavour, $appParameters->replacements);
                         if ($directory !== null) {
-                            rename($directory . DIRECTORY_SEPARATOR . WEBAPP, DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $appId);
+                            rename($directory . DIRECTORY_SEPARATOR . BUILDER_WEBAPP, DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $appId);
                             builder_rmdir($directory);
                             if (deployer_create($appId, $user->id, isset($appParameters->name) ? $appParameters->name : "Unknown", isset($appParameters->description) ? $appParameters->description : "Unknown", $parameters->mail)) {
                                 deployer_mail_activate($appId, $user);

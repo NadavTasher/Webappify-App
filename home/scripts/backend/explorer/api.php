@@ -1,5 +1,5 @@
 <?php
-include __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "deployer" . DIRECTORY_SEPARATOR . "api.php";
+include_once __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "deployer" . DIRECTORY_SEPARATOR . "api.php";
 
 const EXPLORER_API = "explorer";
 
@@ -10,8 +10,12 @@ function explorer()
             return [true, explorer_list()];
         } else if ($action === "random") {
             $array = explorer_list();
-            shuffle($array);
-            return [true, $array[0]];
+            if (count($array) > 0) {
+                shuffle($array);
+                return [true, $array[0]];
+            }else{
+                return [false, "No apps"];
+            }
         }
         return [false, null];
     }, true);
