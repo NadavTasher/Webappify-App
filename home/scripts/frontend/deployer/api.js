@@ -17,6 +17,7 @@ function deployer_deploy(mail, parameters) {
 function deployer_load(parameters) {
     accounts((loggedIn) => {
         if (loggedIn) {
+            view("app");
             view("deployer");
             view("deployer-deploy");
             get("deployer-deploy-button").onclick = () => {
