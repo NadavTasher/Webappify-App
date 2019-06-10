@@ -2,9 +2,9 @@ body {
     background-color: #008080;
 }
 
-body > div {
-    max-width: 460px;
-}
+/*body > div {*/
+/*max-width: 460px;*/
+/*}*/
 
 table {
     background-color: #67b8ed;
@@ -26,6 +26,14 @@ img {
 
 .fineprint {
     font-size: 140%;
+}
+
+.menubar {
+    height: 8vh;
+}
+
+.editor {
+    height: 84vh;
 }
 
 .sideways {

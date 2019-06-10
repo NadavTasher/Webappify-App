@@ -1,3 +1,4 @@
 function editor_load() {
-    alert("Coming soon");
+    view("editor");
+    view("editor-editor");
 }
