@@ -1,3 +1,8 @@
+/*
+Created By NadavTasher
+https://github.com/NadavTasher/WebAppBase/
+*/
+
 const ACCOUNTS_CERTIFICATE_COOKIE = "certificate";
 const ACCOUNTS_ENDPOINT = document.getElementsByName("endpoint")[0].getAttribute("content");
 const ACCOUNTS_STARTPOINT = document.getElementsByName("startpoint")[0].getAttribute("content");

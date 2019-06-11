@@ -1,3 +1,8 @@
+/*
+Created By NadavTasher
+https://github.com/NadavTasher/WebAppBase/
+*/
+
 const BUILDER_API = "builder";
 const BUILDER_ENDPOINT = "scripts/backend/builder/builder.php";
 

@@ -1,3 +1,8 @@
+/*
+Created By NadavTasher
+https://github.com/NadavTasher/WebAppBase/
+*/
+
 const EDITOR_API = "editor";
 const EDITOR_ENDPOINT = "scripts/backend/editor/editor.php";
 

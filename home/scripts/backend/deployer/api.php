@@ -1,5 +1,10 @@
 <?php
 
+/*
+Created By NadavTasher
+https://github.com/NadavTasher/WebAppBase/
+*/
+
 include "mailer/PHPMailer.php";
 include "mailer/OAuth.php";
 include "mailer/POP3.php";

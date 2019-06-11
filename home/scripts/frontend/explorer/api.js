@@ -1,3 +1,8 @@
+/*
+Created By NadavTasher
+https://github.com/NadavTasher/WebAppBase/
+*/
+
 const EXPLORER_API = "explorer";
 const EXPLORER_ENDPOINT = "scripts/backend/explorer/explorer.php";
 

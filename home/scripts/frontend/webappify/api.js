@@ -1,3 +1,8 @@
+/*
+Created By NadavTasher
+https://github.com/NadavTasher/WebAppBase/
+*/
+
 function empty(v) {
     let element = get(v);
     for (let n = 0; n < element.children.length; n++) {

@@ -1,5 +1,10 @@
 <?php
 
+/*
+Created By NadavTasher
+https://github.com/NadavTasher/WebAppBase/
+*/
+
 $result = new stdClass();
 
 function api($api, $callback, $filter = true)
