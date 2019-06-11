@@ -28,7 +28,7 @@ function explorer_list() {
                 name.style.fontSize = "120%";
                 name.innerText = app.name;
                 description.innerText = app.description;
-                button.onclick = () => window.location.href = "../apps/" + app.id;
+                button.onclick = () => slide(button, false, a % 2 === 0, () => window.location.href = "../apps/" + app.id);
                 button.appendChild(name);
                 button.appendChild(description);
                 get("explorer-list-list").appendChild(button);
