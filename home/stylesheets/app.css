@@ -29,7 +29,10 @@ img {
 }
 
 .menubar {
+    flex-direction: row;
     height: 8vh;
+    overflow-x: scroll;
+    justify-content: flex-start
 }
 
 .editor {

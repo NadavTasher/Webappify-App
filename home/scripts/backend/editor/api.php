@@ -33,16 +33,20 @@ function editor()
                                 return [false, "Missing information"];
                             }
                         } else if ($action === "read") {
-                            $filesystem = new stdClass();
                             if (isset($parameters->file)) {
                                 $file = $parameters->file;
-                                editor_load_to_filesystem($id, $file, $filesystem);
-                            } else {
-                                foreach (EDITOR_FILES as $file) {
-                                    editor_load_to_filesystem($id, $file, $filesystem);
+                                $valid = false;
+                                foreach (EDITOR_FILES as $allowed) {
+                                    if ($file === $allowed) {
+                                        $valid = true;
+                                    }
                                 }
+                                if ($valid) {
+                                    return [true, file_get_contents(DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR . $file)];
+                                }
+                            } else {
+                                return [true, EDITOR_FILES];
                             }
-                            return [true, $filesystem];
                         }
                     } else {
                         return [false, "Ownership verification failure"];

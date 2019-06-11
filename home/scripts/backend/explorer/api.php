@@ -28,11 +28,7 @@ function explorer_list()
     global $deployer_database;
     $array = array();
     foreach ($deployer_database as $id => $app) {
-        $object = new stdClass();
-        $object->id = $id;
-        $object->name = $app->name;
-        $object->description = $app->description;
-        array_push($array, $object);
+        array_push($array, deployer_app($id));
     }
     return $array;
 }
