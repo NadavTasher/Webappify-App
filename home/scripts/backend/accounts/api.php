@@ -1,9 +1,9 @@
 <?php
 
-/*
-Created By NadavTasher
-https://github.com/NadavTasher/WebAppBase/
-*/
+/**
+ * Copyright (c) 2019 Nadav Tasher
+ * https://github.com/NadavTasher/AccountsTemplate/
+ **/
 
 include_once __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "base" . DIRECTORY_SEPARATOR . "api.php";
 

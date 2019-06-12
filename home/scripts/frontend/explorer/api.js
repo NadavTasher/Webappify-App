@@ -1,7 +1,7 @@
-/*
-Created By NadavTasher
-https://github.com/NadavTasher/WebAppBase/
-*/
+/**
+ * Copyright (c) 2019 Nadav Tasher
+ * https://github.com/NadavTasher/Webappify/
+ **/
 
 const EXPLORER_API = "explorer";
 const EXPLORER_ENDPOINT = "scripts/backend/explorer/explorer.php";

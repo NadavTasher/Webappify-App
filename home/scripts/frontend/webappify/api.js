@@ -1,7 +1,7 @@
-/*
-Created By NadavTasher
-https://github.com/NadavTasher/WebAppBase/
-*/
+/**
+ * Copyright (c) 2019 Nadav Tasher
+ * https://github.com/NadavTasher/Webappify/
+ **/
 
 function empty(v) {
     let element = get(v);

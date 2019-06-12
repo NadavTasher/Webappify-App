@@ -1,7 +1,7 @@
-/*
-Created By NadavTasher
-https://github.com/NadavTasher/WebAppBase/
-*/
+/**
+ * Copyright (c) 2019 Nadav Tasher
+ * https://github.com/NadavTasher/AccountsTemplate/
+ **/
 
 const ACCOUNTS_CERTIFICATE_COOKIE = "certificate";
 const ACCOUNTS_ENDPOINT = document.getElementsByName("endpoint")[0].getAttribute("content");

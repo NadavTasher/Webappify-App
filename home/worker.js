@@ -1,7 +1,7 @@
-/*
-Created By NadavTasher
-https://github.com/NadavTasher/WebAppBase/
-*/
+/**
+ * Copyright (c) 2019 Nadav Tasher
+ * https://github.com/NadavTasher/WebAppBase/
+ **/
 
 self.addEventListener('install', function (event) {
     event.waitUntil(

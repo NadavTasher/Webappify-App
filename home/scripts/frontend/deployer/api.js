@@ -1,7 +1,7 @@
-/*
-Created By NadavTasher
-https://github.com/NadavTasher/WebAppBase/
-*/
+/**
+ * Copyright (c) 2019 Nadav Tasher
+ * https://github.com/NadavTasher/Webappify/
+ **/
 
 const DEPLOYER_API = "deployer";
 const DEPLOYER_ENDPOINT = "scripts/backend/deployer/deployer.php";
