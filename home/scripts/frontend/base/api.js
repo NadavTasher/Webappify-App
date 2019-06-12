@@ -3,21 +3,25 @@
  * https://github.com/NadavTasher/WebAppBase/
  **/
 
-function animate(v, from, to, seconds, property, callback = null) {
+function animate(v, from, to, seconds, property, keep = false, callback = null) {
     let view = get(v);
-    view.style.removeProperty(property);
-    view.style.position = "relative";
-    view.style.animationTimingFunction = "linear";
-    let fromFrame = {}, toFrame = {};
-    fromFrame[property] = from;
-    toFrame[property] = to;
-    let animation = view.animate([fromFrame, toFrame], {duration: seconds * 1000});
-    animation.onfinish = () => {
-        view.style[property] = to;
-        view.style.animationTimingFunction = null;
-        if (callback !== null)
-            callback();
-    };
+    view.removeAttribute("style");
+    let position = getComputedStyle(view).position;
+    if (position === "static" || position === "sticky") {
+        view.style.position = "relative";
+    }
+    try {
+        view.animate([{[property]: from}, {[property]: to}], {
+            duration: seconds * 1000,
+            fill: keep ? "forwards" : "backwards",
+            easing: "linear"
+        }).onfinish = () => {
+            if (callback !== null) callback();
+        };
+    } catch (e) {
+        if (callback !== null) callback();
+    }
+
 }
 
 function api(endpoint = null, api = null, action = null, parameters = null, callback = null, form = body()) {
@@ -75,14 +79,14 @@ function download(file, data, type = "text/plain", encoding = "utf8") {
 }
 
 function exists(v) {
-    return get(v) !== null;
+    return get(v) !== undefined;
 }
 
 function get(v) {
     return (typeof "" === typeof v || typeof '' === typeof v) ? document.getElementById(v) : v;
 }
 
-function gestures(up, down, left, right, upgoing, downgoing, leftgoing, rightgoing) {
+function gestures(up = null, down = null, left = null, right = null, upgoing = null, downgoing = null, leftgoing = null, rightgoing = null) {
     let touchX, touchY, deltaX, deltaY;
     document.ontouchstart = (event) => {
         touchX = event.touches[0].clientX;
@@ -186,7 +190,7 @@ function slide(v, motion = true, direction = true, callback = null) {
         left: -(get(v).getBoundingClientRect().left + get(v).offsetWidth)
     };
     let offset = direction ? offsets.right : offsets.left;
-    animate(v, (motion ? offset : 0) + "px", (!motion ? offset : 0) + "px", 1, "left", callback);
+    animate(v, (motion ? offset : 0) + "px", (!motion ? offset : 0) + "px", 0.2, "left", false, callback);
 }
 
 function worker(w = "worker.js") {
