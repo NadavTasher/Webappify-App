@@ -57,8 +57,6 @@ function builder_create($flavour, $replacements)
     $directory = BUILDER_APPS_DIRECTORY . DIRECTORY_SEPARATOR . $id;
     mkdir($directory);
     if (builder_unzip(BUILDER_FLAVOUR_DIRECTORY . DIRECTORY_SEPARATOR . $flavour . ".zip", $directory . DIRECTORY_SEPARATOR . BUILDER_WEBAPP)) {
-        // Remove some files
-        builder_remove($directory);
         builder_evaluate($directory, $flavour, $replacements);
         return $directory;
     }
@@ -106,12 +104,6 @@ function builder_replace($file, $search, $replacement)
         $contents = str_replace($search, $replacement, $contents);
         file_put_contents($file, $contents);
     }
-}
-
-function builder_remove($directory)
-{
-    if (file_exists($directory . DIRECTORY_SEPARATOR . "LICENSE")) unlink($directory . DIRECTORY_SEPARATOR . "LICENSE");
-    if (file_exists($directory . DIRECTORY_SEPARATOR . ".git")) builder_rmdir($directory . DIRECTORY_SEPARATOR . ".git");
 }
 
 function builder_rmdir($directory)
