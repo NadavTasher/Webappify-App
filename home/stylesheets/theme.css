@@ -58,6 +58,8 @@ a, p, input, select, option, button, table {
     justify-items: center;
     align-items: center;
     align-content: center;
+    text-align: center;
+    text-align-last: center;
 }
 
 input, select, option, button, textarea {
