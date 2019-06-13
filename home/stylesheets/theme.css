@@ -5,69 +5,69 @@
 
 html {
     overflow-x: hidden;
-    height: 100%;
 }
 
 body {
+    /* Background */
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
     background-attachment: fixed;
     background-repeat: no-repeat;
-}
-
-body > div {
+    /* Flex */
     display: flex;
     flex-direction: column;
+    /* Alignment */
     justify-content: center;
+    /* Positioning */
     position: absolute;
     top: 0;
     bottom: 0;
+    left: 0;
+    right: 0;
 }
 
-html, body {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-}
-
-div, form {
+a, b, i, u, p, input, select, option, button, table, textarea, div, form {
+    /* WebKit */
+    -webkit-appearance: none;
+    /* Display */
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    align-self: center;
-    align-items: center;
-    min-height: fit-content;
-    width: 100%;
-}
-
-a, p, input, select, option, button, table, textarea {
-    -webkit-appearance: none;
-    align-self: stretch;
-    font-family: Arial, ArialHebrew, sans-serif;
+    /* Text */
+    color: black;
     font-size: x-large;
-    color: #000;
-    margin: 1vh;
-    padding: 1vh;
-}
-
-a, p, input, select, option, button, table {
-    display: flex;
+    font-family: Arial, ArialHebrew, sans-serif;
+    /* Positioning */
+    margin: .5vh;
+    padding: .5vh;
+    /* Alignment */
+    justify-self: center;
     justify-content: center;
     justify-items: center;
     align-items: center;
     align-content: center;
+    align-self: stretch;
+    /* Text Alignment */
     text-align: center;
     text-align-last: center;
+    /* Shaping */
+    border-radius: 1vh;
+    border-color: transparent;
+}
+
+p {
+    flex-flow: wrap;
+}
+
+textarea {
+    text-align: left !important;
+    text-align-last: left !important;
 }
 
 input, select, option, button, textarea {
     transition-duration: 0.4s;
     background-color: #ddddee;
-    border-radius: 1vh;
-    border-color: transparent;
-    color: #333;
 }
 
 input:hover, select:hover, option:hover, button:hover, textarea:hover {
