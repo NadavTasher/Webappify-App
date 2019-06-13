@@ -28,7 +28,7 @@ body {
     right: 0;
 }
 
-a, b, i, u, p, input, select, option, button, table, textarea, div, form {
+a, b, i, u, p, input, select, option, button, table, textarea, div {
     /* WebKit */
     -webkit-appearance: none;
     /* Display */
@@ -36,11 +36,11 @@ a, b, i, u, p, input, select, option, button, table, textarea, div, form {
     flex-direction: column;
     /* Text */
     color: black;
-    font-size: x-large;
+    font-size: large;
     font-family: Arial, ArialHebrew, sans-serif;
     /* Positioning */
-    margin: .5vh;
-    padding: .5vh;
+    margin: 1vh;
+    padding: 1vh;
     /* Alignment */
     justify-self: center;
     justify-content: center;
@@ -54,6 +54,15 @@ a, b, i, u, p, input, select, option, button, table, textarea, div, form {
     /* Shaping */
     border-radius: 1vh;
     border-color: transparent;
+    /* Sizing */
+    width: 100%;
+    width: -webkit-fill-available;
+    width: -moz-available;
+}
+
+div {
+    margin: 0;
+    padding: 0;
 }
 
 p {
