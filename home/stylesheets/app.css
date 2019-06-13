@@ -31,13 +31,13 @@ img {
 
 .menubar {
     flex-direction: row;
-    height: 8vh;
+    height: 12vh;
     overflow-x: scroll;
     justify-content: flex-start
 }
 
 .editor {
-    height: 84vh;
+    height: 78vh;
 }
 
 .sideways {
