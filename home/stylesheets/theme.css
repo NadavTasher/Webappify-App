@@ -4,7 +4,16 @@
  **/
 
 html {
+    /* Overflow */
     overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
 body {
@@ -15,20 +24,9 @@ body {
     background-size: cover;
     background-attachment: fixed;
     background-repeat: no-repeat;
-    /* Flex */
-    display: flex;
-    flex-direction: column;
-    /* Alignment */
-    justify-content: center;
-    /* Positioning */
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
 }
 
-a, b, i, u, p, input, select, option, button, table, textarea, div {
+a, p, body, input, select, option, button, table, textarea, div {
     /* WebKit */
     -webkit-appearance: none;
     /* Display */
@@ -47,7 +45,7 @@ a, b, i, u, p, input, select, option, button, table, textarea, div {
     justify-items: center;
     align-items: center;
     align-content: center;
-    align-self: stretch;
+    align-self: center;
     /* Text Alignment */
     text-align: center;
     text-align-last: center;
@@ -55,6 +53,7 @@ a, b, i, u, p, input, select, option, button, table, textarea, div {
     border-radius: 1vh;
     border-color: transparent;
     /* Sizing */
+    height: min-content;
     width: 100%;
     width: -webkit-fill-available;
     width: -moz-available;

@@ -142,7 +142,7 @@ function html(callback = null) {
                 method: "get"
             }).then(response => {
                 response.text().then((app) => {
-                    document.body.children[0].innerHTML = template.replace("<!--App Body-->", app);
+                    document.body.innerHTML = template.replace("<!--App Body-->", app);
                     if (callback !== null) callback();
                 });
             });
