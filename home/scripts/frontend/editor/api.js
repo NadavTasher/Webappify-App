@@ -27,7 +27,7 @@ function editor_load() {
                 get("editor-home-list").appendChild(button);
             }
         }
-    }, fillForm());
+    }, accounts_fill());
 }
 
 function editor_edit(id) {
@@ -57,16 +57,16 @@ function editor_edit(id) {
                                         id: id,
                                         file: file,
                                         content: get("editor-editor-text").value
-                                    }, null, fillForm());
+                                    }, null, accounts_fill());
                                 }
                             }, 1000);
                         };
 
-                    }, fillForm());
+                    }, accounts_fill());
                 };
                 get("editor-editor-files").appendChild(button);
             }
             get("editor-editor-files").children[0].onclick();
         }
-    }, fillForm());
+    }, accounts_fill());
 }

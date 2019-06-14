@@ -16,7 +16,7 @@ function deployer_deploy(mail, parameters) {
             get("deployer-deploy-status").innerText = "Check your email for further instructions.";
             setTimeout(() => window.location = "", 10000);
         }
-    }, fillForm());
+    }, accounts_fill());
 }
 
 function deployer_load(parameters) {

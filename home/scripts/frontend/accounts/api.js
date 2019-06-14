@@ -7,54 +7,54 @@ const ACCOUNTS_CERTIFICATE_COOKIE = "certificate";
 const ACCOUNTS_ENDPOINT = document.getElementsByName("endpoint")[0].getAttribute("content");
 const ACCOUNTS_STARTPOINT = document.getElementsByName("startpoint")[0].getAttribute("content");
 const ACCOUNTS_API = "accounts";
-let success, failure;
+let accounts_callback_success, accounts_callback_failure;
 
 function accounts(callback = null) {
     if (exists("accounts")) view("accounts");
-    success = (loggedIn = false) => {
+    accounts_callback_success = (loggedIn = false) => {
         if (exists("accounts")) hide("accounts");
         if (callback !== null) callback(loggedIn);
     };
-    failure = () => {
+    accounts_callback_failure = () => {
         if (exists("accounts") && exists("login")) {
             view("login");
         } else {
             if (ACCOUNTS_STARTPOINT.length === 0) {
-                success(false);
+                accounts_callback_success(false);
             } else {
                 window.location.href = ACCOUNTS_STARTPOINT;
             }
         }
     };
-    if (hasCookie(ACCOUNTS_CERTIFICATE_COOKIE)) {
-        verify(success, failure);
+    if (accounts_cookie_has(ACCOUNTS_CERTIFICATE_COOKIE)) {
+        accounts_verify(accounts_callback_success, accounts_callback_failure);
     } else {
-        failure();
+        accounts_callback_failure();
     }
 }
 
-function fillForm(form = body()) {
-    if (hasCookie(ACCOUNTS_CERTIFICATE_COOKIE)) {
-        form = body(ACCOUNTS_API, "verify", {certificate: pullCookie(ACCOUNTS_CERTIFICATE_COOKIE)}, form);
+function accounts_fill(form = body()) {
+    if (accounts_cookie_has(ACCOUNTS_CERTIFICATE_COOKIE)) {
+        form = body(ACCOUNTS_API, "verify", {certificate: accounts_cookie_pull(ACCOUNTS_CERTIFICATE_COOKIE)}, form);
     }
     return form;
 }
 
-function force() {
-    success();
+function accounts_force() {
+    accounts_callback_success();
 }
 
-function hasCookie(name) {
-    return pullCookie(name) !== undefined;
+function accounts_cookie_has(name) {
+    return accounts_cookie_pull(name) !== undefined;
 }
 
-function login(name, password) {
+function accounts_login(name, password) {
     api(ACCOUNTS_ENDPOINT, ACCOUNTS_API, "login", {
         name: name,
         password: password
     }, (success, result, error) => {
         if (success) {
-            pushCookie(ACCOUNTS_CERTIFICATE_COOKIE, result);
+            accounts_cookie_push(ACCOUNTS_CERTIFICATE_COOKIE, result);
             window.location.reload();
         } else {
             get("login-error").innerText = error;
@@ -62,7 +62,7 @@ function login(name, password) {
     });
 }
 
-function pullCookie(name) {
+function accounts_cookie_pull(name) {
     name += "=";
     const cookies = document.cookie.split(';');
     for (let i = 0; i < cookies.length; i++) {
@@ -77,31 +77,31 @@ function pullCookie(name) {
     return undefined;
 }
 
-function pushCookie(name, value) {
+function accounts_cookie_push(name, value) {
     const date = new Date();
     date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000));
     document.cookie = name + "=" + encodeURIComponent(value) + ";expires=" + date.toUTCString() + ";domain=" + window.location.hostname + ";path=/";
 }
 
-function register(name, password) {
+function accounts_register(name, password) {
     api(ACCOUNTS_ENDPOINT, ACCOUNTS_API, "register", {
         name: name,
         password: password
     }, (success, result, error) => {
         if (success) {
-            login(name, password);
+            accounts_login(name, password);
         } else {
             get("register-error").innerText = error
         }
     });
 }
 
-function verify(success, failure) {
+function accounts_verify(success, failure) {
     api(ACCOUNTS_ENDPOINT, ACCOUNTS_API, "verify", null, (status) => {
         if (status) {
             success(true);
         } else {
             failure();
         }
-    }, fillForm());
+    }, accounts_fill());
 }

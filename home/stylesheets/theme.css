@@ -24,6 +24,9 @@ body {
     background-size: cover;
     background-attachment: fixed;
     background-repeat: no-repeat;
+    /* Positioning */
+    margin: 0;
+    padding: 0;
 }
 
 a, p, body, input, select, option, button, table, textarea, div {
@@ -57,11 +60,6 @@ a, p, body, input, select, option, button, table, textarea, div {
     width: 100%;
     width: -webkit-fill-available;
     width: -moz-available;
-}
-
-div {
-    margin: 0;
-    padding: 0;
 }
 
 p {
