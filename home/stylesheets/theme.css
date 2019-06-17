@@ -6,10 +6,13 @@
 html {
     /* Overflow */
     overflow-x: hidden;
+    /* Flex */
     display: flex;
     flex-direction: column;
+    /* Alignment */
     justify-content: center;
-    position: absolute;
+    /* Positioning */
+    position: fixed;
     top: 0;
     bottom: 0;
     left: 0;
@@ -48,7 +51,7 @@ a, p, body, input, select, option, button, table, textarea, div {
     justify-items: center;
     align-items: center;
     align-content: center;
-    align-self: center;
+    align-self: stretch;
     /* Text Alignment */
     text-align: center;
     text-align-last: center;
@@ -57,9 +60,6 @@ a, p, body, input, select, option, button, table, textarea, div {
     border-color: transparent;
     /* Sizing */
     height: min-content;
-    width: 100%;
-    width: -webkit-fill-available;
-    width: -moz-available;
 }
 
 p {
