@@ -11,6 +11,9 @@ html {
     flex-direction: column;
     /* Alignment */
     justify-content: center;
+    justify-items: center;
+    align-content: center;
+    align-items: center;
     /* Positioning */
     position: fixed;
     top: 0;
@@ -20,6 +23,8 @@ html {
 }
 
 body {
+    /* Sizing */
+    width: 100%;
     /* Background */
     -webkit-background-size: cover;
     -moz-background-size: cover;
@@ -27,12 +32,14 @@ body {
     background-size: cover;
     background-attachment: fixed;
     background-repeat: no-repeat;
-    /* Positioning */
-    margin: 0;
-    padding: 0;
 }
 
-a, p, body, input, select, option, button, table, textarea, div {
+textarea {
+    text-align: left !important;
+    text-align-last: left !important;
+}
+
+[text], a, p, [input], button, input, select, textarea, [row], [column], div, body {
     /* WebKit */
     -webkit-appearance: none;
     /* Display */
@@ -42,40 +49,58 @@ a, p, body, input, select, option, button, table, textarea, div {
     color: black;
     font-size: large;
     font-family: Arial, ArialHebrew, sans-serif;
+    /* Text Alignment */
+    text-align: center;
+    text-align-last: center;
+}
+
+[text], a, p {
+    flex-flow: wrap;
+    height: auto;
+}
+
+[text], a, p, [input], button, input, select, textarea {
     /* Positioning */
     margin: 1vh;
     padding: 1vh;
     /* Alignment */
-    justify-self: center;
     justify-content: center;
     justify-items: center;
-    align-items: center;
     align-content: center;
-    align-self: stretch;
-    /* Text Alignment */
-    text-align: center;
-    text-align-last: center;
+    align-items: center;
     /* Shaping */
     border-radius: 1vh;
     border-color: transparent;
-    /* Sizing */
-    height: min-content;
 }
 
-p {
-    flex-flow: wrap;
-}
-
-textarea {
-    text-align: left !important;
-    text-align-last: left !important;
-}
-
-input, select, option, button, textarea {
-    transition-duration: 0.4s;
+[input], button, input, select, textarea {
+    transition-duration: 0.2s;
     background-color: #ddddee;
 }
 
-input:hover, select:hover, option:hover, button:hover, textarea:hover {
-    background-color: #bbbbcc;
+[input]:hover, button:hover, input:hover, select:hover, textarea:hover {
+    background-color: #aaaabb;
+}
+
+[row], [column], div, body {
+    /* Alignment */
+    justify-content: center;
+    align-content: center;
+    /* Positioning */
+    margin: 0;
+    padding: 0;
+}
+
+[column] {
+    /* Flex */
+    flex-direction: column;
+    /* Alignment */
+    align-items: stretch;
+}
+
+[row] {
+    /* Flex */
+    flex-direction: row;
+    /* Alignment */
+    align-items: center;
 }

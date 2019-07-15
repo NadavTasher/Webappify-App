@@ -3,14 +3,12 @@
  https://github.com/NadavTasher/Webappify/
 -->
 
-<div id="builder">
-    <div id="builder-template">
+<div id="builder" column>
+    <div id="builder-template" column>
         <p class="title">Choose a template</p>
         <select id="builder-flavour" title="Flavour">
         </select>
-        <button onclick="slide(this,false,true,()=>{view('builder-properties-information-'+get('builder-flavour').value.toLowerCase());view('builder-properties');});">
-            Next
-        </button>
+        <button onclick="slide(this,false,true,()=>{view('builder-properties-information-'+get('builder-flavour').value.toLowerCase());view('builder-properties');});">Next</button>
     </div>
     <div id="builder-properties">
         <p class="title">Fill Information</p>
