@@ -8,8 +8,6 @@ const EDITOR_ENDPOINT = "scripts/backend/editor/editor.php";
 
 function editor_load() {
     api(DEPLOYER_ENDPOINT, DEPLOYER_API, "list", {}, (success, result, error) => {
-        view("editor");
-        view("editor-home");
         clear("editor-home-list");
         if (success) {
             for (let i = 0; i < result.length; i++) {
@@ -21,7 +19,7 @@ function editor_load() {
                 name.style.fontSize = "120%";
                 name.innerText = app.name;
                 description.innerText = app.description;
-                button.onclick = () => slide(button, false, i % 2 === 0, () => editor_edit(app.id));
+                button.onclick = () => page("editor-home", "editor-editor", () => editor_edit(app.id));
                 button.appendChild(name);
                 button.appendChild(description);
                 get("editor-home-list").appendChild(button);
@@ -32,7 +30,6 @@ function editor_load() {
 
 function editor_edit(id) {
     api(EDITOR_ENDPOINT, EDITOR_API, "read", {id: id}, (success, result, error) => {
-        view("editor-editor");
         clear("editor-editor-files");
         if (success) {
             for (let f = 0; f < result.length; f++) {

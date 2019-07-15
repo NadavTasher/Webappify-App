@@ -13,14 +13,14 @@ let code = {
     app: undefined
 };
 
-function builder_load() {
-    builder_load_templates(() => {
-        view("builder");
-        view("builder-template");
-    });
-}
+function builder_load(callback = null) {
+    layout = undefined;
+    stylesheet = undefined;
+    code = {
+        load: undefined,
+        app: undefined
+    };
 
-function builder_load_templates(callback) {
     fetch("files/builder/templates.json", {
         method: "get"
     }).then(response => {
@@ -29,52 +29,50 @@ function builder_load_templates(callback) {
             for (let key in json) {
                 if (json.hasOwnProperty(key)) {
                     let replacements = json[key];
-                    let option = document.createElement("option");
+                    let option = make("option");
                     option.innerText = key;
                     option.value = key;
                     get("builder-flavour").appendChild(option);
-                    let information = document.createElement("div");
+                    let information = make("div");
                     information.id = "builder-properties-information-" + key.toLowerCase();
 
-                    let codes = document.createElement("div");
-                    codes.classList.add("sideways");
+                    let codes = make("div");
 
                     let replacement;
                     for (let r = 0; replacement = replacements[r], r < replacements.length; r++) {
                         if (replacement.hasOwnProperty("name") && replacement.hasOwnProperty("description")) {
                             if (replacement.name === "layout") {
-                                let button = document.createElement("button");
+                                let button = make("button");
                                 button.innerText = "Design Layout";
                                 button.onclick = () => {
                                     if (layout === undefined)
-                                        layout = document.createElement("div");
-                                    view("builder-layout-menu");
-                                    view("builder-layout");
+                                        layout = make("div");
+                                    page("builder-properties", "builder-layout-menu");
                                 };
                                 information.appendChild(button);
                             } else if (replacement.name === "load") {
-                                let button = document.createElement("button");
+                                let button = make("button");
                                 button.innerText = "Load Code";
                                 button.onclick = () => {
-                                    view("builder-load");
+                                    page("builder-properties", "builder-load");
                                 };
                                 codes.appendChild(button);
                             } else if (replacement.name === "code") {
-                                let button = document.createElement("button");
+                                let button = make("button");
                                 button.innerText = "App Code";
                                 button.onclick = () => {
-                                    view("builder-code");
+                                    page("builder-properties", "builder-code");
                                 };
                                 codes.appendChild(button);
                             } else if (replacement.name === "stylesheet") {
-                                let button = document.createElement("button");
+                                let button = make("button");
                                 button.innerText = "Design Stylesheet";
                                 button.onclick = () => {
-                                    view("builder-stylesheet");
+                                    page("builder-properties", "builder-stylesheet");
                                 };
                                 information.appendChild(button);
                             } else {
-                                let input = document.createElement("input");
+                                let input = make("input");
                                 if (replacement.name === "theme") input.type = "color";
                                 input.id = "builder-properties-information-" + key.toLowerCase() + "-replacement-" + replacement.name;
                                 input.placeholder = replacement.description;
@@ -88,7 +86,7 @@ function builder_load_templates(callback) {
                     get("builder-properties-information").appendChild(information);
                 }
             }
-            callback();
+            if (callback !== null) callback();
         });
     });
 }
@@ -129,7 +127,7 @@ function builder_deploy_download() {
     let parameters = builder_compile_parameters();
     let name = (!parameters.replacements.hasOwnProperty("name") || parameters.replacements.name === "" ? "WebAppBundle" : parameters.replacements.name);
     api(BUILDER_ENDPOINT, BUILDER_API, "build", parameters, (success, result, error) => {
-        if(success) {
+        if (success) {
             download(name + ".zip", result, "application/zip", "base64");
             window.location.reload(true);
         }
@@ -138,7 +136,7 @@ function builder_deploy_download() {
 
 function builder_design_text() {
     let add = () => {
-        let paragraph = document.createElement("p");
+        let paragraph = make("p");
         let id = get("builder-layout-properties-text-id");
         let size = get("builder-layout-properties-text-size");
         let text = get("builder-layout-properties-text-text");
@@ -148,17 +146,15 @@ function builder_design_text() {
         if (size.value.length > 0) paragraph.style.fontSize = size.value;
         if (color.value.length > 0) paragraph.style.color = color.value;
         layout.appendChild(paragraph);
-        view("builder-layout-menu");
+        page("builder-layout-properties", "builder-layout-menu");
     };
     empty("builder-layout-properties-text");
     get("builder-layout-properties-add").onclick = add;
-    view("builder-layout-properties-text");
-    view("builder-layout-properties");
 }
 
 function builder_design_button() {
     let add = () => {
-        let button = document.createElement("button");
+        let button = make("button");
         let id = get("builder-layout-properties-button-id");
         let onclick = get("builder-layout-properties-button-onclick");
         let text = get("builder-layout-properties-button-text");
@@ -166,17 +162,15 @@ function builder_design_button() {
         if (onclick.value.length > 0) button.setAttribute("onclick", onclick.value);
         if (text.value.length > 0) button.innerText = text.value;
         layout.appendChild(button);
-        view("builder-layout-menu");
+        page("builder-layout-properties", "builder-layout-menu");
     };
     empty("builder-layout-properties-button");
     get("builder-layout-properties-add").onclick = add;
-    view("builder-layout-properties-button");
-    view("builder-layout-properties");
 }
 
 function builder_design_input() {
     let add = () => {
-        let input = document.createElement("input");
+        let input = make("input");
         let id = get("builder-layout-properties-input-id");
         let placeholder = get("builder-layout-properties-input-placeholder");
         let type = get("builder-layout-properties-input-type");
@@ -186,10 +180,8 @@ function builder_design_input() {
         if (type.value.length > 0) input.setAttribute("type", type.value);
         if (value.value.length > 0) input.setAttribute("value", value.value);
         layout.appendChild(input);
-        view("builder-layout-menu");
+        page("builder-layout-properties", "builder-layout-menu");
     };
     empty("builder-layout-properties-input");
     get("builder-layout-properties-add").onclick = add;
-    view("builder-layout-properties-input");
-    view("builder-layout-properties");
 }

@@ -6,11 +6,6 @@
 const EXPLORER_API = "explorer";
 const EXPLORER_ENDPOINT = "scripts/backend/explorer/explorer.php";
 
-function explorer_load() {
-    view("explorer");
-    view("explorer-home");
-}
-
 function explorer_random() {
     api(EXPLORER_ENDPOINT, EXPLORER_API, "random", {}, (success, result, error) => {
         if (success) {
@@ -20,7 +15,6 @@ function explorer_random() {
 }
 
 function explorer_list() {
-    view("explorer-list");
     clear("explorer-list-list");
     api(EXPLORER_ENDPOINT, EXPLORER_API, "list", {}, (success, result, error) => {
         if (success) {
@@ -33,7 +27,7 @@ function explorer_list() {
                 name.style.fontSize = "120%";
                 name.innerText = app.name;
                 description.innerText = app.description;
-                button.onclick = () => slide(button, false, a % 2 === 0, () => window.location.href = "../apps/" + app.id);
+                button.onclick = () => transition("explorer-list", OUT, () => window.location.href = "../apps/" + app.id);
                 button.appendChild(name);
                 button.appendChild(description);
                 get("explorer-list-list").appendChild(button);
