@@ -10,28 +10,28 @@
         </select>
         <button onclick="slide(this,false,true,()=>{view('builder-properties-information-'+get('builder-flavour').value.toLowerCase());view('builder-properties');});">Next</button>
     </div>
-    <div id="builder-properties">
+    <div id="builder-properties" column>
         <p class="title">Fill Information</p>
-        <div id="builder-properties-information"></div>
+        <div id="builder-properties-information" column></div>
         <button onclick="slide(this,false,true,()=>view('builder-deploy'));">Next</button>
     </div>
-    <div id="builder-layout">
-        <div id="builder-layout-properties">
+    <div id="builder-layout" column>
+        <div id="builder-layout-properties" column>
             <p class="title">Add to layout</p>
-            <div>
-                <div id="builder-layout-properties-text">
+            <div column>
+                <div id="builder-layout-properties-text" column>
                     <input id="builder-layout-properties-text-id" placeholder="Text ID"/>
                     <input id="builder-layout-properties-text-text" placeholder="Text Text"/>
                     <input id="builder-layout-properties-text-size" placeholder="Text Size"/>
                     <input id="builder-layout-properties-text-color" type="color" placeholder="Text Color"/>
                 </div>
-                <div id="builder-layout-properties-input">
+                <div id="builder-layout-properties-input" column>
                     <input id="builder-layout-properties-input-id" placeholder="Input ID"/>
                     <input id="builder-layout-properties-input-text" placeholder="Input Text"/>
                     <input id="builder-layout-properties-input-type" placeholder="Input Type"/>
                     <input id="builder-layout-properties-input-placeholder" placeholder="Placeholder"/>
                 </div>
-                <div id="builder-layout-properties-button">
+                <div id="builder-layout-properties-button" column>
                     <input id="builder-layout-properties-button-id" placeholder="Button ID"/>
                     <input id="builder-layout-properties-button-text" placeholder="Button Text"/>
                     <input id="builder-layout-properties-button-onclick" placeholder="On-Click Code"/>
@@ -40,7 +40,7 @@
             <button onclick="view('builder-layout-menu');">Back</button>
             <button id="builder-layout-properties-add">Add</button>
         </div>
-        <div id="builder-layout-menu">
+        <div id="builder-layout-menu" column>
             <p class="title">Layout design</p>
             <button onclick="builder_design_text()">New Text</button>
             <button onclick="builder_design_input()">New Input</button>
@@ -48,22 +48,22 @@
             <button onclick="view('builder-properties');">Back</button>
         </div>
     </div>
-    <div id="builder-code">
+    <div id="builder-code" column>
         <p class="title">Write app code</p>
         <textarea oninput="code.app = this.value" placeholder="JS App Code" title="App Code"></textarea>
         <button onclick="view('builder-properties');">Back</button>
     </div>
-    <div id="builder-load">
+    <div id="builder-load" column>
         <p class="title">Write load code</p>
         <textarea oninput="code.load = this.value" placeholder="JS Load Code" title="Load Code"></textarea>
         <button onclick="view('builder-properties');">Back</button>
     </div>
-    <div id="builder-stylesheet">
+    <div id="builder-stylesheet" column>
         <p class="title">Stylesheet design</p>
         <textarea oninput="stylesheet = this.value" placeholder="CSS Style" title="Style"></textarea>
         <button onclick="view('builder-properties');">Back</button>
     </div>
-    <div id="builder-deploy">
+    <div id="builder-deploy" column>
         <p class="title">Finished!</p>
         <p class="content">Suggested Setup:</p>
         <table>
@@ -83,32 +83,31 @@
         <button onclick="slide(this, false, false, ()=>builder_deploy_deploy());">Deploy on Webappify</button>
     </div>
 </div>
-<div id="editor">
-    <div id="editor-home">
+<div id="editor" column>
+    <div id="editor-home" column>
         <p class="title">Choose application to edit</p>
-        <div id="editor-home-list"></div>
+        <div id="editor-home-list" column></div>
     </div>
-    <div id="editor-editor">
-        <div class="menubar" id="editor-editor-files"></div>
+    <div id="editor-editor" column>
+        <div class="menubar" id="editor-editor-files" row></div>
         <textarea id="editor-editor-text" class="editor" title="Code"></textarea>
     </div>
 </div>
-<div id="explorer">
-    <div id="explorer-home">
+<div id="explorer" column>
+    <div id="explorer-home" column>
         <p class="title">Explore apps on Webappify</p>
-        <p class="fineprint">Welcome to the explore page!<br/>Here, you'll be able to find interesting apps created by
-            other users.</p>
+        <p class="fineprint">Welcome to the explore page!<br/>Here, you'll be able to find interesting apps created by other users.</p>
         <button onclick="slide(this, false, true, explorer_random);">Pick a random app</button>
         <button onclick="slide(this, false, false, explorer_list);">View complete list</button>
     </div>
-    <div id="explorer-list">
+    <div id="explorer-list" column>
         <p class="title">List of deployed apps</p>
         <p class="fineprint">Explore a list of every deployed app on Webappify, in a random order.</p>
-        <div id="explorer-list-list" class="scrolly"></div>
+        <div id="explorer-list-list" class="scrolly" column></div>
     </div>
 </div>
-<div id="deployer">
-    <div id="deployer-deploy">
+<div id="deployer" column>
+    <div id="deployer-deploy" column>
         <p class="title">Deploy on Webappify</p>
         <p class="fineprint">
             Looks like you are ready to deploy your app on Webappify!<br/>
@@ -124,32 +123,28 @@
         <input id="deployer-deploy-email" type="email" placeholder="Email for deployment and renewment"/>
         <button id="deployer-deploy-button">Deploy</button>
     </div>
-    <div id="deployer-unlock">
+    <div id="deployer-unlock" column>
         <p class="title">Activate Deployment</p>
         <p class="fineprint">Click the button to activate your app.<br/>A renewal email will be sent every 30 days.</p>
         <button id="deployer-unlock-button">Activate</button>
     </div>
-    <div id="deployer-renew">
+    <div id="deployer-renew" column>
         <p class="title">Renew Deployment</p>
         <p class="fineprint">Click the button to renew your app.<br/>The next renewal will be in 30 days.</p>
         <button id="deployer-renew-button">Renew</button>
     </div>
 </div>
-<div id="home">
+<div id="home" column>
     <p class="title">Welcome to Webappify!</p>
     <p class="content">The one-stop all-in-one WebApp platform.</p>
-    <button onclick="slide(this, false, true, builder_load);">Create your app
-    </button>
-    <button onclick="slide(this, false, false, editor_load);">Edit your apps
-    </button>
-    <button onclick="slide(this, false, true, explorer_load);">Discover others'
-    </button>
-    <button onclick="slide(this, false, false, ()=>view('about'));" style="font-size: medium;">About
-    </button>
+    <button onclick="slide(this, false, true, builder_load);">Create your app</button>
+    <button onclick="slide(this, false, false, editor_load);">Edit your apps</button>
+    <button onclick="slide(this, false, true, explorer_load);">Discover others'</button>
+    <button onclick="slide(this, false, false, ()=>view('about'));" style="font-size: medium;">About</button>
 </div>
-<div id="about">
+<div id="about" column>
     <img src="resources/svg/icon.svg" style="height: 18vh;width:18vh" alt="Icon"/>
-    <p class="title">Webappify (formerly WebAppBuilder)</p>
+    <p class="title">Webappify</p>
     <p class="fineprint">The<a href="https://github.com/NadavTasher/Webappify">open-source</a>application platform.</p>
     <p class="fineprint">Developed by<a href="https://kut.to">Nadav Tasher</a></p>
 </div>
