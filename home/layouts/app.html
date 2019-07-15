@@ -8,12 +8,12 @@
         <p class="title">Choose a template</p>
         <select id="builder-flavour" title="Flavour">
         </select>
-        <button onclick="slide(this,false,true,()=>{view('builder-properties-information-'+get('builder-flavour').value.toLowerCase());view('builder-properties');});">Next</button>
+        <button onclick="view('builder-properties-information-'+get('builder-flavour').value.toLowerCase());page(this.parentNode, 'builder-properties');">Next</button>
     </div>
     <div id="builder-properties" column>
         <p class="title">Fill Information</p>
         <div id="builder-properties-information" column></div>
-        <button onclick="slide(this,false,true,()=>view('builder-deploy'));">Next</button>
+        <button onclick="page(this.parentNode, 'builder-deploy');">Next</button>
     </div>
     <div id="builder-layout" column>
         <div id="builder-layout-properties" column>
@@ -37,7 +37,7 @@
                     <input id="builder-layout-properties-button-onclick" placeholder="On-Click Code"/>
                 </div>
             </div>
-            <button onclick="view('builder-layout-menu');">Back</button>
+            <button onclick="page(this.parentNode, 'builder-layout-menu');">Back</button>
             <button id="builder-layout-properties-add">Add</button>
         </div>
         <div id="builder-layout-menu" column>
@@ -45,23 +45,23 @@
             <button onclick="builder_design_text()">New Text</button>
             <button onclick="builder_design_input()">New Input</button>
             <button onclick="builder_design_button()">New Button</button>
-            <button onclick="view('builder-properties');">Back</button>
+            <button onclick="page(this.parentNode, 'builder-properties');">Back</button>
         </div>
     </div>
     <div id="builder-code" column>
         <p class="title">Write app code</p>
         <textarea oninput="code.app = this.value" placeholder="JS App Code" title="App Code"></textarea>
-        <button onclick="view('builder-properties');">Back</button>
+        <button onclick="page(this.parentNode, 'builder-properties');">Back</button>
     </div>
     <div id="builder-load" column>
         <p class="title">Write load code</p>
         <textarea oninput="code.load = this.value" placeholder="JS Load Code" title="Load Code"></textarea>
-        <button onclick="view('builder-properties');">Back</button>
+        <button onclick="page(this.parentNode, 'builder-properties');">Back</button>
     </div>
     <div id="builder-stylesheet" column>
         <p class="title">Stylesheet design</p>
         <textarea oninput="stylesheet = this.value" placeholder="CSS Style" title="Style"></textarea>
-        <button onclick="view('builder-properties');">Back</button>
+        <button onclick="page(this.parentNode, 'builder-properties');">Back</button>
     </div>
     <div id="builder-deploy" column>
         <p class="title">Finished!</p>
@@ -78,9 +78,9 @@
                 <td>7.0+</td>
             </tr>
         </table>
-        <button onclick="slide(this, false, true, ()=>builder_deploy_download());">Download</button>
+        <button onclick="page('build-deploy', 'home', builder_deploy_download);">Download</button>
         <p class="content">Or</p>
-        <button onclick="slide(this, false, false, ()=>builder_deploy_deploy());">Deploy on Webappify</button>
+        <button onclick="page('builder-deploy', 'deployer-deploy', builder_deploy_deploy);">Deploy on Webappify</button>
     </div>
 </div>
 <div id="editor" column>
@@ -97,8 +97,8 @@
     <div id="explorer-home" column>
         <p class="title">Explore apps on Webappify</p>
         <p class="fineprint">Welcome to the explore page!<br/>Here, you'll be able to find interesting apps created by other users.</p>
-        <button onclick="slide(this, false, true, explorer_random);">Pick a random app</button>
-        <button onclick="slide(this, false, false, explorer_list);">View complete list</button>
+        <button onclick="transition('explorer-home', OUT, explorer_random);">Pick a random app</button>
+        <button onclick="page('explorer-home','explorer-list', explorer_list);">View complete list</button>
     </div>
     <div id="explorer-list" column>
         <p class="title">List of deployed apps</p>
@@ -137,9 +137,9 @@
 <div id="home" column>
     <p class="title">Welcome to Webappify!</p>
     <p class="content">The one-stop all-in-one WebApp platform.</p>
-    <button onclick="page('home','builder-template',()=>view('builder'),builder_load);">Create your app</button>
-    <button onclick="page('home', 'editor-home',()=>view('editor'),editor_load);">Edit your apps</button>
-    <button onclick="page('home', 'explorer-home', ()=>view('explorer'), explorer_load);">Discover others'</button>
+    <button onclick="page('home','builder-template',builder_load);">Create your app</button>
+    <button onclick="page('home', 'editor-home',editor_load);">Edit your apps</button>
+    <button onclick="page('home', 'explorer-home', explorer_load);">Discover others'</button>
     <button onclick="page('home','about');" style="font-size: medium;">About</button>
 </div>
 <div id="about" column>

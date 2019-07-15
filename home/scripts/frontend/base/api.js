@@ -214,11 +214,15 @@ function make(type, content = null, configurations = null) {
     return made;
 }
 
-function page(from, to, before = null, after = null) {
+function page(from, to, callback = null) {
     transition(from, OUT, () => {
-        if (before !== null) before();
-        view(to);
-        transition(to, IN, after);
+        let temporary = get(to);
+        while (temporary.parentNode !== get(from).parentNode && temporary.parentNode !== document.body) {
+            view(temporary);
+            temporary = temporary.parentNode;
+        }
+        view(temporary);
+        transition(to, IN, callback);
     });
 }
 
