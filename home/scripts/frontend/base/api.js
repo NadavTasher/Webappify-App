@@ -214,8 +214,33 @@ function make(type, content = null, configurations = null) {
     return made;
 }
 
+function page(from, to, before = null, after = null) {
+    transition(from, OUT, () => {
+        if (before !== null) before();
+        view(to);
+        transition(to, IN, after);
+    });
+}
+
 function show(v) {
     get(v).style.removeProperty("display");
+}
+
+function slide(v, motion = IN, direction = RIGHT, length = 0.2, delay = 0, callback = null) {
+    let view = get(v);
+    let style = getComputedStyle(view);
+    let edge = (direction === RIGHT ? 1 : -1) * screen.width;
+    let current = isNaN(parseInt(style.left)) ? 0 : parseInt(style.left);
+    let origin = current === 0 && motion === IN ? edge : current;
+    let destination = motion === IN ? 0 : edge;
+    animate(view, {
+        name: "left",
+        origin: origin + "px",
+        destination: destination + "px",
+        length: length,
+        delay: delay,
+        preserve: true
+    }, callback);
 }
 
 function theme(color) {
@@ -253,23 +278,6 @@ function view(v) {
 
 function visible(v) {
     return (get(v).style.getPropertyValue("display") !== "none");
-}
-
-function slide(v, motion = IN, direction = RIGHT, length = 0.2, delay = 0, callback = null) {
-    let view = get(v);
-    let style = getComputedStyle(view);
-    let edge = (direction === RIGHT ? 1 : -1) * screen.width;
-    let current = isNaN(parseInt(style.left)) ? 0 : parseInt(style.left);
-    let origin = current === 0 && motion === IN ? edge : current;
-    let destination = motion === IN ? 0 : edge;
-    animate(view, {
-        name: "left",
-        origin: origin + "px",
-        destination: destination + "px",
-        length: length,
-        delay: delay,
-        preserve: true
-    }, callback);
 }
 
 function worker(w = "worker.js") {

@@ -137,13 +137,13 @@
 <div id="home" column>
     <p class="title">Welcome to Webappify!</p>
     <p class="content">The one-stop all-in-one WebApp platform.</p>
-    <button onclick="slide(this, false, true, builder_load);">Create your app</button>
-    <button onclick="slide(this, false, false, editor_load);">Edit your apps</button>
-    <button onclick="slide(this, false, true, explorer_load);">Discover others'</button>
-    <button onclick="slide(this, false, false, ()=>view('about'));" style="font-size: medium;">About</button>
+    <button onclick="page('home','builder-template',()=>view('builder'),builder_load);">Create your app</button>
+    <button onclick="page('home', 'editor-home',()=>view('editor'),editor_load);">Edit your apps</button>
+    <button onclick="page('home', 'explorer-home', ()=>view('explorer'), explorer_load);">Discover others'</button>
+    <button onclick="page('home','about');" style="font-size: medium;">About</button>
 </div>
 <div id="about" column>
-    <img src="resources/svg/icon.svg" style="height: 18vh;width:18vh" alt="Icon"/>
+    <img src="resources/svg/icon.svg" style="height: 18vh;width: auto;" alt="Icon"/>
     <p class="title">Webappify</p>
     <p class="fineprint">The<a href="https://github.com/NadavTasher/Webappify">open-source</a>application platform.</p>
     <p class="fineprint">Developed by<a href="https://kut.to">Nadav Tasher</a></p>
