@@ -16,15 +16,20 @@ html {
     align-items: center;
     /* Positioning */
     position: fixed;
+    /* Sides */
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
+    /* Sizing */
+    height: 100%;
+    width: 100%;
 }
 
 body {
     /* Sizing */
     width: 100%;
+    max-width: 460px;
     /* Background */
     -webkit-background-size: cover;
     -moz-background-size: cover;
