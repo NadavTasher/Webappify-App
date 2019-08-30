@@ -3,33 +3,7 @@
  * https://github.com/NadavTasher/WebAppBase/
  **/
 
-const LEFT = false;
-const RIGHT = !LEFT;
-const IN = true;
-const OUT = !IN;
-
-function animate(v, parameters, callback = null) {
-    let view = get(v);
-    let removeStyles = () => {
-        view.style.removeProperty("position");
-        view.style.removeProperty("transitionDuration");
-        view.style.removeProperty("transitionTimingFunction");
-        view.style.removeProperty(parameters.name);
-    };
-    removeStyles();
-    if (getComputedStyle(view).position === "static" || getComputedStyle(view).position === "sticky")
-        view.style.position = "relative";
-    view.style.transitionDuration = parameters.length + "s";
-    view.style.transitionTimingFunction = "ease";
-    view.style[parameters.name] = parameters.origin;
-    setTimeout(() => {
-        view.style[parameters.name] = parameters.destination;
-        setTimeout(() => {
-            if (!parameters.preserve) removeStyles();
-            if (callback !== null) callback();
-        }, parameters.length * 1000);
-    }, 100 + parameters.delay * 1000);
-}
+/* API */
 
 function api(endpoint = null, api = null, action = null, parameters = null, callback = null, form = body()) {
     fetch(endpoint, {
@@ -61,36 +35,6 @@ function api(endpoint = null, api = null, action = null, parameters = null, call
     });
 }
 
-function apply(configurations, target = null) {
-    if (isObject(configurations)) {
-        if (target === null) {
-            for (let id in configurations) {
-                if (configurations.hasOwnProperty(id) && exists(id)) apply(configurations[id], get(id));
-            }
-        } else {
-            target = get(target);
-            if (!isString(target)) {
-                if (target !== null) {
-                    for (let property in configurations) {
-                        if (configurations.hasOwnProperty(property)) {
-                            if (isObject(configurations[property])) {
-                                if ((target.hasAttribute !== undefined && !target.hasAttribute(property)) || (target.hasAttribute === undefined && !target.hasOwnProperty(property))) target[property] = {};
-                                apply(configurations[property], target[property]);
-                            } else {
-                                target[property] = configurations[property];
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    } else if (isArray(configurations)) {
-        for (let c = 0; c < configurations.length; c++) {
-            apply(configurations[c], target);
-        }
-    }
-}
-
 function body(api = null, action = null, parameters = null, form = new FormData()) {
     if (api !== null && action !== null && parameters !== null && !form.has(api)) {
         form.append(api, JSON.stringify({
@@ -101,18 +45,142 @@ function body(api = null, action = null, parameters = null, form = new FormData(
     return form;
 }
 
-function clear(v) {
-    let view = get(v);
-    while (view.firstChild) {
-        view.removeChild(view.firstChild);
-    }
-}
-
 function download(file, data, type = "text/plain", encoding = "utf8") {
     let link = document.createElement("a");
     link.download = file;
     link.href = "data:" + type + ";" + encoding + "," + data;
     link.click();
+}
+
+function html(callback = null) {
+    fetch("layouts/template.html", {
+        method: "get"
+    }).then(response => {
+        response.text().then((template) => {
+            fetch("layouts/app.html", {
+                method: "get"
+            }).then(response => {
+                response.text().then((app) => {
+                    document.body.innerHTML = template.replace("<!--App Body-->", app);
+                    if (callback !== null) callback();
+                });
+            });
+        });
+    });
+}
+
+function instruct(title = null, safaricheck = true, callback = null) {
+    // Check user-agent
+    let agent = window.navigator.userAgent.toLowerCase();
+    let devices = ["iphone", "ipad", "ipod"];
+    let mobilesafari = false;
+    for (let i = 0; i < devices.length; i++) {
+        if (agent.includes(devices[i])) mobilesafari = true;
+    }
+    if ((mobilesafari && !("standalone" in window.navigator && window.navigator.standalone)) || !safaricheck) {
+        let div = make("div");
+        let text = make("p");
+        let share = make("img");
+        let then = make("p");
+        let add = make("img");
+        // Make the prompt horizontal and button-like
+        row(div);
+        input(div);
+        // OnClick
+        div.onclick = (callback !== null) ? callback : () => {
+            hide(div);
+            div.parentElement.removeChild(div);
+        };
+        // Div style
+        div.style.position = "fixed";
+        div.style.bottom = "0";
+        div.style.left = "0";
+        div.style.right = "0";
+        div.style.margin = "1vh";
+        div.style.padding = "1vh";
+        div.style.height = "6vh";
+        div.style.backgroundColor = "#ffffffee";
+        // Contents
+        text.innerText = "To add " + ((title === null) ? ("\"" + document.title + "\"") : title) + ", ";
+        share.src = "resources/svg/icons/safari/share.svg";
+        then.innerText = "then";
+        add.src = "resources/svg/icons/safari/add.svg";
+        // Indentations
+        text.style.fontStyle = "italic";
+        then.style.fontStyle = "italic";
+        // Heights
+        text.style.maxHeight = "5vh";
+        share.style.maxHeight = "4vh";
+        then.style.maxHeight = "5vh";
+        add.style.maxHeight = "4vh";
+        // Add components
+        div.appendChild(text);
+        div.appendChild(share);
+        div.appendChild(then);
+        div.appendChild(add);
+        document.body.appendChild(div);
+    }
+}
+
+function theme(color) {
+    let meta = document.getElementsByTagName("meta")["theme-color"];
+    if (meta !== null) {
+        meta.content = color;
+    } else {
+        meta = document.createElement("meta");
+        meta.name = "theme-color";
+        meta.content = color;
+        document.head.appendChild(meta);
+    }
+
+}
+
+function title(title) {
+    document.title = title;
+}
+
+function worker(w = "worker.js") {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register(w).then((result) => {
+        });
+    }
+}
+
+/* Visuals */
+
+const LEFT = false;
+const RIGHT = !LEFT;
+const IN = true;
+const OUT = !IN;
+
+function animate(v, parameters, callback = null) {
+    let view = get(v);
+    let removeStyles = () => {
+        view.style.removeProperty("position");
+        view.style.removeProperty("transitionDuration");
+        view.style.removeProperty("transitionTimingFunction");
+        view.style.removeProperty(parameters.name);
+    };
+    removeStyles();
+    if (getComputedStyle(view).position === "static" || getComputedStyle(view).position === "sticky")
+        view.style.position = "relative";
+    view.style.transitionDuration = parameters.length + "s";
+    view.style.transitionTimingFunction = "ease";
+    view.style[parameters.name] = parameters.origin;
+    setTimeout(() => {
+        view.style[parameters.name] = parameters.destination;
+        setTimeout(() => {
+            if (!parameters.preserve) removeStyles();
+            if (callback !== null) callback();
+        }, parameters.length * 1000);
+    }, 100 + parameters.delay * 1000);
+}
+
+function clear(v) {
+    let view = get(v);
+    while (view.firstChild) {
+        view.removeChild(view.firstChild);
+    }
 }
 
 function exists(v) {
@@ -122,6 +190,99 @@ function exists(v) {
 function get(v) {
     return isString(v) ? document.getElementById(v) : v;
 }
+
+function hide(v) {
+    get(v).style.display = "none";
+}
+
+function make(type, content = null, classes = []) {
+    let made = document.createElement(type);
+    if (content !== null) {
+        if (!isString(content)) {
+            made.appendChild(content);
+        } else {
+            made.innerText = content;
+        }
+    }
+    for (let c = 0; c < classes.length; c++)
+        made.classList.add(classes[c]);
+    return made;
+}
+
+function page(from, to, callback = null) {
+    transition(from, OUT, () => {
+        let temporary = get(to);
+        while (temporary.parentNode !== get(from).parentNode && temporary.parentNode !== document.body) {
+            view(temporary);
+            temporary = temporary.parentNode;
+        }
+        view(temporary);
+        transition(to, IN, callback);
+    });
+}
+
+function show(v) {
+    get(v).style.removeProperty("display");
+}
+
+function slide(v, motion = IN, direction = RIGHT, length = 0.2, delay = 0, callback = null) {
+    let view = get(v);
+    let style = getComputedStyle(view);
+    let edge = (direction === RIGHT ? 1 : -1) * screen.width;
+    let current = isNaN(parseInt(style.left)) ? 0 : parseInt(style.left);
+    let origin = current === 0 && motion === IN ? edge : current;
+    let destination = motion === IN ? 0 : edge;
+    animate(view, {
+        name: "left",
+        origin: origin + "px",
+        destination: destination + "px",
+        length: length,
+        delay: delay,
+        preserve: true
+    }, callback);
+}
+
+function transition(v, type = OUT, callback = null) {
+    let element = get(v);
+    for (let n = 0; n < element.children.length; n++) {
+        slide(element.children[n], type, RIGHT, 0.4, 0.2 * n, n === element.children.length - 1 ? callback : null);
+    }
+}
+
+function view(v) {
+    let element = get(v);
+    let parent = element.parentNode;
+    for (let n = 0; n < parent.children.length; n++) {
+        hide(parent.children[n]);
+    }
+    show(element);
+}
+
+function visible(v) {
+    return (get(v).style.getPropertyValue("display") !== "none");
+}
+
+/* Special HTML */
+
+function column(v) {
+    get(v).setAttribute("column", true);
+    get(v).setAttribute("row", false);
+}
+
+function input(v) {
+    get(v).setAttribute("input", true);
+}
+
+function row(v) {
+    get(v).setAttribute("row", true);
+    get(v).setAttribute("column", false);
+}
+
+function text(v) {
+    get(v).setAttribute("text", true);
+}
+
+/* UI */
 
 function gestures(up = null, down = null, left = null, right = null, upgoing = null, downgoing = null, leftgoing = null, rightgoing = null) {
     let touchX, touchY, deltaX, deltaY;
@@ -166,26 +327,7 @@ function gestures(up = null, down = null, left = null, right = null, upgoing = n
     };
 }
 
-function hide(v) {
-    get(v).style.display = "none";
-}
-
-function html(callback = null) {
-    fetch("layouts/template.html", {
-        method: "get"
-    }).then(response => {
-        response.text().then((template) => {
-            fetch("layouts/app.html", {
-                method: "get"
-            }).then(response => {
-                response.text().then((app) => {
-                    document.body.innerHTML = template.replace("<!--App Body-->", app);
-                    if (callback !== null) callback();
-                });
-            });
-        });
-    });
-}
+/* Utils */
 
 function isArray(a) {
     return a instanceof Array;
@@ -199,94 +341,10 @@ function isString(s) {
     return (typeof "" === typeof s || typeof '' === typeof s);
 }
 
-function make(type, content = null, configurations = null) {
-    let made = document.createElement(type);
-    if (content !== null) {
-        if (!isString(content)) {
-            made.appendChild(content);
-        } else {
-            made.innerText = content;
-        }
-    }
-    if (configurations !== null) {
-        apply(configurations, made);
-    }
-    return made;
-}
 
-function page(from, to, callback = null) {
-    transition(from, OUT, () => {
-        let temporary = get(to);
-        while (temporary.parentNode !== get(from).parentNode && temporary.parentNode !== document.body) {
-            view(temporary);
-            temporary = temporary.parentNode;
-        }
-        view(temporary);
-        transition(to, IN, callback);
-    });
-}
 
-function show(v) {
-    get(v).style.removeProperty("display");
-}
 
-function slide(v, motion = IN, direction = RIGHT, length = 0.2, delay = 0, callback = null) {
-    let view = get(v);
-    let style = getComputedStyle(view);
-    let edge = (direction === RIGHT ? 1 : -1) * screen.width;
-    let current = isNaN(parseInt(style.left)) ? 0 : parseInt(style.left);
-    let origin = current === 0 && motion === IN ? edge : current;
-    let destination = motion === IN ? 0 : edge;
-    animate(view, {
-        name: "left",
-        origin: origin + "px",
-        destination: destination + "px",
-        length: length,
-        delay: delay,
-        preserve: true
-    }, callback);
-}
 
-function theme(color) {
-    let meta = document.getElementsByTagName("meta")["theme-color"];
-    if (meta !== null) {
-        meta.content = color;
-    } else {
-        meta = document.createElement("meta");
-        meta.name = "theme-color";
-        meta.content = color;
-        document.head.appendChild(meta);
-    }
 
-}
 
-function title(title) {
-    document.title = title;
-}
 
-function transition(v, type = OUT, callback = null) {
-    let element = get(v);
-    for (let n = 0; n < element.children.length; n++) {
-        slide(element.children[n], type, RIGHT, 0.4, 0.2 * n, n === element.children.length - 1 ? callback : null);
-    }
-}
-
-function view(v) {
-    let element = get(v);
-    let parent = element.parentNode;
-    for (let n = 0; n < parent.children.length; n++) {
-        hide(parent.children[n]);
-    }
-    show(element);
-}
-
-function visible(v) {
-    return (get(v).style.getPropertyValue("display") !== "none");
-}
-
-function worker(w = "worker.js") {
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register(w).then((result) => {
-        });
-    }
-}

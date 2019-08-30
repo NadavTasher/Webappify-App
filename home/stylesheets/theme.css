@@ -29,7 +29,6 @@ html {
 body {
     /* Sizing */
     width: 100%;
-    max-width: 460px;
     /* Background */
     -webkit-background-size: cover;
     -moz-background-size: cover;
@@ -44,7 +43,7 @@ textarea {
     text-align-last: left !important;
 }
 
-[text], a, p, [input], button, input, select, textarea, [row], [column], div, body {
+[text = ""], [text = true], a, p, [input = ""], [input = true], button, input, select, textarea, [row = ""], [row = true], [column = ""], [column = true], div, body {
     /* WebKit */
     -webkit-appearance: none;
     /* Display */
@@ -59,12 +58,12 @@ textarea {
     text-align-last: center;
 }
 
-[text], a, p {
+[text = ""], [text = true], a, p {
     flex-flow: wrap;
     height: auto;
 }
 
-[text], a, p, [input], button, input, select, textarea {
+[text = ""], [text = true], a, p, [input = ""], [input = true], button, input, select, textarea {
     /* Positioning */
     margin: 1vh;
     padding: 1vh;
@@ -78,16 +77,16 @@ textarea {
     border-color: transparent;
 }
 
-[input], button, input, select, textarea {
+[input = ""], [input = true], button, input, select, textarea {
     transition-duration: 0.2s;
     background-color: #ddddee;
 }
 
-[input]:hover, button:hover, input:hover, select:hover, textarea:hover {
-    background-color: #aaaabb;
+[input = ""]:hover, [input = true]:hover, button:hover, input:hover, select:hover, textarea:hover {
+    background-color: #9999aa;
 }
 
-[row], [column], div, body {
+[row = ""], [row = true], [column = ""], [column = true], div, body {
     /* Alignment */
     justify-content: center;
     align-content: center;
@@ -96,14 +95,14 @@ textarea {
     padding: 0;
 }
 
-[column] {
+[column = ""], [column = true] {
     /* Flex */
     flex-direction: column;
     /* Alignment */
     align-items: stretch;
 }
 
-[row] {
+[row = ""], [row = true] {
     /* Flex */
     flex-direction: row;
     /* Alignment */
