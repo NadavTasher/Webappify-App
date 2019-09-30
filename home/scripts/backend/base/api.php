@@ -56,7 +56,7 @@ function put($api, $type, $key, $value)
 
 function random($length)
 {
-    $current = str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")[0];
+    $current = str_shuffle("0123456789abcdefghijklmnopqrstuvwxyz")[0];
     if ($length > 0) {
         return $current . random($length - 1);
     }

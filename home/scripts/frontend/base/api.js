@@ -3,6 +3,10 @@
  * https://github.com/NadavTasher/WebAppBase/
  **/
 
+// Code to be ran before load
+
+prepare();
+
 /* API */
 
 function api(endpoint = null, api = null, action = null, parameters = null, callback = null, form = body()) {
@@ -45,14 +49,42 @@ function body(api = null, action = null, parameters = null, form = new FormData(
     return form;
 }
 
-function download(file, data, type = "text/plain", encoding = "utf8") {
-    let link = document.createElement("a");
-    link.download = file;
-    link.href = "data:" + type + ";" + encoding + "," + data;
-    link.click();
+function instruct(title = null) {
+    let agent = window.navigator.userAgent.toLowerCase();
+    let devices = ["iphone", "ipad", "ipod"];
+    let safari = false;
+    for (let i = 0; i < devices.length; i++) {
+        if (agent.includes(devices[i])) safari = true;
+    }
+    if ((safari && !(window.navigator.hasOwnProperty("standalone") && window.navigator.standalone)) || !safaricheck) {
+        let div = make("div");
+        let text = make("p");
+        let share = make("img");
+        let then = make("p");
+        let add = make("img");
+        text.innerText = "To add " + ((title === null) ? ("\"" + document.title + "\"") : title) + ", ";
+        share.src = "resources/svg/icons/safari/share.svg";
+        then.innerText = "then";
+        add.src = "resources/svg/icons/safari/add.svg";
+        text.style.fontStyle = "italic";
+        then.style.fontStyle = "italic";
+        text.style.maxHeight = "5vh";
+        share.style.maxHeight = "4vh";
+        then.style.maxHeight = "5vh";
+        add.style.maxHeight = "4vh";
+        div.appendChild(text);
+        div.appendChild(share);
+        div.appendChild(then);
+        div.appendChild(add);
+        popup(div, "#ffffffee", 0);
+    }
 }
 
-function html(callback = null) {
+function prepare() {
+    // Register worker
+    if ("serviceWorker" in navigator)
+        navigator.serviceWorker.register("worker.js").then();
+    // Load layouts
     fetch("layouts/template.html", {
         method: "get"
     }).then(response => {
@@ -62,119 +94,43 @@ function html(callback = null) {
             }).then(response => {
                 response.text().then((app) => {
                     document.body.innerHTML = template.replace("<!--App Body-->", app);
-                    if (callback !== null) callback();
                 });
             });
         });
     });
+    // Register popstate
+    addEventListener("popstate", (result) => {
+        if (result.state !== null) {
+            restore(result.state);
+        } else {
+            history.go(-1);
+        }
+    });
 }
 
-function instruct(title = null, safaricheck = true, callback = null) {
-    // Check user-agent
-    let agent = window.navigator.userAgent.toLowerCase();
-    let devices = ["iphone", "ipad", "ipod"];
-    let mobilesafari = false;
-    for (let i = 0; i < devices.length; i++) {
-        if (agent.includes(devices[i])) mobilesafari = true;
-    }
-    if ((mobilesafari && !("standalone" in window.navigator && window.navigator.standalone)) || !safaricheck) {
-        let div = make("div");
-        let text = make("p");
-        let share = make("img");
-        let then = make("p");
-        let add = make("img");
-        // Make the prompt horizontal and button-like
-        row(div);
-        input(div);
-        // OnClick
-        div.onclick = (callback !== null) ? callback : () => {
-            hide(div);
-            div.parentElement.removeChild(div);
-        };
-        // Div style
-        div.style.position = "fixed";
-        div.style.bottom = "0";
-        div.style.left = "0";
-        div.style.right = "0";
-        div.style.margin = "1vh";
-        div.style.padding = "1vh";
-        div.style.height = "6vh";
-        div.style.backgroundColor = "#ffffffee";
-        // Contents
-        text.innerText = "To add " + ((title === null) ? ("\"" + document.title + "\"") : title) + ", ";
-        share.src = "resources/svg/icons/safari/share.svg";
-        then.innerText = "then";
-        add.src = "resources/svg/icons/safari/add.svg";
-        // Indentations
-        text.style.fontStyle = "italic";
-        then.style.fontStyle = "italic";
-        // Heights
-        text.style.maxHeight = "5vh";
-        share.style.maxHeight = "4vh";
-        then.style.maxHeight = "5vh";
-        add.style.maxHeight = "4vh";
-        // Add components
-        div.appendChild(text);
-        div.appendChild(share);
-        div.appendChild(then);
-        div.appendChild(add);
-        document.body.appendChild(div);
-    }
-}
+/* History */
 
-function theme(color) {
-    let meta = document.getElementsByTagName("meta")["theme-color"];
-    if (meta !== null) {
-        meta.content = color;
-    } else {
-        meta = document.createElement("meta");
-        meta.name = "theme-color";
-        meta.content = color;
-        document.head.appendChild(meta);
-    }
-
-}
-
-function title(title) {
-    document.title = title;
-}
-
-function worker(w = "worker.js") {
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register(w).then((result) => {
+function preserve(element = document.body) {
+    let state = [];
+    for (let i = 0; i < element.children.length; i++) {
+        state.push({
+            style: element.children[i].style.cssText,
+            children: preserve(element.children[i])
         });
+    }
+    return state;
+}
+
+function restore(state, element = document.body) {
+    for (let i = 0; i < element.children.length; i++) {
+        if (state.length > i) {
+            element.children[i].style.cssText = state[i].style;
+            restore(state[i].children, element.children[i]);
+        }
     }
 }
 
 /* Visuals */
-
-const LEFT = false;
-const RIGHT = !LEFT;
-const IN = true;
-const OUT = !IN;
-
-function animate(v, parameters, callback = null) {
-    let view = get(v);
-    let removeStyles = () => {
-        view.style.removeProperty("position");
-        view.style.removeProperty("transitionDuration");
-        view.style.removeProperty("transitionTimingFunction");
-        view.style.removeProperty(parameters.name);
-    };
-    removeStyles();
-    if (getComputedStyle(view).position === "static" || getComputedStyle(view).position === "sticky")
-        view.style.position = "relative";
-    view.style.transitionDuration = parameters.length + "s";
-    view.style.transitionTimingFunction = "ease";
-    view.style[parameters.name] = parameters.origin;
-    setTimeout(() => {
-        view.style[parameters.name] = parameters.destination;
-        setTimeout(() => {
-            if (!parameters.preserve) removeStyles();
-            if (callback !== null) callback();
-        }, parameters.length * 1000);
-    }, 100 + parameters.delay * 1000);
-}
 
 function clear(v) {
     let view = get(v);
@@ -199,7 +155,13 @@ function make(type, content = null, classes = []) {
     let made = document.createElement(type);
     if (content !== null) {
         if (!isString(content)) {
-            made.appendChild(content);
+            if (isArray(content)) {
+                for (let i = 0; i < content.length; i++) {
+                    made.appendChild(content[i]);
+                }
+            } else {
+                made.appendChild(content);
+            }
         } else {
             made.innerText = content;
         }
@@ -209,44 +171,8 @@ function make(type, content = null, classes = []) {
     return made;
 }
 
-function page(from, to, callback = null) {
-    transition(from, OUT, () => {
-        let temporary = get(to);
-        while (temporary.parentNode !== get(from).parentNode && temporary.parentNode !== document.body) {
-            view(temporary);
-            temporary = temporary.parentNode;
-        }
-        view(temporary);
-        transition(to, IN, callback);
-    });
-}
-
 function show(v) {
     get(v).style.removeProperty("display");
-}
-
-function slide(v, motion = IN, direction = RIGHT, length = 0.2, delay = 0, callback = null) {
-    let view = get(v);
-    let style = getComputedStyle(view);
-    let edge = (direction === RIGHT ? 1 : -1) * screen.width;
-    let current = isNaN(parseInt(style.left)) ? 0 : parseInt(style.left);
-    let origin = current === 0 && motion === IN ? edge : current;
-    let destination = motion === IN ? 0 : edge;
-    animate(view, {
-        name: "left",
-        origin: origin + "px",
-        destination: destination + "px",
-        length: length,
-        delay: delay,
-        preserve: true
-    }, callback);
-}
-
-function transition(v, type = OUT, callback = null) {
-    let element = get(v);
-    for (let n = 0; n < element.children.length; n++) {
-        slide(element.children[n], type, RIGHT, 0.4, 0.2 * n, n === element.children.length - 1 ? callback : null);
-    }
 }
 
 function view(v) {
@@ -262,7 +188,77 @@ function visible(v) {
     return (get(v).style.getPropertyValue("display") !== "none");
 }
 
-/* Special HTML */
+/* Animations */
+
+const LEFT = false;
+const RIGHT = !LEFT;
+const IN = true;
+const OUT = !IN;
+
+function animate(v, property = "left", stops = ["0px", "0px"], length = 1, callback = null) {
+    let view = get(v);
+    let interval = null;
+    let next = () => {
+        view.style[property] = stops[0];
+        stops.splice(0, 1);
+    };
+    let loop = () => {
+        if (stops.length > 0) {
+            next();
+        } else {
+            clearInterval(interval);
+            view.style.removeProperty("transitionDuration");
+            view.style.removeProperty("transitionTimingFunction");
+            if (callback !== null) callback();
+        }
+    };
+    next();
+    interval = setInterval(loop, length * 1000);
+    setTimeout(() => {
+        view.style.transitionDuration = length + "s";
+        view.style.transitionTimingFunction = "ease";
+        loop();
+    }, 0);
+}
+
+function page(from, to, callback = null) {
+    let stepA = () => {
+        slide(get(from), OUT, LEFT, 0.2, stepB);
+    };
+    let stepB = () => {
+        let temporary = get(to);
+        while (temporary.parentNode !== document.body && temporary.parentNode !== document.body) {
+            view(temporary);
+            temporary = temporary.parentNode;
+        }
+        view(temporary);
+        slide(temporary, IN, RIGHT, 0.2, () => {
+            history.pushState(preserve(), null);
+            if (callback !== null) {
+                callback();
+            }
+        });
+    };
+    if (from === null)
+        stepB();
+    else
+        stepA();
+}
+
+function slide(v, motion = IN, direction = RIGHT, length = 0.2, callback = null) {
+    let view = get(v);
+    let style = getComputedStyle(view);
+    let edge = (direction === RIGHT ? 1 : -1) * screen.width;
+    let current = isNaN(parseInt(style.left)) ? 0 : parseInt(style.left);
+    let origin = current === 0 && motion === IN ? edge : current;
+    let destination = motion === IN ? 0 : edge;
+    if (getComputedStyle(view).position === "static" ||
+        getComputedStyle(view).position === "sticky")
+        view.style.position = "relative";
+    animate(view, "left", [origin + "px", destination + "px"], length, callback);
+}
+
+/* Attributes */
 
 function column(v) {
     get(v).setAttribute("column", true);
@@ -282,7 +278,7 @@ function text(v) {
     get(v).setAttribute("text", true);
 }
 
-/* UI */
+/* Interface */
 
 function gestures(up = null, down = null, left = null, right = null, upgoing = null, downgoing = null, leftgoing = null, rightgoing = null) {
     let touchX, touchY, deltaX, deltaY;
@@ -327,6 +323,44 @@ function gestures(up = null, down = null, left = null, right = null, upgoing = n
     };
 }
 
+function popup(contents, timeout = null, color = null, onclick = null) {
+    let div = make("div");
+    column(div);
+    input(div);
+    let dismiss = () => {
+        if (div.parentElement !== null) {
+            div.onclick = null;
+            animate(div, "opacity", ["1", "0"], 0.5, () => {
+                div.parentElement.removeChild(div);
+            });
+        }
+    };
+    div.onclick = (onclick !== null) ? onclick : dismiss;
+    div.style.position = "fixed";
+    div.style.bottom = "0";
+    div.style.left = "0";
+    div.style.right = "0";
+    div.style.margin = "1vh";
+    div.style.padding = "1vh";
+    div.style.height = "6vh";
+    if (color !== null)
+        div.style.backgroundColor = color;
+    if (isString(contents)) {
+        div.appendChild(make("p", contents));
+    } else {
+        div.appendChild(contents);
+    }
+    animate(div, "opacity", ["0", "1"], 0.5, () => {
+        if (timeout !== null && timeout > 0) {
+            setTimeout(() => {
+                dismiss();
+            }, timeout);
+        }
+    });
+    document.body.appendChild(div);
+    return dismiss;
+}
+
 /* Utils */
 
 function isArray(a) {
@@ -341,10 +375,36 @@ function isString(s) {
     return (typeof "" === typeof s || typeof '' === typeof s);
 }
 
+function open(callback = null, read = false) {
+    let selector = make("input");
+    selector.type = "file";
+    selector.style.display = "none";
+    document.body.appendChild(selector);
+    selector.oninput = () => {
+        selector.parentElement.removeChild(selector);
+        if (selector.files.length > 0) {
+            let file = selector.files[0];
+            if (callback !== null) {
+                if (read) {
+                    let reader = new FileReader();
+                    reader.onload = (result) => {
+                        callback(file, result.target.result);
+                    };
+                    reader.readAsText(file);
+                } else {
+                    callback(file, null);
+                }
+            }
 
 
+        }
+    };
+    selector.click();
+}
 
-
-
-
-
+function save(file, data, type = "text/plain", encoding = "utf8") {
+    let link = document.createElement("a");
+    link.download = file;
+    link.href = "data:" + type + ";" + encoding + "," + data;
+    link.click();
+}

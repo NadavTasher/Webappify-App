@@ -71,7 +71,7 @@ textarea {
     justify-content: center;
     justify-items: center;
     align-content: center;
-    align-items: center;
+    align-items: stretch;
     /* Shaping */
     border-radius: 1vh;
     border-color: transparent;
