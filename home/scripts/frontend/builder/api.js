@@ -128,7 +128,7 @@ function builder_deploy_download() {
     let name = (!parameters.replacements.hasOwnProperty("name") || parameters.replacements.name === "" ? "WebAppBundle" : parameters.replacements.name);
     api(BUILDER_ENDPOINT, BUILDER_API, "build", parameters, (success, result, error) => {
         if (success) {
-            download(name + ".zip", result, "application/zip", "base64");
+            save(name + ".zip", result, "application/zip", "base64");
             window.location.reload(true);
         }
     });
