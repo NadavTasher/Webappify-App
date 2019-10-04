@@ -37,7 +37,7 @@ foreach ($assortment as $flavour) {
         $master->$template_name = $template->replacements;
         echo "Done\n";
         echo "Compressing to \"" . BUILDER_FLAVOUR_DIRECTORY . DIRECTORY_SEPARATOR . $template_name . ".zip" . "\" - ";
-        builder_zip(BUILDER_FLAVOUR_DIRECTORY . DIRECTORY_SEPARATOR . $template_name . ".zip", $repository_directory);
+        file_put_contents(BUILDER_FLAVOUR_DIRECTORY . DIRECTORY_SEPARATOR . $template_name . ".zip", base64_decode(builder_zip($repository_directory)));
         echo "Done\n";
     }
 }
@@ -45,7 +45,7 @@ echo "\n";
 builder_rmdir(TEMPORARY_DIRECTORY);
 builder_rmdir(TEMPORARY_FILE);
 echo "Writing master list - ";
-file_put_contents(BUILDER_DOCKERFILE_FILE, json_encode($master));
+file_put_contents(BUILDER_MASTER_FILE, json_encode($master));
 echo "Done\n";
 echo "\n";
 echo "Update complete\n";

@@ -18,7 +18,7 @@ $master = json_decode(file_get_contents(BUILDER_MASTER_FILE));
 
 function builder()
 {
-    api(BUILDER_API, function ($action, $parameters) {
+    return api(BUILDER_API, function ($action, $parameters) {
         global $master;
         if ($action === "bundle") {
             if (isset($parameters->flavour)) {
@@ -164,7 +164,7 @@ function builder_unzip($file, $directory)
 
 function builder_zip($directory)
 {
-    $file = tempnam("tmp", "zip");
+    $file = tempnam(null, "zip");
     $zip = new ZipArchive();
     $zip->open($file, ZipArchive::CREATE | ZipArchive::OVERWRITE);
     $rootPath = realpath($directory);
