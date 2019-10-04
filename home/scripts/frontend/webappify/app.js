@@ -16,10 +16,10 @@ let code = {
 };
 
 function webappify() {
-    if (parameter("unlock") !== undefined && parameter("key") !== undefined) {
-        activation(parameter("unlock"), parameter("key"));
-    } else if (parameter("renew") !== undefined && parameter("key") !== undefined) {
-        reactivation(parameter("renew"), parameter("key"));
+    if (parameter("activate") !== undefined && parameter("key") !== undefined) {
+        activation(parameter("activate"), parameter("key"));
+    } else if (parameter("reactivate") !== undefined && parameter("key") !== undefined) {
+        reactivation(parameter("reactivate"), parameter("key"));
     } else {
         builder();
         page("home");
@@ -27,7 +27,7 @@ function webappify() {
 }
 
 function activation(id, key) {
-    page(null, "activation");
+    page("activation");
     get("activation-button").onclick = () => {
         api(DEPLOYER_ENDPOINT, DEPLOYER_API, "activate", {
             id: id,
@@ -43,7 +43,7 @@ function activation(id, key) {
 }
 
 function reactivation(id, key) {
-    page(null, "reactivation");
+    page("reactivation");
     get("reactivation-button").onclick = () => {
         api(DEPLOYER_ENDPOINT, DEPLOYER_API, "reactivate", {
             id: id,
