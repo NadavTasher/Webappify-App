@@ -3,114 +3,95 @@
  https://github.com/NadavTasher/Webappify/
 -->
 
-<div id="builder" column>
-    <div id="builder-template" column>
-        <p class="title">Choose a template</p>
-        <select id="builder-flavour" title="Flavour">
-        </select>
-        <button onclick="view('builder-properties-information-'+get('builder-flavour').value.toLowerCase());page(this.parentNode, 'builder-properties');">Next</button>
-    </div>
-    <div id="builder-properties" column>
-        <p class="title">Fill Information</p>
-        <div id="builder-properties-information" column></div>
-        <button onclick="page(this.parentNode, 'builder-deploy');">Next</button>
-    </div>
-    <div id="builder-layout" column>
-        <div id="builder-layout-properties" column>
-            <p class="title">Add to layout</p>
-            <div column>
-                <div id="builder-layout-properties-text" column>
-                    <input id="builder-layout-properties-text-id" placeholder="Text ID"/>
-                    <input id="builder-layout-properties-text-text" placeholder="Text Text"/>
-                    <input id="builder-layout-properties-text-size" placeholder="Text Size"/>
-                    <input id="builder-layout-properties-text-color" type="color" placeholder="Text Color"/>
-                </div>
-                <div id="builder-layout-properties-input" column>
-                    <input id="builder-layout-properties-input-id" placeholder="Input ID"/>
-                    <input id="builder-layout-properties-input-text" placeholder="Input Text"/>
-                    <input id="builder-layout-properties-input-type" placeholder="Input Type"/>
-                    <input id="builder-layout-properties-input-placeholder" placeholder="Placeholder"/>
-                </div>
-                <div id="builder-layout-properties-button" column>
-                    <input id="builder-layout-properties-button-id" placeholder="Button ID"/>
-                    <input id="builder-layout-properties-button-text" placeholder="Button Text"/>
-                    <input id="builder-layout-properties-button-onclick" placeholder="On-Click Code"/>
-                </div>
+<div id="template" column>
+    <p class="title">Choose a template</p>
+    <select id="flavour" title="Flavour">
+    </select>
+    <button onclick="view('properties-information-'+get('flavour').value.toLowerCase());page(this.parentNode, 'properties');">Next</button>
+</div>
+<div id="properties" column>
+    <p class="title">Fill Information</p>
+    <div id="properties-information" column></div>
+    <button onclick="page(this.parentNode, 'deploy');">Next</button>
+</div>
+<div id="layout" column>
+    <div id="layout-properties" column>
+        <p class="title">Add to layout</p>
+        <div column>
+            <div id="layout-properties-text" column>
+                <input id="layout-properties-text-id" placeholder="Text ID"/>
+                <input id="layout-properties-text-text" placeholder="Text Text"/>
+                <input id="layout-properties-text-size" placeholder="Text Size"/>
+                <input id="layout-properties-text-color" type="color" placeholder="Text Color"/>
             </div>
-            <button onclick="page(this.parentNode, 'builder-layout-menu');">Back</button>
-            <button id="builder-layout-properties-add">Add</button>
+            <div id="layout-properties-input" column>
+                <input id="layout-properties-input-id" placeholder="Input ID"/>
+                <input id="layout-properties-input-text" placeholder="Input Text"/>
+                <input id="layout-properties-input-type" placeholder="Input Type"/>
+                <input id="layout-properties-input-placeholder" placeholder="Placeholder"/>
+            </div>
+            <div id="layout-properties-button" column>
+                <input id="layout-properties-button-id" placeholder="Button ID"/>
+                <input id="layout-properties-button-text" placeholder="Button Text"/>
+                <input id="layout-properties-button-onclick" placeholder="On-Click Code"/>
+            </div>
         </div>
-        <div id="builder-layout-menu" column>
-            <p class="title">Layout design</p>
-            <button onclick="view('builder-layout-properties-text');page(this.parentNode, 'builder-layout-properties',builder_design_text);">New Text</button>
-            <button onclick="view('builder-layout-properties-input');page(this.parentNode, 'builder-layout-properties',builder_design_input);">New Input</button>
-            <button onclick="view('builder-layout-properties-button');page(this.parentNode, 'builder-layout-properties',builder_design_button);">New Button</button>
-            <button onclick="page(this.parentNode, 'builder-properties');">Back</button>
-        </div>
+        <button onclick="page(this.parentNode, 'layout-menu');">Back</button>
+        <button id="layout-properties-add">Add</button>
     </div>
-    <div id="builder-code" column>
-        <p class="title">Write app code</p>
-        <textarea oninput="code.app = this.value" placeholder="JS App Code" title="App Code"></textarea>
-        <button onclick="page(this.parentNode, 'builder-properties');">Back</button>
-    </div>
-    <div id="builder-load" column>
-        <p class="title">Write load code</p>
-        <textarea oninput="code.load = this.value" placeholder="JS Load Code" title="Load Code"></textarea>
-        <button onclick="page(this.parentNode, 'builder-properties');">Back</button>
-    </div>
-    <div id="builder-stylesheet" column>
-        <p class="title">Stylesheet design</p>
-        <textarea oninput="stylesheet = this.value" placeholder="CSS Style" title="Style"></textarea>
-        <button onclick="page(this.parentNode, 'builder-properties');">Back</button>
-    </div>
-    <div id="builder-deploy" column>
-        <p class="title">Finished!</p>
-        <p class="content">Suggested Setup:<br/>Ubuntu Server (18.04) with Apache2 and PHP 7.0+</p>
-        <button onclick="page(this.parentNode, 'home', builder_deploy_download);">Download</button>
-        <p class="content">Or</p>
-        <button onclick="page(this.parentNode, 'deployer-deploy', builder_deploy_deploy);">Deploy</button>
+    <div id="layout-menu" column>
+        <p class="title">Layout design</p>
+        <button onclick="view('layout-properties-text');page(this.parentNode, 'layout-properties',design_text);">New Text</button>
+        <button onclick="view('layout-properties-input');page(this.parentNode, 'layout-properties',design_input);">New Input</button>
+        <button onclick="view('layout-properties-button');page(this.parentNode, 'layout-properties',design_button);">New Button</button>
+        <button onclick="page(this.parentNode, 'properties');">Back</button>
     </div>
 </div>
-<div id="editor" column>
-    <div id="editor-home" column>
-        <p class="title">Choose application to edit</p>
-        <div id="editor-home-list" column></div>
-    </div>
-    <div id="editor-editor" column>
-        <div class="menubar" id="editor-editor-files" row></div>
-        <textarea id="editor-editor-text" class="editor" title="Code"></textarea>
-    </div>
+<div id="code" column>
+    <p class="title">Write app code</p>
+    <textarea oninput="code.app = this.value" placeholder="JS App Code" title="App Code"></textarea>
+    <button onclick="page(this.parentNode, 'properties');">Back</button>
 </div>
-<div id="deployer" column>
-    <div id="deployer-deploy" column>
-        <p class="title">Deployment rules:</p>
-        <p class="fineprint" style="text-align: left; text-align-last: left;">
-            1. A deployed app must not cause any damage to the server nor to the clients.<br/>
-            2. Your app will have a 30-Day life span, and will be removed if not renewed before end of the grace
-            period, using the link in the email sent to you.
-        </p>
-        <p id="deployer-deploy-status" style="min-height: 5vh" class="fineprint"></p>
-        <div id="deployer-deploy-information" column>
-            <input id="deployer-deploy-email" type="email" placeholder="Email for deployment and renewment"/>
-            <button id="deployer-deploy-button">Deploy</button>
-        </div>
+<div id="load" column>
+    <p class="title">Write load code</p>
+    <textarea oninput="code.load = this.value" placeholder="JS Load Code" title="Load Code"></textarea>
+    <button onclick="page(this.parentNode, 'properties');">Back</button>
+</div>
+<div id="stylesheet" column>
+    <p class="title">Stylesheet design</p>
+    <textarea oninput="stylesheet = this.value" placeholder="CSS Style" title="Style"></textarea>
+    <button onclick="page(this.parentNode, 'properties');">Back</button>
+</div>
+<div id="deploy">
+    <p class="title">Finished!</p>
+    <p class="content">Viable Servers:</p>
+    <p><a href="https://tutorials.ubuntu.com/tutorial/tutorial-install-ubuntu-server">Ubuntu Server</a> with <a
+            href="https://www.digitalocean.com/community/tutorials/how-to-install-linux-apache-mysql-php-lamp-stack-ubuntu-18-04">Apache2 and PHP 7.0+</a></p>
+    <p>Docker <a href="https://hub.docker.com/_/php?tab=tags&page=1&name=7.0-apache">php:7.0-apache</a> container</p>
+    <div row>
+        <button>Download as a Zip</button>
+        <button>Download as a Docker-Ready Zip</button>
     </div>
-    <div id="deployer-unlock" column>
-        <p class="title">Activate Deployment</p>
-        <p class="fineprint">Click the button to activate your app.<br/>A renewal email will be sent every 30 days.</p>
-        <button id="deployer-unlock-button">Activate</button>
-    </div>
-    <div id="deployer-renew" column>
-        <p class="title">Renew Deployment</p>
-        <p class="fineprint">Click the button to renew your app.<br/>The next renewal will be in 30 days.</p>
-        <button id="deployer-renew-button">Renew</button>
-    </div>
+    <button onclick="page(this.parentNode, 'home', builder_deploy_download);">Download</button>
+    <p class="content">Or</p>
+    <p class="title">Deploy your WebApp</p>
+    <p class="fineprint">In order to deploy your WebApp, you must enter your email.</p>
+    <p class="fineprint">We will only use your email to send you activation emails.</p>
+</div>
+<div id="activate" column>
+    <p class="title">Activate WebApp</p>
+    <p class="fineprint">Click the button to activate your app.<br/>A reactivation email will be sent every 30 days.</p>
+    <button id="activation-button">Activate</button>
+</div>
+<div id="reactivate" column>
+    <p class="title">Reactivate WebApp</p>
+    <p class="fineprint">Click the button to renew your app.<br/>The next reactivation email will be sent in 30 days.</p>
+    <button id="reactivation">Renew</button>
 </div>
 <div id="home" column>
     <p class="title">Welcome to Webappify!</p>
-    <button onclick="page(this.parentNode, 'builder-template',builder_load);">Create your app</button>
-    <button onclick="page(this.parentNode, 'editor-home',editor_load);">Edit your apps</button>
-    <button onclick="page(this.parentNode, 'about');" style="font-size: medium;">About</button>
+    <button onclick="page(this.parentNode, '-template',builder);">Create an app</button>
+    <button onclick="page(this.parentNode, 'about');">About</button>
 </div>
 <div id="about" column>
     <img src="resources/svg/icons/app/icon.svg" style="height: 18vh;width: auto;" alt="Icon"/>

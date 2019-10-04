@@ -45,7 +45,7 @@ echo "\n";
 builder_rmdir(TEMPORARY_DIRECTORY);
 builder_rmdir(TEMPORARY_FILE);
 echo "Writing master list - ";
-file_put_contents(BUILDER_MASTER_LIST, json_encode($master));
+file_put_contents(BUILDER_DOCKERFILE_FILE, json_encode($master));
 echo "Done\n";
 echo "\n";
 echo "Update complete\n";

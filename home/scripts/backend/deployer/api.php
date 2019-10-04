@@ -13,13 +13,9 @@ include "mailer/Exception.php";
 
 include_once __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "base" . DIRECTORY_SEPARATOR . "api.php";
 include_once __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "builder" . DIRECTORY_SEPARATOR . "api.php";
-include_once __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "accounts" . DIRECTORY_SEPARATOR . "api.php";
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
-use PHPMailer\PHPMailer\POP3;
-use PHPMailer\PHPMailer\OAuth;
 use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\PHPMailer;
 
 const DEPLOYER_API = "deployer";
 const DEPLOYER_DIRECTORY = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "apps";
@@ -39,42 +35,37 @@ function deployer()
     api(DEPLOYER_API, function ($action, $parameters) {
         global $deployer_database;
         if ($action === "deploy" || $action === "list") {
-            $user = accounts();
-            if ($user !== null) {
-                if ($action === "deploy") {
-                    if (isset($parameters->mail) && isset($parameters->parameters)) {
-                        if (filter_var($parameters->mail, FILTER_VALIDATE_EMAIL)) {
-                            $appParameters = $parameters->parameters;
-                            $appId = random(12);
-                            $directory = builder_create($appParameters->flavour, $appParameters->replacements);
-                            if ($directory !== null) {
-                                rename($directory . DIRECTORY_SEPARATOR . BUILDER_WEBAPP, DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $appId);
-                                builder_rmdir($directory);
-                                if (deployer_create($appId, $user->id, isset($appParameters->replacements->name) ? $appParameters->replacements->name : "Unknown", isset($appParameters->replacements->description) ? $appParameters->replacements->description : "Unknown", $parameters->mail)) {
-                                    deployer_mail_activate($appId, $user);
-                                    file_put_contents(DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $appId . DIRECTORY_SEPARATOR . DEPLOYER_APPLOCK_FILE, DEPLOYER_APPLOCK_CONTENT);
-                                    return [true, null];
-                                }
-                            } else {
-                                return [false, "Build failure"];
+            if ($action === "deploy") {
+                if (isset($parameters->mail) && isset($parameters->parameters)) {
+                    if (filter_var($parameters->mail, FILTER_VALIDATE_EMAIL)) {
+                        $appParameters = $parameters->parameters;
+                        $appId = random(12);
+                        $directory = builder_create($appParameters->flavour, $appParameters->replacements);
+                        if ($directory !== null) {
+                            rename($directory . DIRECTORY_SEPARATOR . BUILDER_WEBAPP, DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $appId);
+                            builder_rmdir($directory);
+                            if (deployer_create($appId, $user->id, isset($appParameters->replacements->name) ? $appParameters->replacements->name : "Unknown", isset($appParameters->replacements->description) ? $appParameters->replacements->description : "Unknown", $parameters->mail)) {
+                                deployer_mail_activate($appId, $user);
+                                file_put_contents(DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $appId . DIRECTORY_SEPARATOR . DEPLOYER_APPLOCK_FILE, DEPLOYER_APPLOCK_CONTENT);
+                                return [true, null];
                             }
                         } else {
-                            return [false, "Bad email syntax"];
+                            return [false, "Build failure"];
                         }
                     } else {
-                        return [false, "Missing information"];
+                        return [false, "Bad email syntax"];
                     }
-                } else if ($action === "list") {
-                    $array = array();
-                    foreach ($deployer_database as $id => $app) {
-                        if ($app->credentials->owner === $user->id) {
-                            array_push($array, deployer_app($id));
-                        }
-                    }
-                    return [true, $array];
+                } else {
+                    return [false, "Missing information"];
                 }
-            } else {
-                return [false, "User authentication failed"];
+            } else if ($action === "list") {
+                $array = array();
+                foreach ($deployer_database as $id => $app) {
+                    if ($app->credentials->owner === $user->id) {
+                        array_push($array, deployer_app($id));
+                    }
+                }
+                return [true, $array];
             }
         } else if ($action === "unlock") {
             if (isset($parameters->id) && isset($parameters->key)) {

@@ -9,31 +9,41 @@ include_once __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "base"
 
 const BUILDER_API = "builder";
 
-const BUILDER_MASTER_LIST = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "builder" . DIRECTORY_SEPARATOR . "templates.json";
+const BUILDER_DOCKERFILE_FILE = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "builder" . DIRECTORY_SEPARATOR . "Dockerfile";
+const BUILDER_MASTER_FILE = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "builder" . DIRECTORY_SEPARATOR . "templates.json";
 const BUILDER_FLAVOUR_DIRECTORY = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "builder" . DIRECTORY_SEPARATOR . "flavours";
-const BUILDER_APPS_DIRECTORY = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "builder" . DIRECTORY_SEPARATOR . "webapps";
+const BUILDER_APPS_DIRECTORY = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "builder" . DIRECTORY_SEPARATOR . "apps";
 
-const BUILDER_WEBAPP = "webapp";
-const BUILDER_REBUNDLE = BUILDER_WEBAPP . ".zip";
-
-$master = json_decode(file_get_contents(BUILDER_MASTER_LIST));
+$master = json_decode(file_get_contents(BUILDER_MASTER_FILE));
 
 function builder()
 {
     api(BUILDER_API, function ($action, $parameters) {
         global $master;
-        if ($action === "build") {
+        if ($action === "bundle") {
             if (isset($parameters->flavour)) {
                 $flavour = $parameters->flavour;
                 if (isset($master->$flavour)) {
-                    $directory = builder_create($flavour, $parameters->replacements);
-                    if ($directory !== null) {
-                        $result = builder_bundle($directory);
-                        builder_rmdir($directory);
-                        return [true, $result];
-                    } else {
+                    $result = builder_create($flavour, $parameters->replacements, false);
+                    if ($result !== null)
+                        return [true, $result, $result];
+                    else
                         return [false, "Build failure"];
-                    }
+                } else {
+                    return [false, "Non existent template"];
+                }
+            } else {
+                return [false, "Missing information"];
+            }
+        } else if ($action === "docker") {
+            if (isset($parameters->flavour)) {
+                $flavour = $parameters->flavour;
+                if (isset($master->$flavour)) {
+                    $result = builder_create($flavour, $parameters->replacements, true);
+                    if ($result !== null)
+                        return [true, $result, $result];
+                    else
+                        return [false, "Build failure"];
                 } else {
                     return [false, "Non existent template"];
                 }
@@ -45,20 +55,28 @@ function builder()
     }, false);
 }
 
-function builder_bundle($directory)
+function builder_copy($source, $destination)
 {
-    builder_zip($directory . DIRECTORY_SEPARATOR . BUILDER_REBUNDLE, $directory . DIRECTORY_SEPARATOR . BUILDER_WEBAPP);
-    return base64_encode(file_get_contents($directory . DIRECTORY_SEPARATOR . BUILDER_REBUNDLE));
+    file_put_contents($destination, file_get_contents($source));
 }
 
-function builder_create($flavour, $replacements)
+function builder_create($flavour, $replacements, $docker = false)
 {
     $id = random(10);
     $directory = BUILDER_APPS_DIRECTORY . DIRECTORY_SEPARATOR . $id;
     mkdir($directory);
-    if (builder_unzip(BUILDER_FLAVOUR_DIRECTORY . DIRECTORY_SEPARATOR . $flavour . ".zip", $directory . DIRECTORY_SEPARATOR . BUILDER_WEBAPP)) {
+    $buildDirectory = $directory . DIRECTORY_SEPARATOR . "src";
+    mkdir($buildDirectory);
+    if (builder_unzip(BUILDER_FLAVOUR_DIRECTORY . DIRECTORY_SEPARATOR . $flavour . ".zip", $buildDirectory)) {
         builder_evaluate($directory, $flavour, $replacements);
-        return $directory;
+        if ($docker) {
+            builder_copy(BUILDER_DOCKERFILE_FILE, $directory . DIRECTORY_SEPARATOR . "Dockerfile");
+            $result = builder_zip($directory);
+        } else {
+            $result = builder_zip($buildDirectory);
+        }
+        builder_rmdir($directory);
+        return $result;
     }
     return null;
 }
@@ -84,12 +102,12 @@ function builder_evaluate($directory, $flavour, $info)
                 if (!$change) {
                     if (isset($replacement->default)) {
                         foreach ($replacement->haystacks as $haystack) {
-                            builder_replace($directory . DIRECTORY_SEPARATOR . BUILDER_WEBAPP . DIRECTORY_SEPARATOR . $haystack, $replacement->needle, $replacement->default);
+                            builder_replace($directory . DIRECTORY_SEPARATOR . $haystack, $replacement->needle, $replacement->default);
                         }
                     }
                 } else {
                     foreach ($replacement->haystacks as $haystack) {
-                        builder_replace($directory . DIRECTORY_SEPARATOR . BUILDER_WEBAPP . DIRECTORY_SEPARATOR . $haystack, $replacement->needle, $info->$name);
+                        builder_replace($directory . DIRECTORY_SEPARATOR . $haystack, $replacement->needle, $info->$name);
                     }
                 }
             }
@@ -144,11 +162,12 @@ function builder_unzip($file, $directory)
     }
 }
 
-function builder_zip($file, $directory)
+function builder_zip($directory)
 {
-    $rootPath = realpath($directory);
+    $file = tempnam("tmp", "zip");
     $zip = new ZipArchive();
     $zip->open($file, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+    $rootPath = realpath($directory);
     $files = new RecursiveIteratorIterator(
         new RecursiveDirectoryIterator($rootPath),
         RecursiveIteratorIterator::LEAVES_ONLY
@@ -161,4 +180,5 @@ function builder_zip($file, $directory)
         }
     }
     $zip->close();
+    return base64_encode(file_get_contents($file));
 }
