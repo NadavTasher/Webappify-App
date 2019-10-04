@@ -7,12 +7,12 @@
     <p class="title">Choose a template</p>
     <select id="flavour" title="Flavour">
     </select>
-    <button onclick="view('properties-information-'+get('flavour').value.toLowerCase());page(this.parentNode, 'properties');">Next</button>
+    <button onclick="view('properties-information-'+get('flavour').value.toLowerCase());page('properties');">Next</button>
 </div>
 <div id="properties" column>
     <p class="title">Fill Information</p>
     <div id="properties-information" column></div>
-    <button onclick="page(this.parentNode, 'deploy');">Next</button>
+    <button onclick="page('deploy');">Next</button>
 </div>
 <div id="layout" column>
     <div id="layout-properties" column>
@@ -36,47 +36,49 @@
                 <input id="layout-properties-button-onclick" placeholder="On-Click Code"/>
             </div>
         </div>
-        <button onclick="page(this.parentNode, 'layout-menu');">Back</button>
+        <button onclick="page('layout-menu');">Back</button>
         <button id="layout-properties-add">Add</button>
     </div>
     <div id="layout-menu" column>
         <p class="title">Layout design</p>
-        <button onclick="view('layout-properties-text');page(this.parentNode, 'layout-properties',design_text);">New Text</button>
-        <button onclick="view('layout-properties-input');page(this.parentNode, 'layout-properties',design_input);">New Input</button>
-        <button onclick="view('layout-properties-button');page(this.parentNode, 'layout-properties',design_button);">New Button</button>
-        <button onclick="page(this.parentNode, 'properties');">Back</button>
+        <button onclick="view('layout-properties-text');design_text();page('layout-properties');">New Text</button>
+        <button onclick="view('layout-properties-input');design_input();page('layout-properties');">New Input</button>
+        <button onclick="view('layout-properties-button');design_button();page('layout-properties');">New Button</button>
+        <button onclick="page('properties');">Back</button>
     </div>
 </div>
 <div id="code" column>
     <p class="title">Write app code</p>
     <textarea oninput="code.app = this.value" placeholder="JS App Code" title="App Code"></textarea>
-    <button onclick="page(this.parentNode, 'properties');">Back</button>
+    <button onclick="page('properties');">Back</button>
 </div>
 <div id="load" column>
     <p class="title">Write load code</p>
     <textarea oninput="code.load = this.value" placeholder="JS Load Code" title="Load Code"></textarea>
-    <button onclick="page(this.parentNode, 'properties');">Back</button>
+    <button onclick="page('properties');">Back</button>
 </div>
 <div id="stylesheet" column>
     <p class="title">Stylesheet design</p>
     <textarea oninput="stylesheet = this.value" placeholder="CSS Style" title="Style"></textarea>
-    <button onclick="page(this.parentNode, 'properties');">Back</button>
+    <button onclick="page('properties');">Back</button>
 </div>
 <div id="deploy">
     <p class="title">Finished!</p>
-    <p class="content">Viable Servers:</p>
-    <p><a href="https://tutorials.ubuntu.com/tutorial/tutorial-install-ubuntu-server">Ubuntu Server</a> with <a
-            href="https://www.digitalocean.com/community/tutorials/how-to-install-linux-apache-mysql-php-lamp-stack-ubuntu-18-04">Apache2 and PHP 7.0+</a></p>
-    <p>Docker <a href="https://hub.docker.com/_/php?tab=tags&page=1&name=7.0-apache">php:7.0-apache</a> container</p>
-    <div row>
-        <button>Download as a Zip</button>
-        <button>Download as a Docker-Ready Zip</button>
+    <div column coasted>
+        <p class="content">Download as:</p>
+        <div id="deploy-buttons" row>
+            <button onclick="download_zip()">Zip Bundle</button>
+            <button onclick="download_docker()">Docker-Ready Zip</button>
+        </div>
     </div>
-    <button onclick="page(this.parentNode, 'home', builder_deploy_download);">Download</button>
     <p class="content">Or</p>
-    <p class="title">Deploy your WebApp</p>
-    <p class="fineprint">In order to deploy your WebApp, you must enter your email.</p>
-    <p class="fineprint">We will only use your email to send you activation emails.</p>
+    <div column coasted>
+        <p class="content">Deploy your WebApp</p>
+        <p class="fineprint">In order to deploy your WebApp, you must enter your email.</p>
+        <p class="fineprint">We will only use your email to send you activation emails.</p>
+        <input id="deploy-email" type="email" placeholder="Email"/>
+        <button onclick="deploy(this)">Deploy</button>
+    </div>
 </div>
 <div id="activate" column>
     <p class="title">Activate WebApp</p>
@@ -90,8 +92,8 @@
 </div>
 <div id="home" column>
     <p class="title">Welcome to Webappify!</p>
-    <button onclick="page(this.parentNode, 'template', builder);">Create an app</button>
-    <button onclick="page(this.parentNode, 'about');">About</button>
+    <button onclick="page('template');">Create an app</button>
+    <button onclick="page('about');">About</button>
 </div>
 <div id="about" column>
     <img src="resources/svg/icons/app/icon.svg" style="height: 18vh;width: auto;" alt="Icon"/>

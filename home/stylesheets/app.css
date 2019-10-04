@@ -30,54 +30,22 @@ img {
     font-size: large;
 }
 
-.menubar {
-    height: 12vh;
-    overflow-x: scroll;
-    justify-content: start !important;
-}
-
-.editor {
-    height: 78vh;
-}
-
-.sideways {
-    flex-direction: row;
-    justify-content: space-around;
-}
-
-.sideways > * {
-    width: inherit;
-}
-
-.background {
-    margin: 1vh;
-    transition-duration: 0.4s;
-    background-color: #ddddee;
-    border-radius: 1vh;
-    border-color: transparent;
-    color: #333;
-}
-
-.background:hover {
-    background-color: #bbbbcc;
-}
-
-.scrolly {
-    justify-content: stretch;
-    overflow-y: -moz-scrollbars-none;
-    overflow-y: auto;
-    min-height: 60vh;
-    max-height: 60vh;
-}
-
-.scrolly::-webkit-scrollbar {
-    width: 0;
-}
-
 input {
     width: auto;
 }
 
 textarea {
     height: 30vh;
+}
+
+#deploy-buttons > * {
+    width: 100%;
+}
+
+[coasted] {
+    margin: 1vh !important;
+    padding: 1vh !important;
+    border-radius: 1vh;
+    border-color: transparent;
+    background-color: #9999aa;
 }

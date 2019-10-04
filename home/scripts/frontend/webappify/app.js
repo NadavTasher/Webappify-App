@@ -21,40 +21,9 @@ function webappify() {
     } else if (parameter("renew") !== undefined && parameter("key") !== undefined) {
         reactivation(parameter("renew"), parameter("key"));
     } else {
-        page(null, "home", builder);
+        builder();
+        page("home");
     }
-}
-
-function deployer_deploy(mail, parameters) {
-    api(DEPLOYER_ENDPOINT, DEPLOYER_API, "deploy", {
-        parameters: parameters,
-        mail: mail
-    }, (success, result, error) => {
-        if (success) {
-            get("deployer-deploy-status").innerText = "Check your email for further instructions.";
-            setTimeout(() => page("deployer-deploy", "home"), 10000);
-        }
-    }, accounts_fill());
-}
-
-function deployer_load(parameters) {
-    accounts((loggedIn) => {
-        if (loggedIn) {
-            view("app");
-            view("deployer");
-            view("deployer-deploy");
-            get("deployer-deploy-button").onclick = () => {
-                let email = get("deployer-deploy-email").value;
-                if (email(email)) {
-                    transition("deployer-deploy-information", OUT, () => deployer_deploy(email, parameters));
-                } else {
-                    transition("deployer-deploy-information", OUT, () => get("deployer-deploy-status").innerText = "Wrong email syntax");
-                }
-            };
-        } else {
-            deployer_load(parameters);
-        }
-    });
 }
 
 function activation(id, key) {
@@ -67,7 +36,7 @@ function activation(id, key) {
             if (success) {
                 window.location.href = "../apps/" + id;
             } else {
-                popup(error, 3000, "#AA000080");
+                popup(error, 3000, "#AA0000DD");
             }
         });
     };
@@ -83,7 +52,7 @@ function reactivation(id, key) {
             if (success) {
                 window.location.href = "../apps/" + id;
             } else {
-                popup(error, 3000, "#AA000080");
+                popup(error, 3000, "#AA0000DD");
             }
         });
     };
@@ -123,28 +92,28 @@ function builder() {
                                 button.onclick = () => {
                                     if (layout === undefined)
                                         layout = make("div");
-                                    page("properties", "layout-menu");
+                                    page("layout-menu");
                                 };
                                 information.appendChild(button);
                             } else if (replacement.name === "load") {
                                 let button = make("button");
                                 button.innerText = "Load Code";
                                 button.onclick = () => {
-                                    page("properties", "load");
+                                    page("load");
                                 };
                                 codes.appendChild(button);
                             } else if (replacement.name === "code") {
                                 let button = make("button");
                                 button.innerText = "App Code";
                                 button.onclick = () => {
-                                    page("properties", "code");
+                                    page("code");
                                 };
                                 codes.appendChild(button);
                             } else if (replacement.name === "stylesheet") {
                                 let button = make("button");
                                 button.innerText = "Design Stylesheet";
                                 button.onclick = () => {
-                                    page("properties", "stylesheet");
+                                    page("stylesheet");
                                 };
                                 information.appendChild(button);
                             } else {
@@ -210,8 +179,20 @@ function download_docker() {
     });
 }
 
-function deploy() {
-
+function deploy(button) {
+    if (email(get("deploy-email").value)) {
+        hide(button);
+        api(DEPLOYER_ENDPOINT, DEPLOYER_API, "deploy", {email: get("deploy-email").value}, (success, result, error) => {
+            if (success) {
+                popup("An email will be sent with further instructions.", 5000);
+            } else {
+                show(button);
+                popup(error, 4000, "#AA0000DD");
+            }
+        }, body(BUILDER_API, "bundle", compile_parameters()));
+    } else {
+        popup("Not an email", 4000, "#AA0000DD");
+    }
 }
 
 function design_button() {
@@ -224,7 +205,7 @@ function design_button() {
         if (onclick.value.length > 0) button.setAttribute("onclick", onclick.value);
         if (text.value.length > 0) button.innerText = text.value;
         layout.appendChild(button);
-        page("layout-properties", "layout-menu");
+        page("layout-menu");
     };
     empty("layout-properties-button");
     get("layout-properties-add").onclick = add;
@@ -242,7 +223,7 @@ function design_input() {
         if (type.value.length > 0) input.setAttribute("type", type.value);
         if (value.value.length > 0) input.setAttribute("value", value.value);
         layout.appendChild(input);
-        page("layout-properties", "layout-menu");
+        page("layout-menu");
     };
     empty("layout-properties-input");
     get("layout-properties-add").onclick = add;
@@ -260,7 +241,7 @@ function design_text() {
         if (size.value.length > 0) paragraph.style.fontSize = size.value;
         if (color.value.length > 0) paragraph.style.color = color.value;
         layout.appendChild(paragraph);
-        page("layout-properties", "layout-menu");
+        page("layout-menu");
     };
     empty("layout-properties-text");
     get("layout-properties-add").onclick = add;

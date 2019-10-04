@@ -34,8 +34,8 @@ function deployer()
 {
     api(DEPLOYER_API, function ($action, $parameters) {
         if ($action === "deploy") {
-            if (isset($parameters->mail)) {
-                if (filter_var($parameters->mail, FILTER_VALIDATE_EMAIL)) {
+            if (isset($parameters->email)) {
+                if (filter_var($parameters->email, FILTER_VALIDATE_EMAIL)) {
                     $app = builder();
                     if ($app !== null) {
                         $appId = random(20);
@@ -43,7 +43,7 @@ function deployer()
                         file_put_contents($file, base64_decode($app));
                         builder_unzip($file, DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $appId);
                         file_put_contents(DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $appId . DIRECTORY_SEPARATOR . DEPLOYER_APPLOCK_FILE, DEPLOYER_APPLOCK_CONTENT);
-                        deployer_create($appId, $parameters->mail);
+                        deployer_create($appId, $parameters->email);
                         deployer_mail_activate($appId);
                         return [true, null];
                     } else {

@@ -96,36 +96,6 @@ function prepare(callback = null) {
             });
         });
     });
-    // Register popstate
-    addEventListener("popstate", (result) => {
-        if (result.state !== null) {
-            restore(result.state);
-        } else {
-            history.go(-1);
-        }
-    });
-}
-
-/* History */
-
-function preserve(element = document.body) {
-    let state = [];
-    for (let i = 0; i < element.children.length; i++) {
-        state.push({
-            style: element.children[i].style.cssText,
-            children: preserve(element.children[i])
-        });
-    }
-    return state;
-}
-
-function restore(state, element = document.body) {
-    for (let i = 0; i < element.children.length; i++) {
-        if (state.length > i) {
-            element.children[i].style.cssText = state[i].style;
-            restore(state[i].children, element.children[i]);
-        }
-    }
 }
 
 /* Visuals */
@@ -167,6 +137,15 @@ function make(type, content = null, classes = []) {
     for (let c = 0; c < classes.length; c++)
         made.classList.add(classes[c]);
     return made;
+}
+
+function page(target) {
+    let temporary = get(target);
+    while (temporary.parentNode !== document.body && temporary.parentNode !== document.body) {
+        view(temporary);
+        temporary = temporary.parentNode;
+    }
+    view(temporary);
 }
 
 function show(v) {
@@ -217,30 +196,6 @@ function animate(v, property = "left", stops = ["0px", "0px"], length = 1, callb
         view.style.transitionTimingFunction = "ease";
         loop();
     }, 0);
-}
-
-function page(from, to, callback = null) {
-    let stepA = () => {
-        slide(get(from), OUT, LEFT, 0.2, stepB);
-    };
-    let stepB = () => {
-        let temporary = get(to);
-        while (temporary.parentNode !== document.body && temporary.parentNode !== document.body) {
-            view(temporary);
-            temporary = temporary.parentNode;
-        }
-        view(temporary);
-        slide(temporary, IN, RIGHT, 0.2, () => {
-            history.pushState(preserve(), null);
-            if (callback !== null) {
-                callback();
-            }
-        });
-    };
-    if (from === null)
-        stepB();
-    else
-        stepA();
 }
 
 function slide(v, motion = IN, direction = RIGHT, length = 0.2, callback = null) {

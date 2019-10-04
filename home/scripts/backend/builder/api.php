@@ -68,7 +68,7 @@ function builder_create($flavour, $replacements, $docker = false)
     $buildDirectory = $directory . DIRECTORY_SEPARATOR . "src";
     mkdir($buildDirectory);
     if (builder_unzip(BUILDER_FLAVOUR_DIRECTORY . DIRECTORY_SEPARATOR . $flavour . ".zip", $buildDirectory)) {
-        builder_evaluate($directory, $flavour, $replacements);
+        builder_evaluate($buildDirectory, $flavour, $replacements);
         if ($docker) {
             builder_copy(BUILDER_DOCKERFILE_FILE, $directory . DIRECTORY_SEPARATOR . "Dockerfile");
             $result = builder_zip($directory);
@@ -164,9 +164,9 @@ function builder_unzip($file, $directory)
 
 function builder_zip($directory)
 {
-    $file = tempnam(null, "zip");
+    $output = tempnam(null, "zip");
     $zip = new ZipArchive();
-    $zip->open($file, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+    $zip->open($output, ZipArchive::CREATE | ZipArchive::OVERWRITE);
     $rootPath = realpath($directory);
     $files = new RecursiveIteratorIterator(
         new RecursiveDirectoryIterator($rootPath),
@@ -180,5 +180,6 @@ function builder_zip($directory)
         }
     }
     $zip->close();
-    return base64_encode(file_get_contents($file));
+    builder_rmdir($directory);
+    return base64_encode(file_get_contents($output));
 }
