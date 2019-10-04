@@ -169,11 +169,11 @@ function deployer_create($appId, $deployEmail)
         return false;
     $deployer_database->$appId = new stdClass();
     $deployer_database->$appId->keys = new stdClass();
-    $deployer_database->$appId->keys->activation = random(32);
-    $deployer_database->$appId->keys->reactivation = random(32);
+    $deployer_database->$appId->keys->activate = random(32);
+    $deployer_database->$appId->keys->reactivate = random(32);
     $deployer_database->$appId->times = new stdClass();
     $deployer_database->$appId->times->deploy = time();
-    $deployer_database->$appId->times->reactivation = time() + DEPLOYER_LIFECYCLE;
+    $deployer_database->$appId->times->reactivate = time() + DEPLOYER_LIFECYCLE;
     $deployer_database->$appId->email = $deployEmail;
     deployer_save();
     return true;
