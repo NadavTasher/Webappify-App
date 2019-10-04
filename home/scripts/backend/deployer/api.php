@@ -75,11 +75,11 @@ function deployer()
 function deployer_mail_activate($appId)
 {
     global $deployer_database;
-    $unlockKey = $deployer_database->$appId->keys->activation;
+    $activateKey = $deployer_database->$appId->keys->activate;
 
     $mail = file_get_contents(DEPLOYER_ACTIVATE_MAIL);
     $mail = str_replace("AppID", $appId, $mail);
-    $mail = str_replace("Key", $unlockKey, $mail);
+    $mail = str_replace("Key", $activateKey, $mail);
 
     deployer_mail($deployer_database->$appId->email, "Webappify Activation", $mail);
 }
@@ -87,11 +87,11 @@ function deployer_mail_activate($appId)
 function deployer_mail_reactivate($appId)
 {
     global $deployer_database;
-    $renewKey = $deployer_database->$appId->keys->reactivation;
+    $reactivateKey = $deployer_database->$appId->keys->reactivate;
 
     $mail = file_get_contents(DEPLOYER_REACTIVATE_MAIL);
     $mail = str_replace("AppID", $appId, $mail);
-    $mail = str_replace("Key", $renewKey, $mail);
+    $mail = str_replace("Key", $reactivateKey, $mail);
 
     deployer_mail($deployer_database->$appId->email, "Webappify Reactivation", $mail);
 }
