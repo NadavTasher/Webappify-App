@@ -40,33 +40,10 @@ function webappify()
                     }
                 }
             }
+            return [true, $list];
         }
         return [false, null];
     }, false);
-}
-
-function builder_rmdir($directory)
-{
-    if (!file_exists($directory)) {
-        return true;
-    }
-
-    if (!is_dir($directory)) {
-        return unlink($directory);
-    }
-
-    foreach (scandir($directory) as $item) {
-        if ($item == '.' || $item == '..') {
-            continue;
-        }
-
-        if (!builder_rmdir($directory . DIRECTORY_SEPARATOR . $item)) {
-            return false;
-        }
-
-    }
-
-    return rmdir($directory);
 }
 
 function webappify_load()
@@ -92,7 +69,7 @@ function webappify_create($flavour, $configuration)
         $app = new stdClass();
         $app->id = $id;
         // Copy sources
-        xcopy(WEBAPPIFY_SOURCES . DIRECTORY_SEPARATOR . $flavour, WEBAPPIFY_DESTINATIONS . DIRECTORY_SEPARATOR . $id);
+        webappify_copy(WEBAPPIFY_SOURCES . DIRECTORY_SEPARATOR . $flavour, WEBAPPIFY_DESTINATIONS . DIRECTORY_SEPARATOR . $id);
         // Configure app
         webappify_replace("AppName", $configuration->name, WEBAPPIFY_DESTINATIONS . DIRECTORY_SEPARATOR . $id);
         webappify_replace("AppDescription", $configuration->description, WEBAPPIFY_DESTINATIONS . DIRECTORY_SEPARATOR . $id);
@@ -157,7 +134,7 @@ function webappify_replace($needle, $replacement, $haystack)
     }
 }
 
-function xcopy($source, $destination, $permissions = 0755)
+function webappify_copy($source, $destination, $permissions = 0755)
 {
     // Check for symlinks
     if (is_link($source)) {
@@ -177,7 +154,7 @@ function xcopy($source, $destination, $permissions = 0755)
     // Loop through the folder
     foreach (scandir($source) as $entry) {
         if ($entry !== "." && $entry !== ",,") {
-            xcopy("$source/$entry", "$destination/$entry", $permissions);
+            webappify_copy("$source/$entry", "$destination/$entry", $permissions);
         }
     }
 

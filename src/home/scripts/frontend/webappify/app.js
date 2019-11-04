@@ -8,9 +8,10 @@ const WEBAPPIFY_ENDPOINT = "scripts/backend/webappify/webappify.php";
 
 function webappify() {
     api(WEBAPPIFY_ENDPOINT, WEBAPPIFY_API, "list", {}, (success, result, error) => {
-        for (let key in result) {
-            let option = make("option", key);
-            option.value = key;
+        for (let t = 0; t < result.length; t++) {
+            let option = make("option");
+            option.innerText = result[t];
+            option.value = result[t];
             get("flavor").appendChild(option);
         }
     });
