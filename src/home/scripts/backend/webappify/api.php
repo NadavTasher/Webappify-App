@@ -34,7 +34,7 @@ function webappify()
         } else if ($action === "list") {
             $list = array();
             foreach (scandir(WEBAPPIFY_SOURCES) as $entry) {
-                if ($entry !== "." && $entry !== ",,") {
+                if ($entry !== "." && $entry !== "..") {
                     if (is_dir(WEBAPPIFY_SOURCES . DIRECTORY_SEPARATOR . $entry)) {
                         array_push($list, $entry);
                     }
@@ -88,10 +88,10 @@ function webappify_create($flavour, $configuration)
     }
 }
 
-function webappify_sources($id, $prefix = "")
+function webappify_sources($file, $id, $prefix = "")
 {
     $zip = new ZipArchive();
-    $zip->open(tempnam(null, "zip"), ZipArchive::CREATE | ZipArchive::OVERWRITE);
+    $zip->open($file, ZipArchive::CREATE | ZipArchive::OVERWRITE);
     $rootPath = realpath(WEBAPPIFY_DESTINATIONS . DIRECTORY_SEPARATOR . $id);
     foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($rootPath), RecursiveIteratorIterator::LEAVES_ONLY) as $file) {
         if (!$file->isDir()) {
@@ -106,17 +106,19 @@ function webappify_sources($id, $prefix = "")
 
 function webappify_sources_bundle($id)
 {
-    $zip = webappify_sources($id);
+    $file = tempnam(null, "zip");
+    $zip = webappify_sources($file, $id);
     $zip->close();
-    return base64_encode(file_get_contents($zip->filename));
+    return base64_encode(file_get_contents($file));
 }
 
 function webappify_docker_bundle($id)
 {
-    $zip = webappify_sources($id, "src" . DIRECTORY_SEPARATOR);
+    $file = tempnam(null, "zip");
+    $zip = webappify_sources($file, $id, "src" . DIRECTORY_SEPARATOR);
     $zip->addFile(WEBAPPIFY_DOCKERFILE, "Dockerfile");
     $zip->close();
-    return base64_encode(file_get_contents($zip->filename));
+    return base64_encode(file_get_contents($file));
 }
 
 function webappify_replace($needle, $replacement, $haystack)
@@ -126,7 +128,7 @@ function webappify_replace($needle, $replacement, $haystack)
     } else {
         if (is_dir($haystack)) {
             foreach (scandir($haystack) as $entry) {
-                if ($entry !== "." && $entry !== ",,") {
+                if ($entry !== "." && $entry !== "..") {
                     webappify_replace($needle, $replacement, "$haystack/$entry");
                 }
             }
@@ -153,7 +155,7 @@ function webappify_copy($source, $destination, $permissions = 0755)
 
     // Loop through the folder
     foreach (scandir($source) as $entry) {
-        if ($entry !== "." && $entry !== ",,") {
+        if ($entry !== "." && $entry !== "..") {
             webappify_copy("$source/$entry", "$destination/$entry", $permissions);
         }
     }

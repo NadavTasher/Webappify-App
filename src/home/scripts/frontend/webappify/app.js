@@ -20,7 +20,7 @@ function webappify() {
 
 function finish() {
     api(WEBAPPIFY_ENDPOINT, WEBAPPIFY_API, "create", {
-        flavour: get("flavor").value,
+        flavor: get("flavor").value,
         configuration: {
             name: get("name-text").value,
             description: get("description-text").value,
@@ -34,7 +34,7 @@ function finish() {
         }
     }, (success, result, error) => {
         if (success) {
-            get("open").onclick = () => window.location = result.id;
+            get("open").onclick = () => window.location = "../apps/" + result.id;
             get("sources").onclick = () => save("WebAppBundle.zip", result.sources, "application/zip", "base64");
             get("docker").onclick = () => save("WebAppDocker.zip", result.docker, "application/zip", "base64");
             page("finish");
