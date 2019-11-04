@@ -8,35 +8,30 @@
 include_once __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "backend" . DIRECTORY_SEPARATOR . "webappify" . DIRECTORY_SEPARATOR . "api.php";
 
 cronjob_update();
+cronjob_remove();
 
 function cronjob_update()
 {
     cronjob_clear(WEBAPPIFY_SOURCES);
     foreach (json_decode(file_get_contents("https://raw.githubusercontent.com/NadavTasher/Webappify/master/src/home/files/assortment.json")) as $flavor) {
-        $template_name = null;
-        preg_match("/([A-Za-z]+)$/", $flavor, $template_name);
-        if ($template_name !== null) {
-            $template_name = $template_name[0];
-            $temporary = tempnam(null, "zip");
-            file_put_contents($temporary, file_get_contents($flavor . "/archive/master.zip"));
-            cronjob_extract($temporary, WEBAPPIFY_SOURCES . DIRECTORY_SEPARATOR . $template_name);
+        $matches = null;
+        preg_match("/([A-Za-z]+)$/", $flavor, $matches);
+        if (count($matches) > 0) {
+            shell_exec("git clone $flavor.git " . WEBAPPIFY_SOURCES . DIRECTORY_SEPARATOR . $matches[0]);
         }
     }
 }
 
 function cronjob_remove()
 {
-
-}
-
-function cronjob_extract($file, $directory)
-{
-    if (!file_exists($directory))
-        mkdir($directory);
-    $zip = new ZipArchive;
-    $zip->open($file);
-    $zip->extractTo($directory);
-    $zip->close();
+    $database = webappify_load();
+    foreach ($database as $id => $created) {
+        if ($created + 60 * 24 * 60 * 60 < time()) {
+            cronjob_unlink(WEBAPPIFY_DESTINATIONS . DIRECTORY_SEPARATOR . $id);
+            unset($database->$id);
+            webappify_unload($database);
+        }
+    }
 }
 
 function cronjob_clear($directory)

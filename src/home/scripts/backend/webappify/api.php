@@ -10,11 +10,15 @@ include_once __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "base"
 
 // Initialize constants
 const WEBAPPIFY_API = "webappify";
-const WEBAPPIFY_DATABASE = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "database.json";
+const WEBAPPIFY_DATABASE = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "apps.json";
 const WEBAPPIFY_DOCKERFILE = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "Dockerfile";
 const WEBAPPIFY_SOURCES = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "sources";
 const WEBAPPIFY_DESTINATIONS = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "apps";
 
+/**
+ * This is the main API function.
+ * @return mixed|null
+ */
 function webappify()
 {
     return api(WEBAPPIFY_API, function ($action, $parameters) {
@@ -46,16 +50,30 @@ function webappify()
     }, false);
 }
 
+/**
+ * This function load the database and returns it.
+ * @return stdClass Database
+ */
 function webappify_load()
 {
     return json_decode(file_get_contents(WEBAPPIFY_DATABASE));
 }
 
+/**
+ * This function unloads the database.
+ * @param stdClass $database Database
+ */
 function webappify_unload($database)
 {
     file_put_contents(WEBAPPIFY_DATABASE, json_encode($database));
 }
 
+/**
+ * This function creates a new application and returns an app object.
+ * @param string $flavour App Flavor
+ * @param stdClass $configuration App Configuration
+ * @return stdClass App Object
+ */
 function webappify_create($flavour, $configuration)
 {
     // Load database
@@ -88,6 +106,13 @@ function webappify_create($flavour, $configuration)
     }
 }
 
+/**
+ * This function creates a ZipArchive with the app's sources.
+ * @param string $file Temporary File
+ * @param string $id App ID
+ * @param string $prefix Prefix
+ * @return ZipArchive Zip with sources
+ */
 function webappify_sources($file, $id, $prefix = "")
 {
     $zip = new ZipArchive();
@@ -104,6 +129,11 @@ function webappify_sources($file, $id, $prefix = "")
     return $zip;
 }
 
+/**
+ * This function creates a source bundle and returns an encoded base64 string.
+ * @param string $id App ID
+ * @return string Base64 Encoded Sources Bundle
+ */
 function webappify_sources_bundle($id)
 {
     $file = tempnam(null, "zip");
@@ -112,6 +142,11 @@ function webappify_sources_bundle($id)
     return base64_encode(file_get_contents($file));
 }
 
+/**
+ * This function creates a docker sources bundle and returns an encoded base64 string.
+ * @param string $id App ID
+ * @return string Base64 Encoded Docker Sources Bundle
+ */
 function webappify_docker_bundle($id)
 {
     $file = tempnam(null, "zip");
@@ -121,6 +156,12 @@ function webappify_docker_bundle($id)
     return base64_encode(file_get_contents($file));
 }
 
+/**
+ * This function recursively walks the haystack and replaces any occurrence of needle with haystack
+ * @param string $needle Needle
+ * @param string $replacement Replacement
+ * @param string $haystack Haystack Path
+ */
 function webappify_replace($needle, $replacement, $haystack)
 {
     if (is_file($haystack)) {
@@ -136,29 +177,28 @@ function webappify_replace($needle, $replacement, $haystack)
     }
 }
 
+/**
+ * This function copies the source directory to the destination directory.
+ * @param string $source Source Directory
+ * @param string $destination Destination Directory
+ * @param int $permissions Directory R/W/X Permissions
+ * @return bool Success
+ */
 function webappify_copy($source, $destination, $permissions = 0755)
 {
-    // Check for symlinks
     if (is_link($source)) {
         return symlink(readlink($source), $destination);
     }
-
-    // Simple copy for a file
     if (is_file($source)) {
         return copy($source, $destination);
     }
-
-    // Make destination directory
     if (!is_dir($destination)) {
         mkdir($destination, $permissions);
     }
-
-    // Loop through the folder
     foreach (scandir($source) as $entry) {
         if ($entry !== "." && $entry !== "..") {
             webappify_copy("$source/$entry", "$destination/$entry", $permissions);
         }
     }
-
     return true;
 }

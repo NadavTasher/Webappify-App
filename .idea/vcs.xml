@@ -2,5 +2,10 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/home/files/sources/Array" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/home/files/sources/AuthenticationTemplate" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/home/files/sources/PersonaTemplate" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/home/files/sources/ScheduleTemplate" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/home/files/sources/WebAppBase" vcs="Git" />
   </component>
 </project>
