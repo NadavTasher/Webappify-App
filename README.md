@@ -1,6 +1,6 @@
-# Schedule Suite
+# Webappify
 
-Schedule Suite is a product suite that deals with displaying dynamic daily schedules for students and teachers.
+Webappify is an open-source application creation and deployment platform, mainly targeting web developers.
 
 ## Installation
 ### Method 1: Using a docker exported image
