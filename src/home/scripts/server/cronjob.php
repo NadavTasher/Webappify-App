@@ -10,6 +10,9 @@ include_once __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "backe
 cronjob_update();
 cronjob_remove();
 
+/**
+ * This function updates the template sources.
+ */
 function cronjob_update()
 {
     cronjob_clear(WEBAPPIFY_SOURCES);
@@ -22,6 +25,9 @@ function cronjob_update()
     }
 }
 
+/**
+ * This function removes apps that are deployed for more than 60 days.
+ */
 function cronjob_remove()
 {
     $database = webappify_load();
@@ -34,6 +40,10 @@ function cronjob_remove()
     }
 }
 
+/**
+ * This function clears the directory.
+ * @param string $directory Directory to clear
+ */
 function cronjob_clear($directory)
 {
     foreach (scandir($directory) as $entry) {
@@ -43,6 +53,10 @@ function cronjob_clear($directory)
     }
 }
 
+/**
+ * This function recursively unlinks the path.
+ * @param string $path Path
+ */
 function cronjob_unlink($path)
 {
     if (is_file($path)) {
