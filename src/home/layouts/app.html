@@ -1,0 +1,69 @@
+<!--
+ Copyright (c) 2019 Nadav Tasher
+ https://github.com/NadavTasher/Webappify/
+-->
+
+<div id="template" column>
+    <p class="title">Choose a WebApp template:</p>
+    <select id="flavour" title="Flavour">
+    </select>
+    <button onclick="page('information');">Next</button>
+</div>
+<div id="properties" column>
+    <div id="information" column>
+        <p class="title">Fill Information</p>
+        <input id="name" type="text" placeholder="App's Name"/>
+        <input id="description" type="text" placeholder="App's Description"/>
+        <input id="color" type="color" value="#FFFFFF"/>
+        <div coasted stretch row>
+            <button onclick="page('layout');">Layout</button>
+            <button onclick="page('style');">Style</button>
+            <button onclick="page('code');">Code</button>
+        </div>
+        <button onclick="finish();">Next</button>
+    </div>
+    <div id="layout" column>
+        <p class="title">App's Layout</p>
+        <textarea id="leyout-text" oninput="updateLayout()" placeholder="Layout (HTML)" title="Style"></textarea>
+        <button onclick="page('information');">Back</button>
+    </div>
+    <div id="style" column>
+        <p class="title">App's Style</p>
+        <textarea id="style-text" oninput="updateStyle()" placeholder="Stylesheet (CSS)" title="Style"></textarea>
+        <button onclick="page('information');">Back</button>
+    </div>
+    <div id="code">
+        <p class="title">App's Code</p>
+        <textarea id="code-load-text" oninput="updateCode()" placeholder="Load Code (JS)" title="Load Code"></textarea>
+        <textarea id="code-app-text" oninput="updateCode()" placeholder="App Code (JS)" title="App Code"></textarea>
+        <button onclick="page('information');">Back</button>
+    </div>
+</div>
+<div id="finish">
+    <p class="title">Finished!</p>
+    <div column coasted>
+        <p class="content">Download as:</p>
+        <div stretch row>
+            <button id="sources">Source-Code Bundle</button>
+            <button id="docker">Docker-Ready Bundle</button>
+        </div>
+    </div>
+    <p class="content">Also,</p>
+    <div column coasted>
+        <p class="content">Your app is deployed!</p>
+        <p class="fineprint">Your app will stay deployed for the next 60 days.</p>
+        <button id="open">Open App</button>
+    </div>
+</div>
+<div id="home" column>
+    <p class="title">Welcome to Webappify!</p>
+    <p class="content">An open-source web-application platform!</p>
+    <button onclick="page('template');">Create an app!</button>
+    <button onclick="page('about');">About Webappify</button>
+</div>
+<div id="about" column>
+    <img src="resources/svg/icons/app/icon.svg" style="height: 18vh;width: auto;" alt="Icon"/>
+    <p class="title">Webappify</p>
+    <a href="https://github.com/NadavTasher/Webappify">An open-source application platform,</a>
+    <a href="https://kut.to">Developed by Nadav Tasher</a>
+</div>

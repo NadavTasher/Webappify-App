@@ -49,3 +49,7 @@ textarea {
     border-color: transparent;
     background-color: #9999aa;
 }
+
+[stretch] > * {
+    width: 100%;
+}
