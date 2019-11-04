@@ -44,7 +44,6 @@ function deployer()
                         builder_unzip($file, DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $appId);
                         file_put_contents(DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $appId . DIRECTORY_SEPARATOR . DEPLOYER_APPLOCK_FILE, DEPLOYER_APPLOCK_CONTENT);
                         deployer_create($appId, $parameters->email);
-                        deployer_mail_activate($appId);
                         return [true, null];
                     } else {
                         return [false, "Build failure"];
@@ -72,54 +71,6 @@ function deployer()
     }, false);
 }
 
-function deployer_mail_activate($appId)
-{
-    global $deployer_database;
-    $activateKey = $deployer_database->$appId->keys->activate;
-
-    $mail = file_get_contents(DEPLOYER_ACTIVATE_MAIL);
-    $mail = str_replace("AppID", $appId, $mail);
-    $mail = str_replace("Key", $activateKey, $mail);
-
-    deployer_mail($deployer_database->$appId->email, "Webappify Activation", $mail);
-}
-
-function deployer_mail_reactivate($appId)
-{
-    global $deployer_database;
-    $reactivateKey = $deployer_database->$appId->keys->reactivate;
-
-    $mail = file_get_contents(DEPLOYER_REACTIVATE_MAIL);
-    $mail = str_replace("AppID", $appId, $mail);
-    $mail = str_replace("Key", $reactivateKey, $mail);
-
-    deployer_mail($deployer_database->$appId->email, "Webappify Reactivation", $mail);
-}
-
-function deployer_mail($email, $subject, $message)
-{
-    $private = json_decode(file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . "private" . DIRECTORY_SEPARATOR . "credentials.json"));
-    try {
-        $mail = new PHPMailer(true);
-        $mail->IsSMTP();
-        $mail->SMTPAuth = true;
-        $mail->SMTPSecure = "ssl";
-        $mail->Host = "smtp.gmail.com";
-        $mail->Port = 465;
-        $mail->Username = $private->mail;
-        $mail->Password = $private->password;
-        $mail->AddAddress($email);
-        $mail->SetFrom("noreply@webappify.org", "Webappify");
-        $mail->Subject = $subject;
-        $mail->isHTML(true);
-        $mail->Body = $message;
-        $mail->Send();
-        return true;
-    } catch (Exception $e) {
-        return false;
-    }
-}
-
 function deployer_scan()
 {
     global $deployer_database;
@@ -128,38 +79,9 @@ function deployer_scan()
         if ($time > $app->times->reactivate) {
             if ($time > $app->times->reactivate + DEPLOYER_GRACE) {
                 deployer_remove($appId);
-            } else {
-                deployer_mail_reactivate($appId);
             }
         }
     }
-}
-
-function deployer_reactivate($appId, $renewKey)
-{
-    global $deployer_database;
-    if (isset($deployer_database->$appId) && $deployer_database->$appId->keys->reactivate === $renewKey) {
-        $deployer_database->$appId->times->reactivate = time() + DEPLOYER_LIFECYCLE;
-        $deployer_database->$appId->keys->reactivate = random(32);
-        deployer_save();
-        return [true, null];
-    } else {
-        return [false, "Wrong key or non existent app"];
-    }
-}
-
-function deployer_activate($appId, $activateKey)
-{
-    global $deployer_database;
-    if (file_exists(DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $appId . DIRECTORY_SEPARATOR . DEPLOYER_APPLOCK_FILE)) {
-        if (isset($deployer_database->$appId) && $deployer_database->$appId->keys->activate === $activateKey) {
-            unlink(DEPLOYER_DIRECTORY . DIRECTORY_SEPARATOR . $appId . DIRECTORY_SEPARATOR . DEPLOYER_APPLOCK_FILE);
-            return [true, null];
-        } else {
-            return [false, "Wrong key or non existent app"];
-        }
-    }
-    return [true, null];
 }
 
 function deployer_create($appId, $deployEmail)
