@@ -11,8 +11,8 @@ RUN apt-get install -y git
 # Install supervisor
 RUN apt-get install -y supervisor
 # Copy configuration files
-COPY configuration /etc/supervisor/conf.d/supervisord.conf
-COPY configuration /update.sh
+COPY configuration/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY configuration/update.sh /update.sh
 # Copy Webappify to /var/www/html
 COPY src /var/www/html
 # Change ownership of /var/www
