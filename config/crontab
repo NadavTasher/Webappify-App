@@ -1,1 +1,0 @@
-0 8 * * * php /var/www/html/home/scripts/server/cronjob.php

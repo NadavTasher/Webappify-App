@@ -3,14 +3,16 @@ FROM php:7.3-apache
 RUN apt-get update
 RUN mkdir -p /usr/share/man/man1
 # Install php-zip
-# TODO install php-zip
+RUN apt-get install -y libzip-dev zip
+RUN docker-php-ext-configure zip --with-libzip
+RUN docker-php-ext-install zip
+# Install git
+RUN apt-get install -y git
+# Install supervisor
+RUN apt-get install -y supervisor
 # Copy configuration files
-COPY config/init.sh /init.sh
-COPY config/crontab /crontab
-# Configure initscript
-RUN chmod +x /init.sh
-# Configure crontab
-# TODO configure crontab
+COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY config/update.sh /update.sh
 # Copy Webappify to /var/www/html
 COPY src /var/www/html
 # Change ownership of /var/www
@@ -22,4 +24,4 @@ RUN a2enmod headers
 # Restart webserver
 RUN service apache2 restart
 # Startup command
-CMD "/init.sh"
+CMD ["supervisord"]
