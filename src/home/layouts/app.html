@@ -4,17 +4,16 @@
 -->
 
 <div id="template" column>
-    <p class="title">Choose a WebApp template:</p>
-    <select id="flavour" title="Flavour">
-    </select>
+    <p class="title">Choose an app template:</p>
+    <select id="flavor" title="Flavor"></select>
     <button onclick="page('information');">Next</button>
 </div>
 <div id="properties" column>
     <div id="information" column>
         <p class="title">Fill Information</p>
-        <input id="name" type="text" placeholder="App's Name"/>
-        <input id="description" type="text" placeholder="App's Description"/>
-        <input id="color" type="color" value="#FFFFFF"/>
+        <input id="name-text" type="text" placeholder="App's Name"/>
+        <input id="description-text" type="text" placeholder="App's Description"/>
+        <input id="color-text" type="color" value="#FFFFFF"/>
         <div coasted stretch row>
             <button onclick="page('layout');">Layout</button>
             <button onclick="page('style');">Style</button>
@@ -24,18 +23,18 @@
     </div>
     <div id="layout" column>
         <p class="title">App's Layout</p>
-        <textarea id="leyout-text" oninput="updateLayout()" placeholder="Layout (HTML)" title="Style"></textarea>
+        <textarea id="layout-text" placeholder="Layout (HTML)" title="Style"></textarea>
         <button onclick="page('information');">Back</button>
     </div>
     <div id="style" column>
         <p class="title">App's Style</p>
-        <textarea id="style-text" oninput="updateStyle()" placeholder="Stylesheet (CSS)" title="Style"></textarea>
+        <textarea id="style-text" placeholder="Stylesheet (CSS)" title="Style"></textarea>
         <button onclick="page('information');">Back</button>
     </div>
     <div id="code">
         <p class="title">App's Code</p>
-        <textarea id="code-load-text" oninput="updateCode()" placeholder="Load Code (JS)" title="Load Code"></textarea>
-        <textarea id="code-app-text" oninput="updateCode()" placeholder="App Code (JS)" title="App Code"></textarea>
+        <textarea id="code-load-text" placeholder="Load Code (JS)" title="Load Code"></textarea>
+        <textarea id="code-app-text" placeholder="App Code (JS)" title="App Code"></textarea>
         <button onclick="page('information');">Back</button>
     </div>
 </div>

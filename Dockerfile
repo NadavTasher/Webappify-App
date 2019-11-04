@@ -2,13 +2,15 @@ FROM php:7.3-apache
 # Update package lists
 RUN apt-get update
 RUN mkdir -p /usr/share/man/man1
+# Install php-zip
+# TODO install php-zip
 # Copy configuration files
 COPY config/init.sh /init.sh
 COPY config/crontab /crontab
 # Configure initscript
 RUN chmod +x /init.sh
 # Configure crontab
-RUN
+# TODO configure crontab
 # Copy Webappify to /var/www/html
 COPY src /var/www/html
 # Change ownership of /var/www

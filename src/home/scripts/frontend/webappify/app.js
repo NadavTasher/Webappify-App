@@ -6,35 +6,31 @@
 const WEBAPPIFY_API = "webappify";
 const WEBAPPIFY_ENDPOINT = "scripts/backend/webappify/webappify.php";
 
-let configuration = {
-    layout: undefined,
-    stylesheet: undefined,
-    code: {
-        load: undefined,
-        code: undefined
-    }
-};
-
 function webappify() {
-    fetch("files/builder/templates.json", {
-        method: "get"
-    }).then(response => {
-        response.text().then((result) => {
-            let json = JSON.parse(result);
-            for (let key in json) {
-                let option = make("option", key);
-                option.value = key;
-                get("flavour").appendChild(option);
-            }
-        });
+    api(WEBAPPIFY_ENDPOINT, WEBAPPIFY_API, "list", {}, (success, result, error) => {
+        for (let key in result) {
+            let option = make("option", key);
+            option.value = key;
+            get("flavor").appendChild(option);
+        }
     });
     page("home");
 }
 
 function finish() {
     api(WEBAPPIFY_ENDPOINT, WEBAPPIFY_API, "create", {
-        flavour: get('flavour').value,
-        configuration: configuration
+        flavour: get("flavor").value,
+        configuration: {
+            name: get("name-text").value,
+            description: get("description-text").value,
+            color: get("color-text").value,
+            layout: get("layout-text").value,
+            style: get("style-text").value,
+            code: {
+                app: get("code-app-text").value,
+                load: get("code-load-text").value
+            }
+        }
     }, (success, result, error) => {
         if (success) {
             get("open").onclick = () => window.location = result.id;
