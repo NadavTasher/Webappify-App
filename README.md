@@ -3,6 +3,13 @@
 Webappify is an open-source application creation and deployment platform, mainly targeting web developers.
 
 ## Installation
+### Method 0: Using a docker repository
+Install [docker](https://www.docker.com/) on your machine.
+
+Run the following command:
+```bash
+docker run -p 80:80 --name webappify-container --restart unless-stopped -d nadavtasher/webappify:latest
+```
 ### Method 1: Using a docker exported image
 Install [docker](https://www.docker.com/) on your machine.
 
