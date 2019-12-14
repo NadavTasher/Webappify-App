@@ -15,12 +15,12 @@ cronjob_remove();
  */
 function cronjob_update()
 {
-    cronjob_clear(WEBAPPIFY_SOURCES);
+    cronjob_clear(WEBAPPIFY_PATH_TEMPLATES);
     foreach (json_decode(file_get_contents("https://raw.githubusercontent.com/NadavTasher/Webappify/master/src/home/files/assortment.json")) as $flavor) {
         $matches = null;
         preg_match("/([A-Za-z]+)$/", $flavor, $matches);
         if (count($matches) > 0) {
-            shell_exec("git clone $flavor.git " . WEBAPPIFY_SOURCES . DIRECTORY_SEPARATOR . $matches[0]);
+            shell_exec("git clone $flavor.git " . WEBAPPIFY_PATH_TEMPLATES . DIRECTORY_SEPARATOR . $matches[0]);
         }
     }
 }
@@ -30,12 +30,13 @@ function cronjob_update()
  */
 function cronjob_remove()
 {
-    $database = webappify_load();
-    foreach ($database as $id => $created) {
-        if ($created + 60 * 24 * 60 * 60 < time()) {
-            cronjob_unlink(WEBAPPIFY_DESTINATIONS . DIRECTORY_SEPARATOR . $id);
-            unset($database->$id);
-            webappify_unload($database);
+    foreach (scandir(WEBAPPIFY_PATH_APPLICATIONS) as $entry) {
+        if ($entry[0] !== ".") {
+            $directory = WEBAPPIFY_PATH_APPLICATIONS . DIRECTORY_SEPARATOR . $entry;
+            $deployment = intval(file_get_contents($directory . DIRECTORY_SEPARATOR . WEBAPPIFY_DEPLOYMENT));
+            if ($deployment + WEBAPPIFY_TIMEOUT < time()) {
+                cronjob_unlink($directory);
+            }
         }
     }
 }

@@ -8,12 +8,16 @@
 // Include Base API
 include_once __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "base" . DIRECTORY_SEPARATOR . "api.php";
 
-// Initialize constants
+// Constants
 const WEBAPPIFY_API = "webappify";
-const WEBAPPIFY_DATABASE = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "apps.json";
-const WEBAPPIFY_DOCKERFILE = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "Dockerfile";
-const WEBAPPIFY_SOURCES = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "sources";
-const WEBAPPIFY_DESTINATIONS = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "apps";
+const WEBAPPIFY_DOCKERFILE = "Dockerfile";
+const WEBAPPIFY_DEPLOYMENT = "deployment";
+const WEBAPPIFY_TIMEOUT = 60 * 24 * 60 * 60;
+// Initialize constant paths
+const WEBAPPIFY_PATH = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "..";
+const WEBAPPIFY_PATH_DOCKERFILE = WEBAPPIFY_PATH . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "others" . DIRECTORY_SEPARATOR . "Dockerfile";
+const WEBAPPIFY_PATH_TEMPLATES = WEBAPPIFY_PATH . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "sources";
+const WEBAPPIFY_PATH_APPLICATIONS = WEBAPPIFY_PATH . DIRECTORY_SEPARATOR . "apps";
 
 /**
  * This is the main API function.
@@ -26,7 +30,7 @@ function webappify()
             if (isset($parameters->flavor) && isset($parameters->configuration)) {
                 $flavor = $parameters->flavor;
                 $configuration = $parameters->configuration;
-                if (is_dir(WEBAPPIFY_SOURCES . DIRECTORY_SEPARATOR . basename($flavor))) {
+                if (is_dir(WEBAPPIFY_PATH_TEMPLATES . DIRECTORY_SEPARATOR . basename($flavor))) {
                     $app = webappify_create($flavor, $configuration);
                     return [true, $app];
                 } else {
@@ -37,9 +41,9 @@ function webappify()
             }
         } else if ($action === "list") {
             $list = array();
-            foreach (scandir(WEBAPPIFY_SOURCES) as $entry) {
+            foreach (scandir(WEBAPPIFY_PATH_TEMPLATES) as $entry) {
                 if ($entry !== "." && $entry !== "..") {
-                    if (is_dir(WEBAPPIFY_SOURCES . DIRECTORY_SEPARATOR . $entry)) {
+                    if (is_dir(WEBAPPIFY_PATH_TEMPLATES . DIRECTORY_SEPARATOR . $entry)) {
                         array_push($list, $entry);
                     }
                 }
@@ -51,24 +55,6 @@ function webappify()
 }
 
 /**
- * This function load the database and returns it.
- * @return stdClass Database
- */
-function webappify_load()
-{
-    return json_decode(file_get_contents(WEBAPPIFY_DATABASE));
-}
-
-/**
- * This function unloads the database.
- * @param stdClass $database Database
- */
-function webappify_unload($database)
-{
-    file_put_contents(WEBAPPIFY_DATABASE, json_encode($database));
-}
-
-/**
  * This function creates a new application and returns an app object.
  * @param string $flavour App Flavor
  * @param stdClass $configuration App Configuration
@@ -76,8 +62,6 @@ function webappify_unload($database)
  */
 function webappify_create($flavour, $configuration)
 {
-    // Load database
-    $database = webappify_load();
     // Generate ID
     $id = random(14);
     if (isset($database->$id)) {
@@ -86,22 +70,23 @@ function webappify_create($flavour, $configuration)
         // Generate app object
         $app = new stdClass();
         $app->id = $id;
+        // App directory
+        $directory = WEBAPPIFY_PATH_APPLICATIONS . DIRECTORY_SEPARATOR . $id;
         // Copy sources
-        webappify_copy(WEBAPPIFY_SOURCES . DIRECTORY_SEPARATOR . $flavour, WEBAPPIFY_DESTINATIONS . DIRECTORY_SEPARATOR . $id);
+        webappify_copy(WEBAPPIFY_PATH_TEMPLATES . DIRECTORY_SEPARATOR . $flavour, $directory);
         // Configure app
-        webappify_replace("AppName", $configuration->name, WEBAPPIFY_DESTINATIONS . DIRECTORY_SEPARATOR . $id);
-        webappify_replace("AppDescription", $configuration->description, WEBAPPIFY_DESTINATIONS . DIRECTORY_SEPARATOR . $id);
-        webappify_replace("#FFFFFF", $configuration->color, WEBAPPIFY_DESTINATIONS . DIRECTORY_SEPARATOR . $id);
-        webappify_replace("<!--App Layout-->", $configuration->layout, WEBAPPIFY_DESTINATIONS . DIRECTORY_SEPARATOR . $id);
-        webappify_replace("/* App Style */", $configuration->style, WEBAPPIFY_DESTINATIONS . DIRECTORY_SEPARATOR . $id);
-        webappify_replace("// App Load Code", $configuration->code->load, WEBAPPIFY_DESTINATIONS . DIRECTORY_SEPARATOR . $id);
-        webappify_replace("// App Code", $configuration->code->app, WEBAPPIFY_DESTINATIONS . DIRECTORY_SEPARATOR . $id);
+        webappify_replace("AppName", $configuration->name, $directory);
+        webappify_replace("AppDescription", $configuration->description, $directory);
+        webappify_replace("#FFFFFF", $configuration->color, $directory);
+        webappify_replace("<!--App Layout-->", $configuration->layout, $directory);
+        webappify_replace("/* App Style */", $configuration->style, $directory);
+        webappify_replace("// App Load Code", $configuration->code->load, $directory);
+        webappify_replace("// App Code", $configuration->code->app, $directory);
         // Pack app
         $app->sources = webappify_sources_bundle($id);
         $app->docker = webappify_docker_bundle($id);
         // Register app
-        $database->$id = time();
-        webappify_unload($database);
+        file_put_contents($directory . DIRECTORY_SEPARATOR . WEBAPPIFY_DEPLOYMENT, time());
         return $app;
     }
 }
@@ -117,7 +102,7 @@ function webappify_sources($file, $id, $prefix = "")
 {
     $zip = new ZipArchive();
     $zip->open($file, ZipArchive::CREATE | ZipArchive::OVERWRITE);
-    $rootPath = realpath(WEBAPPIFY_DESTINATIONS . DIRECTORY_SEPARATOR . $id);
+    $rootPath = realpath(WEBAPPIFY_PATH_APPLICATIONS . DIRECTORY_SEPARATOR . $id);
     foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($rootPath), RecursiveIteratorIterator::LEAVES_ONLY) as $file) {
         if (!$file->isDir()) {
             $filePath = $file->getRealPath();
@@ -151,7 +136,7 @@ function webappify_docker_bundle($id)
 {
     $file = tempnam(null, "zip");
     $zip = webappify_sources($file, $id, "src" . DIRECTORY_SEPARATOR);
-    $zip->addFile(WEBAPPIFY_DOCKERFILE, "Dockerfile");
+    $zip->addFile(WEBAPPIFY_PATH_DOCKERFILE, WEBAPPIFY_DOCKERFILE);
     $zip->close();
     return base64_encode(file_get_contents($file));
 }
