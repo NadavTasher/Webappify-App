@@ -17,7 +17,7 @@ const WEBAPPIFY_TIMEOUT = 60 * 24 * 60 * 60;
 const WEBAPPIFY_PATH = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "..";
 const WEBAPPIFY_PATH_DOCKERFILE = WEBAPPIFY_PATH . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "others" . DIRECTORY_SEPARATOR . "Dockerfile";
 const WEBAPPIFY_PATH_TEMPLATES = WEBAPPIFY_PATH . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "sources";
-const WEBAPPIFY_PATH_APPLICATIONS = WEBAPPIFY_PATH . DIRECTORY_SEPARATOR . "apps";
+const WEBAPPIFY_PATH_APPLICATIONS = WEBAPPIFY_PATH . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "apps";
 
 /**
  * This is the main API function.
@@ -64,14 +64,13 @@ function webappify_create($flavour, $configuration)
 {
     // Generate ID
     $id = random(14);
-    if (isset($database->$id)) {
+    $directory = WEBAPPIFY_PATH_APPLICATIONS . DIRECTORY_SEPARATOR . $id;
+    if (file_exists($directory)) {
         return webappify_create($flavour, $configuration);
     } else {
         // Generate app object
         $app = new stdClass();
         $app->id = $id;
-        // App directory
-        $directory = WEBAPPIFY_PATH_APPLICATIONS . DIRECTORY_SEPARATOR . $id;
         // Copy sources
         webappify_copy(WEBAPPIFY_PATH_TEMPLATES . DIRECTORY_SEPARATOR . $flavour, $directory);
         // Configure app

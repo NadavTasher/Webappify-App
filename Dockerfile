@@ -21,7 +21,5 @@ RUN chown www-data /var/www/ -R
 RUN chmod 775 /var/www/ -R
 # Enable mods
 RUN a2enmod headers
-# Restart webserver
-RUN service apache2 restart
 # Startup command
 CMD ["supervisord"]
