@@ -1,50 +1,81 @@
 /**
  * Copyright (c) 2019 Nadav Tasher
- * https://github.com/NadavTasher/WebAppBase/
+ * https://github.com/NadavTasher/BaseTemplate/
  **/
 
 /* API */
 
-function api(endpoint = null, api = null, action = null, parameters = null, callback = null, form = body()) {
-    fetch(endpoint, {
-        method: "post",
-        body: body(api, action, parameters, form)
-    }).then(response => {
-        response.text().then((result) => {
-            if (callback !== null && api !== null && action !== null) {
-                let json = JSON.parse(result);
-                if (json.hasOwnProperty(api)) {
-                    if (json[api].hasOwnProperty("status") && json[api].hasOwnProperty("result")) {
-                        if (json[api]["status"].hasOwnProperty(action) && json[api]["result"].hasOwnProperty(action)) {
-                            let status = json[api]["status"][action];
-                            let result = json[api]["result"][action];
-                            if (status === true) {
-                                callback(true, result, null);
+/**
+ * This function is responsible for API calls between the frontend and the backend.
+ * @param endpoint The backend PHP file to be reached
+ * @param api The API which this call associates with
+ * @param action The action to be executed
+ * @param parameters The parameters for the action
+ * @param callback The callback for the API call, contains success, result and error
+ * @param APIs The API parameters for the API call (for API layering)
+ */
+function api(endpoint = null, api = null, action = null, parameters = null, callback = null, APIs = {}) {
+    let form = new FormData();
+    form.append("api", JSON.stringify(hook(api, action, parameters, APIs)));
+    if (window.navigator.onLine) {
+        fetch(endpoint, {
+            method: "post",
+            body: form
+        }).then(response => {
+            response.text().then((result) => {
+                if (callback !== null && api !== null && action !== null) {
+                    try {
+                        let json = JSON.parse(result);
+                        try {
+                            if (api in json) {
+                                if ("success" in json[api] && "result" in json[api]) {
+                                    callback(json[api]["success"] === true, json[api]["result"]);
+                                } else {
+                                    callback(false, "API parameters not found");
+                                }
                             } else {
-                                callback(false, null, status);
+                                callback(false, "API not found");
                             }
+                        } catch (e) {
                         }
-                    } else {
-                        callback(false, null, "Base API not detected in JSON");
+                    } catch (e) {
+                        try {
+                            callback(false, "API result isn't JSON");
+                        } catch (e) {
+                        }
                     }
-                } else {
-                    callback(false, null, "Base API (\"" + api + "\") not found in JSON");
                 }
-            }
+            });
         });
-    });
-}
-
-function body(api = null, action = null, parameters = null, form = new FormData()) {
-    if (api !== null && action !== null && parameters !== null && !form.has(api)) {
-        form.append(api, JSON.stringify({
-            action: action,
-            parameters: parameters
-        }));
+    } else {
+        callback(false, "Offline");
     }
-    return form;
 }
 
+/**
+ * This function compiles the API call hook.
+ * @param api The API to associate
+ * @param action The action to be executed
+ * @param parameters The parameters for the action
+ * @param APIs The API parameters for the API call (for API layering)
+ * @returns {FormData} API call hook
+ */
+function hook(api = null, action = null, parameters = null, APIs = {}) {
+    if (!(api in APIs)) {
+        if (api !== null && action !== null && parameters !== null) {
+            APIs[api] = {
+                action: action,
+                parameters: parameters
+            };
+        }
+    }
+    return APIs;
+}
+
+/**
+ * This function pops up installation instructions for Safari users.
+ * @param title App's Name
+ */
 function instruct(title = null) {
     let agent = window.navigator.userAgent.toLowerCase();
     let devices = ["iphone", "ipad", "ipod"];
@@ -52,12 +83,13 @@ function instruct(title = null) {
     for (let i = 0; i < devices.length; i++) {
         if (agent.includes(devices[i])) safari = true;
     }
-    if ((safari && !(window.navigator.hasOwnProperty("standalone") && window.navigator.standalone)) || !safaricheck) {
+    if ((safari && !("standalone" in window.navigator && window.navigator.standalone))) {
         let div = make("div");
         let text = make("p");
         let share = make("img");
         let then = make("p");
         let add = make("img");
+        row(div);
         text.innerText = "To add " + ((title === null) ? ("\"" + document.title + "\"") : title) + ", ";
         share.src = "resources/svg/icons/safari/share.svg";
         then.innerText = "then";
@@ -72,10 +104,14 @@ function instruct(title = null) {
         div.appendChild(share);
         div.appendChild(then);
         div.appendChild(add);
-        popup(div, "#ffffffee", 0);
+        popup(div, 0, "#ffffffee");
     }
 }
 
+/**
+ * This function prepares the web page (loads ServiceWorker, HTML).
+ * @param callback Function to be executed when loading finishes
+ */
 function prepare(callback = null) {
     // Register worker
     if ("serviceWorker" in navigator)
@@ -100,6 +136,10 @@ function prepare(callback = null) {
 
 /* Visuals */
 
+/**
+ * This function removes all children of given view.
+ * @param v View
+ */
 function clear(v) {
     let view = get(v);
     while (view.firstChild) {
@@ -107,18 +147,30 @@ function clear(v) {
     }
 }
 
-function exists(v) {
-    return get(v) !== undefined;
-}
-
+/**
+ * This function returns the view by its ID or by it's own value.
+ * @param v View
+ * @returns {HTMLElement} View
+ */
 function get(v) {
     return isString(v) ? document.getElementById(v) : v;
 }
 
+/**
+ * This function hides the given view.
+ * @param v View
+ */
 function hide(v) {
     get(v).style.display = "none";
 }
 
+/**
+ * This function creates a new view by its type, contents and classes.
+ * @param type View type
+ * @param content View contents
+ * @param classes View classes
+ * @returns {HTMLElement} View
+ */
 function make(type, content = null, classes = []) {
     let made = document.createElement(type);
     if (content !== null) {
@@ -139,6 +191,10 @@ function make(type, content = null, classes = []) {
     return made;
 }
 
+/**
+ * This function recursively sets the viewed view to be the given view.
+ * @param target View
+ */
 function page(target) {
     let temporary = get(target);
     while (temporary.parentNode !== document.body && temporary.parentNode !== document.body) {
@@ -148,10 +204,18 @@ function page(target) {
     view(temporary);
 }
 
+/**
+ * This function shows the given view.
+ * @param v View
+ */
 function show(v) {
     get(v).style.removeProperty("display");
 }
 
+/**
+ * This function shows the given view while hiding it's brothers.
+ * @param v View
+ */
 function view(v) {
     let element = get(v);
     let parent = element.parentNode;
@@ -161,6 +225,11 @@ function view(v) {
     show(element);
 }
 
+/**
+ * This function returns the visibillity state of the given view.
+ * @param v View
+ * @returns {boolean} Visible
+ */
 function visible(v) {
     return (get(v).style.getPropertyValue("display") !== "none");
 }
@@ -172,7 +241,15 @@ const RIGHT = !LEFT;
 const IN = true;
 const OUT = !IN;
 
-function animate(v, property = "left", stops = ["0px", "0px"], length = 1, callback = null) {
+/**
+ * This function animates the given view's property, while jumping from stop to stop every length amount of time.
+ * @param v View
+ * @param property View's style property to animate
+ * @param stops Value stops
+ * @param length Length of each animation stop
+ * @param callback Function to run after animation is finished
+ */
+function animate(v, property = "left", stops = ["0px", "0px"], length = 1000, callback = null) {
     let view = get(v);
     let interval = null;
     let next = () => {
@@ -190,15 +267,23 @@ function animate(v, property = "left", stops = ["0px", "0px"], length = 1, callb
         }
     };
     next();
-    interval = setInterval(loop, length * 1000);
+    interval = setInterval(loop, length);
     setTimeout(() => {
-        view.style.transitionDuration = length + "s";
+        view.style.transitionDuration = length + "ms";
         view.style.transitionTimingFunction = "ease";
         loop();
     }, 0);
 }
 
-function slide(v, motion = IN, direction = RIGHT, length = 0.2, callback = null) {
+/**
+ * This function slides the given view in or out of frame with given direction.
+ * @param v View
+ * @param motion Type of motion (In / Out)
+ * @param direction Direction of motion (Left / Right)
+ * @param length Length of animation
+ * @param callback Function to run after animation is finished
+ */
+function slide(v, motion = IN, direction = RIGHT, length = 200, callback = null) {
     let view = get(v);
     let style = getComputedStyle(view);
     let edge = (direction === RIGHT ? 1 : -1) * screen.width;
@@ -213,77 +298,58 @@ function slide(v, motion = IN, direction = RIGHT, length = 0.2, callback = null)
 
 /* Attributes */
 
+/**
+ * This function makes the given view a column.
+ * @param v View
+ */
 function column(v) {
-    get(v).setAttribute("column", true);
-    get(v).setAttribute("row", false);
+    get(v).setAttribute("column", "true");
+    get(v).setAttribute("row", "false");
 }
 
+/**
+ * This function makes the given view an input.
+ * @param v View
+ */
 function input(v) {
-    get(v).setAttribute("input", true);
+    get(v).setAttribute("input", "true");
 }
 
+/**
+ * This function makes the given view a row.
+ * @param v View
+ */
 function row(v) {
-    get(v).setAttribute("row", true);
-    get(v).setAttribute("column", false);
+    get(v).setAttribute("row", "true");
+    get(v).setAttribute("column", "false");
 }
 
+/**
+ * This function makes the given view a text.
+ * @param v View
+ */
 function text(v) {
-    get(v).setAttribute("text", true);
+    get(v).setAttribute("text", "true");
 }
 
 /* Interface */
 
-function gestures(up = null, down = null, left = null, right = null, upgoing = null, downgoing = null, leftgoing = null, rightgoing = null) {
-    let touchX, touchY, deltaX, deltaY;
-    document.ontouchstart = (event) => {
-        touchX = event.touches[0].clientX;
-        touchY = event.touches[0].clientY;
-    };
-    document.ontouchmove = (event) => {
-        deltaX = touchX - event.touches[0].clientX;
-        deltaY = touchY - event.touches[0].clientY;
-        if (Math.abs(deltaX) > Math.abs(deltaY)) {
-            if (deltaX > 0) {
-                if (leftgoing !== null) leftgoing();
-            } else {
-                if (rightgoing !== null) rightgoing();
-            }
-        } else {
-            if (deltaY > 0) {
-                if (upgoing !== null) upgoing();
-            } else {
-                if (downgoing !== null) downgoing();
-            }
-        }
-
-    };
-    document.ontouchend = () => {
-        if (Math.abs(deltaX) > Math.abs(deltaY)) {
-            if (deltaX > 0) {
-                if (left !== null) left();
-            } else {
-                if (right !== null) right();
-            }
-        } else {
-            if (deltaY > 0) {
-                if (up !== null) up();
-            } else {
-                if (down !== null) down();
-            }
-        }
-        touchX = null;
-        touchY = null;
-    };
-}
-
-function popup(contents, timeout = null, color = null, onclick = null) {
+/**
+ * This function pops up a popup at the bottom of the screen.
+ * @param contents The content to be displayed (View / Text)
+ * @param timeout The time before the popup dismisses (0 - Forever, null - Default)
+ * @param color The background color of the popup
+ * @param onclick The click action for the popup (null - Dismiss)
+ * @returns {function} Dismiss callback
+ */
+function popup(contents, timeout = 3000, color = null, onclick = null) {
     let div = make("div");
     column(div);
     input(div);
     let dismiss = () => {
         if (div.parentElement !== null) {
             div.onclick = null;
-            animate(div, "opacity", ["1", "0"], 0.5, () => {
+            animate(div, "opacity", ["1", "0"], 500, () => {
                 div.parentElement.removeChild(div);
             });
         }
@@ -303,8 +369,8 @@ function popup(contents, timeout = null, color = null, onclick = null) {
     } else {
         div.appendChild(contents);
     }
-    animate(div, "opacity", ["0", "1"], 0.5, () => {
-        if (timeout !== null && timeout > 0) {
+    animate(div, "opacity", ["0", "1"], 500, () => {
+        if (timeout > 0) {
             setTimeout(() => {
                 dismiss();
             }, timeout);
@@ -316,48 +382,45 @@ function popup(contents, timeout = null, color = null, onclick = null) {
 
 /* Utils */
 
+/**
+ * This function returns whether the given parameter is an array.
+ * @param a Parameter
+ * @returns {boolean} Is an array
+ */
 function isArray(a) {
     return a instanceof Array;
 }
 
+/**
+ * This function returns whether the given parameter is an object.
+ * @param o Parameter
+ * @returns {boolean} Is an object
+ */
 function isObject(o) {
     return o instanceof Object && !isArray(o);
 }
 
+/**
+ * This function returns whether the given parameter is a string.
+ * @param s Parameter
+ * @returns {boolean} Is a string
+ */
 function isString(s) {
     return (typeof "" === typeof s || typeof '' === typeof s);
 }
 
-function open(callback = null, read = false) {
-    let selector = make("input");
-    selector.type = "file";
-    selector.style.display = "none";
-    document.body.appendChild(selector);
-    selector.oninput = () => {
-        selector.parentElement.removeChild(selector);
-        if (selector.files.length > 0) {
-            let file = selector.files[0];
-            if (callback !== null) {
-                if (read) {
-                    let reader = new FileReader();
-                    reader.onload = (result) => {
-                        callback(file, result.target.result);
-                    };
-                    reader.readAsText(file);
-                } else {
-                    callback(file, null);
-                }
-            }
-
-
-        }
-    };
-    selector.click();
+/**
+ * This function returns whether the device is a mobile phone
+ * @returns {boolean} Is mobile
+ */
+function isMobile() {
+    return window.innerHeight > window.innerWidth;
 }
 
-function save(file, data, type = "text/plain", encoding = "utf8") {
-    let link = document.createElement("a");
-    link.download = file;
-    link.href = "data:" + type + ";" + encoding + "," + data;
-    link.click();
+/**
+ * This function return whether the device is a desktop.
+ * @returns {boolean} Is desktop
+ */
+function isDesktop() {
+    return !isMobile();
 }

@@ -4,5 +4,5 @@
  **/
 
 function load() {
-    webappify();
+    webappify_load();
 }

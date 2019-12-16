@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <!--
  Copyright (c) 2019 Nadav Tasher
- https://github.com/NadavTasher/WebAppBase/
+ https://github.com/NadavTasher/BaseTemplate/
 -->
-<html lang="en">
+<html row lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, minimal-ui"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, minimal-ui"/>
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#008080"/>
     <link rel="icon"
@@ -15,28 +14,27 @@
     <title>Offline</title>
     <noscript></noscript>
     <style>
+
+        /**
+         * Copyright (c) 2019 Nadav Tasher
+         * https://github.com/NadavTasher/BaseTemplate/
+         **/
+
         html {
-            /* Overflow */
-            overflow-x: hidden;
-            /* Flex */
-            display: flex;
-            flex-direction: column;
-            /* Alignment */
-            justify-content: center;
-            justify-items: center;
-            align-content: center;
-            align-items: center;
             /* Positioning */
             position: fixed;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            /* Sizing */
+            height: 100%;
+            width: 100%;
         }
 
         body {
+            /* Overflow */
+            overflow-y: auto !important;
+            /* Alignment */
+            justify-content: start !important;
             /* Sizing */
-            width: 100%;
+            max-height: 100%;
             /* Background */
             -webkit-background-size: cover;
             -moz-background-size: cover;
@@ -44,7 +42,6 @@
             background-size: cover;
             background-attachment: fixed;
             background-repeat: no-repeat;
-            background-color: #008080;
         }
 
         textarea {
@@ -52,7 +49,7 @@
             text-align-last: left !important;
         }
 
-        [text], a, p, [input], button, input, select, textarea, [row], [column], div, body {
+        [text = ""], [text = true], a, p, [input = ""], [input = true], button, input, select, textarea, [row = ""], [row = true], [column = ""], [column = true], div {
             /* WebKit */
             -webkit-appearance: none;
             /* Display */
@@ -65,14 +62,18 @@
             /* Text Alignment */
             text-align: center;
             text-align-last: center;
+            /* Minimal Sizing */
+            min-height: fit-content;
+            /* Outline */
+            outline: none;
         }
 
-        [text], a, p {
+        [text = ""], [text = true], a, p {
             flex-flow: wrap;
             height: auto;
         }
 
-        [text], a, p, [input], button, input, select, textarea {
+        [text = ""], [text = true], a, p, [input = ""], [input = true], button, input, select, textarea {
             /* Positioning */
             margin: 1vh;
             padding: 1vh;
@@ -80,22 +81,22 @@
             justify-content: center;
             justify-items: center;
             align-content: center;
-            align-items: center;
+            align-items: stretch;
             /* Shaping */
-            border-radius: 1vh;
+            border-radius: 0.5vh;
             border-color: transparent;
         }
 
-        [input], button, input, select, textarea {
+        [input = ""], [input = true], button, input, select, textarea {
             transition-duration: 0.2s;
             background-color: #ddddee;
         }
 
-        [input]:hover, button:hover, input:hover, select:hover, textarea:hover {
-            background-color: #aaaabb;
+        [input = ""]:hover, [input = true]:hover, button:hover, input:hover, select:hover, textarea:hover {
+            background-color: #9999aa;
         }
 
-        [row], [column], div, body {
+        [row = ""], [row = true], [column = ""], [column = true], div {
             /* Alignment */
             justify-content: center;
             align-content: center;
@@ -104,18 +105,28 @@
             padding: 0;
         }
 
-        [column] {
+        [column = ""], [column = true] {
             /* Flex */
             flex-direction: column;
             /* Alignment */
             align-items: stretch;
         }
 
-        [row] {
+        [row = ""], [row = true] {
             /* Flex */
             flex-direction: row;
             /* Alignment */
             align-items: center;
+        }
+
+        [row = ""] > *, [row = true] > * {
+            /* Width */
+            width: 100%;
+        }
+
+        body {
+            background-color: #008080;
+            max-width: 460px;
         }
 
         /* App Style */
@@ -123,7 +134,7 @@
     </style>
 </head>
 <body column>
-<p>You are offline.</p>
-<button onclick="window.location.reload(true)">Reload</button>
+<p style="font-size: 5vh;">You are offline - try reloading the page.</p>
+<button onclick="window.location.reload(true);">Reload the page</button>
 </body>
 </html>
