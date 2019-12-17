@@ -35,10 +35,8 @@ function webappify_create() {
             color: get("color-text").value,
             layout: get("layout-text").value,
             style: get("style-text").value,
-            code: {
-                app: get("code-app-text").value,
-                load: get("code-load-text").value
-            }
+            code: get("code-text").value,
+            load: get("load-text").value
         }
     }, (success, result, error) => {
         if (success) {

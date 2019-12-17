@@ -79,8 +79,8 @@ function webappify_create($flavour, $configuration)
         webappify_replace("#FFFFFF", $configuration->color, $directory);
         webappify_replace("<!--App Layout-->", $configuration->layout, $directory);
         webappify_replace("/* App Style */", $configuration->style, $directory);
-        webappify_replace("// App Load Code", $configuration->code->load, $directory);
-        webappify_replace("// App Code", $configuration->code->app, $directory);
+        webappify_replace("// App Load Code", $configuration->load, $directory);
+        webappify_replace("// App Code", $configuration->code, $directory);
         // Pack app
         $app->sources = webappify_sources_bundle($id);
         $app->docker = webappify_docker_bundle($id);
