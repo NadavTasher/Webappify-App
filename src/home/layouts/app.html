@@ -6,7 +6,7 @@
 <div id="template" column>
     <p class="title">Choose an app template:</p>
     <select id="flavor" title="Flavor"></select>
-    <button onclick="page('information');">Next</button>
+    <button onclick="UI.page('information');">Next</button>
 </div>
 <div id="properties" column>
     <div id="information" column>
@@ -15,27 +15,27 @@
         <input id="description-text" type="text" placeholder="App's Description"/>
         <input id="color-text" type="color" value="#FFFFFF"/>
         <div coasted stretch row>
-            <button onclick="page('layout');">Layout</button>
-            <button onclick="page('style');">Style</button>
-            <button onclick="page('code');">Code</button>
+            <button onclick="UI.page('layout');">Layout</button>
+            <button onclick="UI.page('style');">Style</button>
+            <button onclick="UI.page('code');">Code</button>
         </div>
         <button onclick="webappify_create();">Next</button>
     </div>
     <div id="layout" column>
         <p class="title">App's Layout</p>
         <textarea id="layout-text" placeholder="Layout (HTML)" title="Style"></textarea>
-        <button onclick="page('information');">Back</button>
+        <button onclick="UI.page('information');">Back</button>
     </div>
     <div id="style" column>
         <p class="title">App's Style</p>
         <textarea id="style-text" placeholder="Stylesheet (CSS)" title="Style"></textarea>
-        <button onclick="page('information');">Back</button>
+        <button onclick="UI.page('information');">Back</button>
     </div>
     <div id="code">
         <p class="title">App's Code</p>
         <textarea id="load-text" placeholder="Load Code (JS)" title="Load Code"></textarea>
         <textarea id="code-text" placeholder="App Code (JS)" title="App Code"></textarea>
-        <button onclick="page('information');">Back</button>
+        <button onclick="UI.page('information');">Back</button>
     </div>
 </div>
 <div id="finish">
@@ -57,8 +57,8 @@
 <div id="home" column>
     <p class="title">Welcome to Webappify!</p>
     <p class="content">An open-source web-application platform!</p>
-    <button onclick="page('template');">Create an app!</button>
-    <button onclick="page('about');">About Webappify</button>
+    <button onclick="UI.page('template');">Create an app!</button>
+    <button onclick="UI.page('about');">About Webappify</button>
 </div>
 <div id="about" column>
     <img src="resources/svg/icons/app/icon.svg" style="height: 18vh;width: auto;" alt="Icon"/>

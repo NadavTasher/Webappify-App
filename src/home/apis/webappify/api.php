@@ -14,7 +14,7 @@ const WEBAPPIFY_DOCKERFILE = "Dockerfile";
 const WEBAPPIFY_DEPLOYMENT = "deployment";
 const WEBAPPIFY_TIMEOUT = 60 * 24 * 60 * 60;
 // Initialize constant paths
-const WEBAPPIFY_PATH = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "..";
+const WEBAPPIFY_PATH = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "..";
 const WEBAPPIFY_PATH_DOCKERFILE = WEBAPPIFY_PATH . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "others" . DIRECTORY_SEPARATOR . "Dockerfile";
 const WEBAPPIFY_PATH_TEMPLATES = WEBAPPIFY_PATH . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "sources";
 const WEBAPPIFY_PATH_APPLICATIONS = WEBAPPIFY_PATH . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "apps";
@@ -25,7 +25,7 @@ const WEBAPPIFY_PATH_APPLICATIONS = WEBAPPIFY_PATH . DIRECTORY_SEPARATOR . ".." 
  */
 function webappify()
 {
-    return api(WEBAPPIFY_API, function ($action, $parameters) {
+    return API::handle(WEBAPPIFY_API, function ($action, $parameters) {
         if ($action === "create") {
             if (isset($parameters->flavor) && isset($parameters->configuration)) {
                 $flavor = $parameters->flavor;
@@ -185,4 +185,17 @@ function webappify_copy($source, $destination, $permissions = 0755)
         }
     }
     return true;
+}
+
+/**
+ * Creates a random string.
+ * @param int $length String length
+ * @return string String
+ */
+function random($length = 0)
+{
+    if ($length > 0) {
+        return str_shuffle("0123456789abcdefghijklmnopqrstuvwxyz")[0] . random($length - 1);
+    }
+    return "";
 }

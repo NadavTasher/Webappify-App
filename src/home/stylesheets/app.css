@@ -3,14 +3,15 @@
  * https://github.com/NadavTasher/Webappify/
  **/
 
-body {
-    background-color: #008080;
-    max-width: 460px;
+:root {
+    --bright: #DDDDEE;
+    --dark: #9999AA;
+    --theme: #008080;
+    --text: black;
 }
 
-table {
-    background-color: #67b8ed;
-    border-radius: 3vh;
+body {
+    max-width: 460px;
 }
 
 img {

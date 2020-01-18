@@ -1,10 +1,9 @@
-FROM php:7.3-apache
+FROM php:7.4.1-apache
 # Update package lists
 RUN apt-get update
 RUN mkdir -p /usr/share/man/man1
 # Install php-zip
 RUN apt-get install -y libzip-dev zip
-RUN docker-php-ext-configure zip --with-libzip
 RUN docker-php-ext-install zip
 # Install git
 RUN apt-get install -y git

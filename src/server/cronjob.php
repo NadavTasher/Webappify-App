@@ -5,7 +5,7 @@
  * https://github.com/NadavTasher/Webappify/
  **/
 
-include_once __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "backend" . DIRECTORY_SEPARATOR . "webappify" . DIRECTORY_SEPARATOR . "api.php";
+include_once __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "home" . DIRECTORY_SEPARATOR . "apis" . DIRECTORY_SEPARATOR . "webappify" . DIRECTORY_SEPARATOR . "api.php";
 
 cronjob_update();
 cronjob_remove();

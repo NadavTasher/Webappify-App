@@ -1,4 +1,5 @@
 <?php
 include "api.php";
+API::init();
 webappify();
-echo json_encode($result);
+API::echo();
