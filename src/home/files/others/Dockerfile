@@ -1,4 +1,4 @@
-FROM php:7.3-apache
+FROM php:7.4.1-apache
 # Enable mods
 RUN a2enmod headers
 # Copy WebApp to /var/www/html
