@@ -10,7 +10,14 @@
  */
 class API
 {
-    private static $result = null;
+    // Base API name
+    public const BASE = "base";
+
+    // APIs directory
+    private const APIS_DIRECTORY = __DIR__ . DIRECTORY_SEPARATOR . "..";
+
+    // API results
+    private static stdClass $result;
 
     /**
      * Creates the result JSON.
@@ -29,6 +36,16 @@ class API
     }
 
     /**
+     * Returns the directory of an API.
+     * @param string $API API name
+     * @return string API directory
+     */
+    public static function directory($API)
+    {
+        return self::APIS_DIRECTORY . DIRECTORY_SEPARATOR . $API;
+    }
+
+    /**
      * Handles API calls by handing them over to the callback.
      * @param string $API The API to listen to
      * @param callable $callback The callback to be called with action and parameters
@@ -37,13 +54,24 @@ class API
      */
     public static function handle($API, $callback, $filter = true)
     {
+        // Initialize the request
+        $request = null;
+        // Load the request from POST or GET
         if (isset($_POST["api"])) {
             $request = $_POST["api"];
+        } else if (isset($_GET["api"])) {
+            $request = $_GET["api"];
+        }
+        // Make sure the request is initialized
+        if ($request !== null) {
+            // Filter the request
             if ($filter) {
                 $request = str_replace("<", "", $request);
                 $request = str_replace(">", "", $request);
             }
+            // Decode the request
             $APIs = json_decode($request);
+            // Parse the APIs
             if (isset($APIs->$API)) {
                 if (isset($APIs->$API->action) &&
                     isset($APIs->$API->parameters)) {
@@ -61,7 +89,7 @@ class API
                                     if (count($action_result) >= 3) {
                                         return $action_result[2];
                                     } else {
-                                        return $action_result;
+                                        return null;
                                     }
                                 }
                             }
@@ -70,6 +98,7 @@ class API
                 }
             }
         }
+        // Fallback result
         return null;
     }
 }
@@ -95,11 +124,11 @@ class Database
 
     /**
      * Database constructor.
-     * @param string $path Root directory
+     * @param string $API API name
      */
-    public function __construct($path = __DIR__)
+    public function __construct($API = API::BASE)
     {
-        $this->directory = $path . DIRECTORY_SEPARATOR . "database";
+        $this->directory = API::directory($API) . DIRECTORY_SEPARATOR . "database";
         $this->directory_rows = $this->directory . DIRECTORY_SEPARATOR . "rows";
         $this->directory_columns = $this->directory . DIRECTORY_SEPARATOR . "columns";
         $this->directory_links = $this->directory . DIRECTORY_SEPARATOR . "links";
@@ -139,7 +168,7 @@ class Database
     /**
      * Creates a new database row.
      * @param null $id ID
-     * @return string Row ID
+     * @return array Result
      */
     public function create_row($id = null)
     {
@@ -147,64 +176,82 @@ class Database
         if ($id === null)
             $id = self::id(32);
         // Check if the row already exists
-        if (!$this->has_row($id)) {
+        $has_row = $this->has_row($id);
+        if (!$has_row[0]) {
             // Create row directory
             mkdir($this->directory_rows . DIRECTORY_SEPARATOR . $id);
+            // Return result
+            return [true, $id];
         }
-        return $id;
+        return [false, "Row already exists"];
     }
 
     /**
      * Creates a new database column.
      * @param string $name Column name
+     * @return array Result
      */
     public function create_column($name)
     {
         // Generate hashed string
         $hashed = self::hash($name);
         // Check if the column already exists
-        if (!$this->has_column($name)) {
+        $has_column = $this->has_column($name);
+        if (!$has_column[0]) {
             // Create column directory
             mkdir($this->directory_columns . DIRECTORY_SEPARATOR . $hashed);
+            // Return result
+            return [true, $name];
         }
+        return [false, "Column already exists"];
     }
 
     /**
      * Creates a new database link.
      * @param string $row Row ID
      * @param string $link Link value
+     * @return array Result
      */
     public function create_link($row, $link)
     {
         // Generate hashed string
         $hashed = self::hash($link);
         // Check if the link already exists
-        if (!$this->has_link($link)) {
+        $has_link = $this->has_link($link);
+        if (!$has_link[0]) {
             // Make sure the row exists
-            if ($this->has_row($row)) {
+            $has_row = $this->has_row($row);
+            if ($has_row[0]) {
                 // Generate link file
                 file_put_contents($this->directory_links . DIRECTORY_SEPARATOR . $hashed, $row);
+                // Return result
+                return [true, $link];
             }
+            return $has_row;
         }
+        return [false, "Link already exists"];
     }
 
     /**
      * Check whether a database row exists.
      * @param string $id Row ID
-     * @return bool Exists
+     * @return array Result
      */
     public function has_row($id)
     {
         // Store path
         $path = $this->directory_rows . DIRECTORY_SEPARATOR . $id;
         // Check if path exists and is a directory
-        return file_exists($path) && is_dir($path);
+        if (file_exists($path) && is_dir($path)) {
+            return [true, $id];
+        }
+        return [false, "Row doesn't exist"];
     }
 
     /**
      * Check whether a database column exists.
      * @param string $name Column name
-     * @return bool Exists
+     * @return array Result
      */
     public function has_column($name)
     {
@@ -213,13 +260,16 @@ class Database
         // Store path
         $path = $this->directory_columns . DIRECTORY_SEPARATOR . $hashed;
         // Check if path exists and is a directory
-        return file_exists($path) && is_dir($path);
+        if (file_exists($path) && is_dir($path)) {
+            return [true, $name];
+        }
+        return [false, "Column doesn't exist"];
     }
 
     /**
      * Check whether a database link exists.
      * @param string $link Link value
-     * @return bool Exists
+     * @return array Result
      */
     public function has_link($link)
     {
@@ -228,49 +278,44 @@ class Database
         // Store path
         $path = $this->directory_links . DIRECTORY_SEPARATOR . $hashed;
         // Check if path exists and is a file
-        return file_exists($path) && is_file($path);
-    }
-
-    /**
-     * Follows a link and retrieves the row ID it points to.
-     * @param string $link Link value
-     * @return string | null Row ID
-     */
-    public function follow_link($link)
-    {
-        // Check if link exists
-        if ($this->has_link($link)) {
+        if (file_exists($path) && is_file($path)) {
             // Generate hashed string
             $hashed = self::hash($link);
             // Store path
             $path = $this->directory_links . DIRECTORY_SEPARATOR . $hashed;
             // Read link
-            return file_get_contents($path);
+            return [true, file_get_contents($path)];
         }
-        return null;
+        return [false, "Link doesn't exist"];
     }
 
     /**
      * Check whether a database value exists.
      * @param string $row Row ID
      * @param string $column Column name
-     * @return bool Exists
+     * @return array Result
      */
     public function isset($row, $column)
     {
         // Check if row exists
-        if ($this->has_row($row)) {
+        $has_row = $this->has_row($row);
+        if ($has_row[0]) {
             // Check if the column exists
-            if ($this->has_column($column)) {
+            $has_column = $this->has_column($column);
+            if ($has_column[0]) {
                 // Generate hashed string
                 $hashed = self::hash($column);
                 // Store path
                 $path = $this->directory_rows . DIRECTORY_SEPARATOR . $row . DIRECTORY_SEPARATOR . $hashed;
                 // Check if path exists and is a file
-                return file_exists($path) && is_file($path);
+                if (file_exists($path) && is_file($path)) {
+                    return [true, null];
+                }
+                return [false, "Value doesn't exist"];
             }
+            return $has_column;
         }
-        return false;
+        return $has_row;
     }
 
     /**
@@ -278,15 +323,17 @@ class Database
      * @param string $row Row ID
      * @param string $column Column name
      * @param string $value Value
+     * @return array Result
      */
     public function set($row, $column, $value)
     {
         // Remove previous values
-        if ($this->isset($row, $column)) {
+        if ($this->isset($row, $column)[0]) {
             $this->unset($row, $column);
         }
         // Check if the column exists
-        if ($this->has_column($column)) {
+        $has_column = $this->has_column($column);
+        if ($has_column[0]) {
             // Create hashed string
             $hashed_name = self::hash($column);
             // Store path
@@ -310,20 +357,26 @@ class Database
             array_push($rows, $row);
             // Write contents
             file_put_contents($index_path, implode(self::SEPARATOR, $rows));
+            // Result result
+            return [true, null];
         }
+        return $has_column;
     }
 
     /**
      * Unsets a database value.
      * @param string $row Row ID
      * @param string $column Column name
+     * @return array Result
      */
     public function unset($row, $column)
     {
         // Check if a value is already set
-        if ($this->isset($row, $column)) {
+        $isset = $this->isset($row, $column);
+        if ($isset[0]) {
             // Check if the column exists
-            if ($this->has_column($column)) {
+            $has_column = $this->has_column($column);
+            if ($has_column[0]) {
                 // Create hashed string
                 $hashed_name = self::hash($column);
                 // Store path
@@ -345,29 +398,35 @@ class Database
                     unset($rows[array_search($row, $rows)]);
                     // Write contents
                     file_put_contents($index_path, implode(self::SEPARATOR, $rows));
+                    // Return result
+                    return [true, null];
                 }
+                return [false, "Index doesn't exist"];
             }
+            return $has_column;
         }
+        return $isset;
     }
 
     /**
      * Gets a database value.
      * @param string $row Row ID
      * @param string $column Column name
-     * @return string | null Value
+     * @return array Result
      */
     public function get($row, $column)
     {
         // Check if a value is set
-        if ($this->isset($row, $column)) {
+        $isset = $this->isset($row, $column);
+        if ($isset[0]) {
             // Generate hashed string
             $hashed = self::hash($column);
             // Store path
             $path = $this->directory_rows . DIRECTORY_SEPARATOR . $row . DIRECTORY_SEPARATOR . $hashed;
             // Read path
-            return file_get_contents($path);
+            return [true, file_get_contents($path)];
         }
-        return null;
+        return $isset;
     }
 
     /**
@@ -381,7 +440,8 @@ class Database
         // Create rows array
         $rows = array();
         // Check if the column exists
-        if ($this->has_column($column)) {
+        $has_column = $this->has_column($column);
+        if ($has_column[0]) {
             // Create hashed string
             $hashed_name = self::hash($column);
             // Create hashed string
@@ -395,8 +455,9 @@ class Database
                 // Separate lines
                 $rows = explode(self::SEPARATOR, $contents);
             }
+            return [true, $rows];
         }
-        return $rows;
+        return $has_column;
     }
 
     /**
@@ -413,17 +474,17 @@ class Database
     }
 
     /**
-     * Creates a hash for a given message.
+     * Hashes a message.
      * @param string $message Message
-     * @param int $layers Layers
+     * @param int $rounds Number of rounds
      * @return string Hash
      */
-    private static function hash($message, $layers = self::HASHING_ROUNDS)
+    private static function hash($message, $rounds = self::HASHING_ROUNDS)
     {
-        if ($layers === 0) {
+        if ($rounds === 0) {
             return hash(self::HASHING_ALGORITHM, $message);
         } else {
-            return hash(self::HASHING_ALGORITHM, self::hash($message, $layers - 1));
+            return hash(self::HASHING_ALGORITHM, self::hash($message, $rounds - 1));
         }
     }
 }
@@ -438,8 +499,9 @@ class Authority
     // Subdirectories
     private string $secret_file;
     private string $access_file;
+    // Token issuer
+    private string $issuer;
     // Lengths
-    private const LENGTH_RANDOM = 32;
     private const LENGTH_SECRET = 512;
     // Token properties
     private const VALIDITY = 31 * 24 * 60 * 60;
@@ -450,13 +512,14 @@ class Authority
 
     /**
      * Authority constructor.
-     * @param string $path Root directory
+     * @param string $API API name
      */
-    public function __construct($path = __DIR__)
+    public function __construct($API = API::BASE)
     {
-        $this->directory = $path . DIRECTORY_SEPARATOR . "configuration";
+        $this->directory = API::directory($API) . DIRECTORY_SEPARATOR . "authority";
         $this->secret_file = $this->directory . DIRECTORY_SEPARATOR . "secret";
         $this->access_file = $this->directory . DIRECTORY_SEPARATOR . ".htaccess";
+        $this->issuer = $API;
         $this->create();
     }
 
@@ -494,76 +557,109 @@ class Authority
 
     /**
      * Returns the shared secret.
-     * @return string Secret
+     * @return array Result
      */
     private function secret()
     {
         // Read secret file
-        return file_get_contents($this->secret_file);
+        if (file_exists($this->secret_file) && is_file($this->secret_file)) {
+            return [true, file_get_contents($this->secret_file)];
+        }
+        // Fallback error
+        return [false, "Secret doesn't exist"];
     }
 
     /**
      * Creates a token.
-     * @param string $issuer Issuer
-     * @param string $contents Content
+     * @param string | stdClass | array $contents Content
+     * @param array $permissions Permissions
      * @param float | int $validity Validity time
-     * @return string Token
+     * @return array Result
      */
-    public function issue($issuer, $contents, $validity = self::VALIDITY)
+    public function issue($contents, $permissions = [], $validity = self::VALIDITY)
     {
-        // Calculate expiry time
-        $time = time() + intval($validity);
-        $token_parts = [
-            self::random(self::LENGTH_RANDOM),
-            $issuer,
-            $contents,
-            strval($time)
-        ];
-        // Create token string
-        $token = implode(self::SEPARATOR, $token_parts);
-        // Calculate signature
-        $signature = self::hash($token, $this->secret());
-        // Return combined message
-        return bin2hex(implode(self::SEPARATOR, [$token, $signature]));
+        // Load secret
+        $secret = $this->secret();
+        // Make sure secret exists
+        if ($secret[0]) {
+            // Create token object
+            $token_object = new stdClass();
+            $token_object->contents = $contents;
+            $token_object->permissions = $permissions;
+            $token_object->issuer = self::hash($this->issuer);
+            $token_object->expiry = time() + intval($validity);
+            // Create token string
+            $token_object_string = json_encode($token_object);
+            // Calculate signature
+            $token_signature = self::sign($token_object_string, $secret[1]);
+            // Create parts
+            $token_parts = [$token_object_string, $token_signature];
+            // Combine all into token
+            $token = bin2hex(implode(self::SEPARATOR, $token_parts));
+            // Return combined message
+            return [true, $token];
+        }
+        // Fallback error
+        return $secret;
     }
 
     /**
      * Validates a token.
-     * @param string $issuer Issuer
      * @param string $token Token
+     * @param array $permissions Permissions
      * @return array Validation result
      */
-    public function validate($issuer, $token)
+    public function validate($token, $permissions = [])
     {
-        // Separate string
-        $token_parts = explode(self::SEPARATOR, hex2bin($token));
-        // Validate content count
-        if (count($token_parts) === 5) {
-            // Store parts
-            $token_random = $token_parts[0];
-            $token_issuer = $token_parts[1];
-            $token_contents = $token_parts[2];
-            $token_time = $token_parts[3];
-            $token_signature = $token_parts[4];
-            // Regenerate token string
-            $token = implode(self::SEPARATOR, array_slice($token_parts, 0, 4));
-            // Validate signature
-            if (self::hash($token, $this->secret()) === $token_signature) {
-                // Validate issuer
-                if ($token_issuer === $issuer) {
-                    // Check against time
-                    $time = intval($token_time);
-                    if ($time > time()) {
-                        // Return token contents
-                        return [true, $token_contents];
+        // Load secret
+        $secret = $this->secret();
+        // Make sure secret exists
+        if ($secret[0]) {
+            // Separate string
+            $token_parts = explode(self::SEPARATOR, hex2bin($token));
+            // Validate content count
+            if (count($token_parts) === 2) {
+                // Store parts
+                $token_object_string = $token_parts[0];
+                $token_signature = $token_parts[1];
+                // Validate signature
+                if (self::sign($token_object_string, $secret[1]) === $token_signature) {
+                    // Parse token object
+                    $token_object = json_decode($token_object_string);
+                    // Validate existence
+                    if (isset($token_object->contents) && isset($token_object->permissions) && isset($token_object->issuer) && isset($token_object->expiry)) {
+                        // Validate issuer
+                        if ($token_object->issuer === self::hash($this->issuer)) {
+                            // Validate expiry
+                            if (time() < $token_object->expiry) {
+                                // Validate permissions
+                                foreach ($permissions as $permission) {
+                                    // Make sure permission exists
+                                    if (array_search($permission, $token_object->permissions) === false) {
+                                        // Fallback error
+                                        return [false, "Insufficient token permissions"];
+                                    }
+                                }
+                                // Return token
+                                return [true, $token_object->contents];
+                            }
+                            // Fallback error
+                            return [false, "Invalid token expiry"];
+                        }
+                        // Fallback error
+                        return [false, "Invalid token issuer"];
                     }
-                    return [false, "Token expired"];
+                    // Fallback error
+                    return [false, "Invalid token structure"];
                 }
-                return [false, "Invalid token issuer"];
+                // Fallback error
+                return [false, "Invalid token signature"];
             }
-            return [false, "Invalid token signature"];
+            // Fallback error
+            return [false, "Invalid token format"];
         }
-        return [false, "Invalid token format"];
+        // Fallback error
+        return $secret;
     }
 
     /**
@@ -571,19 +667,34 @@ class Authority
      * @param string $message Message
      * @param string $secret Shared secret
      * @param int $rounds Number of rounds
-     * @return string HMACed
+     * @return string Signature
      */
-    private static function hash($message, $secret, $rounds = self::HASHING_ROUNDS)
+    private static function sign($message, $secret, $rounds = self::HASHING_ROUNDS)
     {
         // Layer > 0 result
         if ($rounds > 0) {
-            $layer = self::hash($message, $secret, $rounds - 1);
+            $layer = self::sign($message, $secret, $rounds - 1);
             $return = hash_hmac(self::HASHING_ALGORITHM, $layer, $secret);
         } else {
             // Layer 0 result
             $return = hash_hmac(self::HASHING_ALGORITHM, $message, $secret);
         }
         return $return;
+    }
+
+    /**
+     * Hashes a message.
+     * @param string $message Message
+     * @param int $rounds Number of rounds
+     * @return string Hash
+     */
+    private static function hash($message, $rounds = self::HASHING_ROUNDS)
+    {
+        if ($rounds === 0) {
+            return hash(self::HASHING_ALGORITHM, $message);
+        } else {
+            return hash(self::HASHING_ALGORITHM, self::hash($message, $rounds - 1));
+        }
     }
 
     /**

@@ -39,12 +39,11 @@ function webappify_create() {
         }
     }, (success, result) => {
         if (success) {
-            UI.get("open").onclick = () => window.location = "../apps/" + result.id;
+            UI.get("open").onclick = () => window.location = "../apps/" + result.id + "/src/";
             UI.get("sources").onclick = () => webappify_save("WebAppBundle.zip", result.sources, "application/zip", "base64");
-            UI.get("docker").onclick = () => webappify_save("WebAppDocker.zip", result.docker, "application/zip", "base64");
             UI.page("finish");
         } else {
-            UI.popup("An error occurred: " + result, 0, "#AA0000AA");
+            alert("An error occurred: " + result);
         }
     });
 }

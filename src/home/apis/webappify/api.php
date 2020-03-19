@@ -10,12 +10,10 @@ include_once __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "base"
 
 // Constants
 const WEBAPPIFY_API = "webappify";
-const WEBAPPIFY_DOCKERFILE = "Dockerfile";
 const WEBAPPIFY_DEPLOYMENT = "deployment";
 const WEBAPPIFY_TIMEOUT = 60 * 24 * 60 * 60;
 // Initialize constant paths
 const WEBAPPIFY_PATH = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "..";
-const WEBAPPIFY_PATH_DOCKERFILE = WEBAPPIFY_PATH . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "others" . DIRECTORY_SEPARATOR . "Dockerfile";
 const WEBAPPIFY_PATH_TEMPLATES = WEBAPPIFY_PATH . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "sources";
 const WEBAPPIFY_PATH_APPLICATIONS = WEBAPPIFY_PATH . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "apps";
 
@@ -82,8 +80,7 @@ function webappify_create($flavour, $configuration)
         webappify_replace("// App Load Code", $configuration->load, $directory);
         webappify_replace("// App Code", $configuration->code, $directory);
         // Pack app
-        $app->sources = webappify_sources_bundle($id);
-        $app->docker = webappify_docker_bundle($id);
+        $app->sources = webappify_bundle($id);
         // Register app
         file_put_contents($directory . DIRECTORY_SEPARATOR . WEBAPPIFY_DEPLOYMENT, time());
         return $app;
@@ -91,53 +88,25 @@ function webappify_create($flavour, $configuration)
 }
 
 /**
- * This function creates a ZipArchive with the app's sources.
- * @param string $file Temporary File
+ * This function creates a source bundle and returns an encoded base64 string.
  * @param string $id App ID
- * @param string $prefix Prefix
- * @return ZipArchive Zip with sources
+ * @return string Base64 Encoded Sources Bundle
  */
-function webappify_sources($file, $id, $prefix = "")
+function webappify_bundle($id)
 {
+    $temporaryFile = tempnam(null, "zip");
     $zip = new ZipArchive();
-    $zip->open($file, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+    $zip->open($temporaryFile, ZipArchive::CREATE | ZipArchive::OVERWRITE);
     $rootPath = realpath(WEBAPPIFY_PATH_APPLICATIONS . DIRECTORY_SEPARATOR . $id);
     foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($rootPath), RecursiveIteratorIterator::LEAVES_ONLY) as $file) {
         if (!$file->isDir()) {
             $filePath = $file->getRealPath();
             $relativePath = substr($filePath, strlen($rootPath) + 1);
-            $relativePath = $prefix . $relativePath;
             $zip->addFile($filePath, $relativePath);
         }
     }
-    return $zip;
-}
-
-/**
- * This function creates a source bundle and returns an encoded base64 string.
- * @param string $id App ID
- * @return string Base64 Encoded Sources Bundle
- */
-function webappify_sources_bundle($id)
-{
-    $file = tempnam(null, "zip");
-    $zip = webappify_sources($file, $id);
     $zip->close();
-    return base64_encode(file_get_contents($file));
-}
-
-/**
- * This function creates a docker sources bundle and returns an encoded base64 string.
- * @param string $id App ID
- * @return string Base64 Encoded Docker Sources Bundle
- */
-function webappify_docker_bundle($id)
-{
-    $file = tempnam(null, "zip");
-    $zip = webappify_sources($file, $id, "src" . DIRECTORY_SEPARATOR);
-    $zip->addFile(WEBAPPIFY_PATH_DOCKERFILE, WEBAPPIFY_DOCKERFILE);
-    $zip->close();
-    return base64_encode(file_get_contents($file));
+    return base64_encode(file_get_contents($temporaryFile));
 }
 
 /**
