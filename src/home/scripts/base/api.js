@@ -128,11 +128,11 @@ class Authority {
         // Make sure the token is two parts
         if (token_parts.length === 2) {
             // Parse object
-            let token_object = JSON.parse(token_parts[0]);
+            let token_object = JSON.parse(Authority.hex2bin(token_parts[0]));
             // Validate structure
             if (token_object.hasOwnProperty("contents") && token_object.hasOwnProperty("permissions") && token_object.hasOwnProperty("issuer") && token_object.hasOwnProperty("expiry")) {
                 // Validate time
-                if (token_object.expiry < Math.floor(Date.now() / 1000)) {
+                if (Math.floor(Date.now() / 1000) < token_object.expiry) {
                     // Validate permissions
                     for (let permission of permissions) {
                         // Make sure permission exists

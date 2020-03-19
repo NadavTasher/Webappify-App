@@ -589,7 +589,7 @@ class Authority
             $token_object->issuer = self::hash($this->issuer);
             $token_object->expiry = time() + intval($validity);
             // Create token string
-            $token_object_string = json_encode($token_object);
+            $token_object_string = bin2hex(json_encode($token_object));
             // Calculate signature
             $token_signature = self::sign($token_object_string, $secret[1]);
             // Create parts
@@ -625,7 +625,7 @@ class Authority
                 // Validate signature
                 if (self::sign($token_object_string, $secret[1]) === $token_signature) {
                     // Parse token object
-                    $token_object = json_decode($token_object_string);
+                    $token_object = json_decode(hex2bin($token_object_string));
                     // Validate existence
                     if (isset($token_object->contents) && isset($token_object->permissions) && isset($token_object->issuer) && isset($token_object->expiry)) {
                         // Validate issuer
