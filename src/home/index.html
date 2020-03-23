@@ -1,36 +1,41 @@
 <!DOCTYPE html>
 <!--
  Copyright (c) 2019 Nadav Tasher
- https://github.com/NadavTasher/WebAppBase/
+ https://github.com/NadavTasher/BaseTemplate/
 -->
 <html row lang="en">
 <head>
+    <!-- Charset -->
     <meta charset="UTF-8"/>
+    <!-- App Description -->
     <meta name="description" content="Create your next app with Webappify!">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, minimal-ui"/>
+    <!-- Viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, minimal-ui"/>
+    <!-- Mobile -->
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#008080"/>
+    <meta name="theme-color" content="#FFFFFF"/>
+    <!-- Mobile Safari -->
     <meta name="apple-mobile-web-app-capable" content="yes"/>
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
     <meta name="apple-mobile-web-app-title" content="Webappify"/>
-    <link rel="apple-touch-icon" href="images/icons/icon_apple.png"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <!-- Icons -->
     <link rel="icon" href="images/icons/icon.png"/>
+    <link rel="apple-touch-icon" href="images/icons/icon_apple.png"/>
+    <!-- Web Manifest -->
     <link rel="manifest" href="resources/manifest.json"/>
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="stylesheets/app.css"/>
     <link rel="stylesheet" href="stylesheets/theme.css"/>
-    <link rel="stylesheet" href="stylesheets/template.css"/>
+    <!-- Scripts -->
     <script type="text/javascript" src="scripts/app.js"></script>
     <script type="text/javascript" src="scripts/base/api.js"></script>
     <script type="text/javascript" src="scripts/webappify/api.js"></script>
+    <!-- App Title -->
     <title>Webappify</title>
+    <!-- No Script -->
     <noscript></noscript>
 </head>
 <body onload="App.prepare(load);" column>
-<!--
- Copyright (c) 2019 Nadav Tasher
- https://github.com/NadavTasher/Webappify/
--->
-
 <div id="template" column>
     <p class="title">Choose an app template:</p>
     <select id="flavor" title="Flavor"></select>
@@ -86,7 +91,7 @@
     <button onclick="UI.page('about');">About Webappify</button>
 </div>
 <div id="about" column>
-    <img src="resources/svg/icons/app/icon.svg" style="height: 18vh;width: auto;" alt="Icon"/>
+    <img src="images/icons/icon.png" style="height: 18vh;width: auto;" alt="Icon"/>
     <p class="title">Webappify</p>
     <a href="https://github.com/NadavTasher/Webappify">An open-source application platform,</a>
     <a href="https://kut.to">Developed by Nadav Tasher</a>

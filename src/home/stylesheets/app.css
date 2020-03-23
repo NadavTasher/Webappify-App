@@ -15,8 +15,9 @@ body {
 }
 
 img {
-    height: 25vw;
-    width: 25vw;
+    max-width: 18vh;
+    max-height: 18vh;
+    align-self: center;
 }
 
 .title {
@@ -37,10 +38,6 @@ input {
 
 textarea {
     height: 30vh;
-}
-
-#deploy-buttons > * {
-    width: 100%;
 }
 
 [coasted] {
