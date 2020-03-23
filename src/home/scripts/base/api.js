@@ -179,7 +179,7 @@ class App {
     static prepare(callback = null) {
         // Register worker
         if ("serviceWorker" in navigator)
-            navigator.serviceWorker.register("worker.js").then();
+            navigator.serviceWorker.register("worker.js", {scope: "./"}).then();
         // Load layouts
         if (callback !== null)
             callback();
@@ -265,28 +265,5 @@ class UI {
         while (view.firstChild) {
             view.removeChild(view.firstChild);
         }
-    }
-}
-
-/**
- * Base API for device information.
- */
-class Device {
-    /**
-     * Returns whether the device is a mobile phone.
-     * @returns {boolean} Is mobile
-     */
-    static isMobile() {
-        // Check if the height is larger than the width
-        return window.innerHeight > window.innerWidth;
-    }
-
-    /**
-     * Returns whether the device is a desktop.
-     * @returns {boolean} Is desktop
-     */
-    static isDesktop() {
-        // Check if the device is not mobile
-        return !Device.isMobile();
     }
 }

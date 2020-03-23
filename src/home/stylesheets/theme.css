@@ -34,8 +34,6 @@ textarea {
 }
 
 [text = ""], [text = true], a, p, [input = ""], [input = true], button, input, select, textarea, [row = ""], [row = true], [column = ""], [column = true], div {
-    /* WebKit */
-    -webkit-appearance: none;
     /* Display */
     display: flex;
     flex-direction: column;

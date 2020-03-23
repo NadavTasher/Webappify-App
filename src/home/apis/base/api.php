@@ -73,13 +73,20 @@ class API
             $APIs = json_decode($request);
             // Parse the APIs
             if (isset($APIs->$API)) {
-                if (isset($APIs->$API->action) &&
-                    isset($APIs->$API->parameters)) {
-                    if (is_string($APIs->$API->action) &&
-                        is_object($APIs->$API->parameters)) {
+                if (isset($APIs->$API->action)) {
+                    if (is_string($APIs->$API->action)) {
+                        // Parse the action
                         $action = $APIs->$API->action;
-                        $action_parameters = $APIs->$API->parameters;
+                        $action_parameters = new stdClass();
+                        // Parse the parameters
+                        if (isset($APIs->$API->parameters)) {
+                            if (is_object($APIs->$API->parameters)) {
+                                $action_parameters = $APIs->$API->parameters;
+                            }
+                        }
+                        // Execute the call
                         $action_result = $callback($action, $action_parameters);
+                        // Parse the results
                         if (is_array($action_result)) {
                             if (count($action_result) >= 2) {
                                 if (is_bool($action_result[0])) {

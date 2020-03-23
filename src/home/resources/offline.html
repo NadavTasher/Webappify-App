@@ -3,16 +3,22 @@
  Copyright (c) 2019 Nadav Tasher
  https://github.com/NadavTasher/BaseTemplate/
 -->
-<html row lang="en">
+<html onclick="window.location.reload();" row lang="en">
 <head>
-    <meta charset="UTF-8">
+    <!-- Charset -->
+    <meta charset="UTF-8"/>
+    <!-- App Description -->
+    <meta name="description" content="AppDescription">
+    <!-- Viewport -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, minimal-ui"/>
+    <!-- Mobile -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#FFFFFF"/>
-    <link rel="icon"
-          href="data:image/png;base64,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"/>
+    <!-- App Title -->
     <title>Offline</title>
+    <!-- No Script -->
     <noscript></noscript>
+    <!-- Stylesheets -->
     <style>
 
         /**
@@ -30,8 +36,6 @@
         body {
             max-width: 460px;
         }
-
-        /* App Style */
 
         html {
             /* Positioning */
@@ -64,8 +68,6 @@
         }
 
         [text = ""], [text = true], a, p, [input = ""], [input = true], button, input, select, textarea, [row = ""], [row = true], [column = ""], [column = true], div {
-            /* WebKit */
-            -webkit-appearance: none;
             /* Display */
             display: flex;
             flex-direction: column;
@@ -99,6 +101,8 @@
             /* Shaping */
             border-radius: 0.5vh;
             border-color: transparent;
+            /* Width */
+            width: auto;
         }
 
         [input = ""], [input = true], button, input, select, textarea {
@@ -145,7 +149,7 @@
     </style>
 </head>
 <body column>
-<p style="font-size: 5vh;">You are offline - try reloading the page.</p>
-<button onclick="window.location.reload(true);">Reload the page</button>
+<p style="font-size: 6vh">Offline</p>
+<p style="font-size: 3vh">Touch to reload</p>
 </body>
 </html>

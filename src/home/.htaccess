@@ -1,5 +1,3 @@
-<FilesMatch "^(?!.*\.((png|jpg|jpeg|gif|webp)|(mp4|mkv|avi|m4v)|(mp3|ogg|flac|m4a|wav))$).*$">
-    Header set Pragma "no-cache"
-    Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
-    Header set Expires "Thu, 1 Jan 1970 00:00:00 GMT"
-</FilesMatch>
+Header set Cache-Control "no-cache, no-store, must-revalidate"
+Header set Pragma "no-cache"
+Header set Expires 0
