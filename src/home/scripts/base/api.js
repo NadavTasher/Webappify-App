@@ -4,9 +4,22 @@
  **/
 
 /**
+ * Prepares the web page (loads ServiceWorker).
+ * @param callback Function to be executed when loading finishes
+ */
+window.prepare = function (callback = null) {
+    // Register worker
+    if ("serviceWorker" in navigator)
+        navigator.serviceWorker.register("worker.js", {scope: "./"}).then();
+    // Callback
+    if (callback !== null)
+        callback();
+};
+
+/**
  * Base API for sending requests.
  */
-class API {
+window.API = class {
 
     /**
      * Sends an API call.
@@ -17,7 +30,7 @@ class API {
      * @param APIs API list
      */
     static send(endpoint = null, action = null, parameters = null, callback = null, APIs = {}) {
-        API.call(endpoint, API.hook(endpoint, action, parameters, callback, APIs));
+        this.call(endpoint, API.hook(endpoint, action, parameters, callback, APIs));
     }
 
     /**
@@ -113,9 +126,14 @@ class API {
         // Return updated API list
         return APIs;
     }
-}
 
-class Authority {
+};
+
+/**
+ * Base API for token validation.
+ * @type {Window.Authority}
+ */
+window.Authority = class {
 
     /**
      * Validates a given token and return its contents.
@@ -124,11 +142,11 @@ class Authority {
      */
     static validate(token, permissions = []) {
         // Split the token
-        let token_parts = Authority.hex2bin(token).split(":");
+        let token_parts = this.hex2bin(token).split(":");
         // Make sure the token is two parts
         if (token_parts.length === 2) {
             // Parse object
-            let token_object = JSON.parse(Authority.hex2bin(token_parts[0]));
+            let token_object = JSON.parse(this.hex2bin(token_parts[0]));
             // Validate structure
             if (token_object.hasOwnProperty("contents") && token_object.hasOwnProperty("permissions") && token_object.hasOwnProperty("issuer") && token_object.hasOwnProperty("expiry")) {
                 // Validate time
@@ -166,39 +184,135 @@ class Authority {
         }
         return string;
     }
-}
+
+};
 
 /**
- * Base API for preparing the app.
+ * Base API for storage management.
  */
-class App {
+window.PathStorage = class {
+
     /**
-     * Prepares the web page (loads ServiceWorker, HTML).
-     * @param callback Function to be executed when loading finishes
+     * Set a value in the storage.
+     * @param key Key
+     * @param value Value
      */
-    static prepare(callback = null) {
-        // Register worker
-        if ("serviceWorker" in navigator)
-            navigator.serviceWorker.register("worker.js", {scope: "./"}).then();
-        // Load layouts
-        if (callback !== null)
-            callback();
+    static setItem(key, value) {
+        // Load the storage
+        let storage = this._load();
+        // Put the value
+        storage[key] = value;
+        // Unload the storage
+        this._unload(storage);
     }
-}
+
+    /**
+     * Removes a value from the storage.
+     * @param key Key
+     */
+    static removeItem(key) {
+        // Load the storage
+        let storage = this._load();
+        // Put the value
+        storage[key] = undefined;
+        // Unload the storage
+        this._unload(storage);
+    }
+
+    /**
+     * Get a value from the storage.
+     * @param key Key
+     */
+    static getItem(key) {
+        if (this.hasItem(key)) {
+            // Load the storage
+            let storage = this._load();
+            // Pull the value
+            return storage[key];
+        }
+        return null;
+    }
+
+    /**
+     * Checks is a value exists in the storage.
+     * @param key Key
+     * @return {boolean} Exists
+     */
+    static hasItem(key) {
+        // Load the storage
+        let storage = this._load();
+        // Check existence
+        return storage.hasOwnProperty(key);
+    }
+
+    /**
+     * Clears the storage.
+     */
+    static clear() {
+        this._unload({});
+    }
+
+    /**
+     * Unloads a storage object.
+     * @param storage Storage
+     */
+    static _unload(storage) {
+        let storageString = JSON.stringify(storage);
+        window.localStorage.setItem(this._path(), storageString);
+    }
+
+    /**
+     * Loads a storage object.
+     * @return {object} Storage
+     */
+    static _load() {
+        let storageString = window.localStorage.getItem(this._path());
+        if (storageString !== null) {
+            return JSON.parse(storageString);
+        } else {
+            return {};
+        }
+    }
+
+    /**
+     * Return the current path.
+     * @return {string} Path
+     */
+    static _path() {
+        let fullPath = window.location.pathname;
+        // Check if its a path
+        if (fullPath.endsWith("/")) {
+            return fullPath;
+        }
+        // Remove until the last /
+        return fullPath.substr(0, fullPath.lastIndexOf("/"));
+    }
+
+};
 
 /**
  * Base API for creating the UI.
  */
-class UI {
+window.UI = class {
 
     /**
      * Returns a view by its ID or by it's own value.
      * @param v View
      * @returns {HTMLElement} View
      */
-    static get(v) {
-        // Return requested view
-        return (typeof "" === typeof v || typeof '' === typeof v) ? document.getElementById(v) : v;
+    static find(v) {
+        if (typeof "" === typeof v || typeof '' === typeof v) {
+            // ID lookup
+            if (document.getElementById(v) !== undefined) {
+                return document.getElementById(v);
+            }
+            // Query lookup
+            if (document.querySelector(v) !== undefined) {
+                return document.querySelector(v);
+            }
+        }
+        // Return the input
+        return v;
     }
 
     /**
@@ -207,7 +321,7 @@ class UI {
      */
     static hide(v) {
         // Set style to none
-        UI.get(v).style.display = "none";
+        this.find(v).style.display = "none";
     }
 
     /**
@@ -216,7 +330,7 @@ class UI {
      */
     static show(v) {
         // Set style to original value
-        UI.get(v).style.removeProperty("display");
+        this.find(v).style.removeProperty("display");
     }
 
     /**
@@ -225,15 +339,15 @@ class UI {
      */
     static view(v) {
         // Store view
-        let element = UI.get(v);
+        let element = this.find(v);
         // Store parent
         let parent = element.parentNode;
         // Hide all
         for (let child of parent.children) {
-            UI.hide(child);
+            this.hide(child);
         }
         // Show view
-        UI.show(element);
+        this.show(element);
     }
 
     /**
@@ -242,16 +356,16 @@ class UI {
      */
     static page(target) {
         // Store current target
-        let temporary = UI.get(target);
+        let temporary = this.find(target);
         // Recursively get parent
         while (temporary.parentNode !== document.body && temporary.parentNode !== document.body) {
             // View temporary
-            UI.view(temporary);
+            this.view(temporary);
             // Set temporary to it's parent
             temporary = temporary.parentNode;
         }
         // View temporary
-        UI.view(temporary);
+        this.view(temporary);
     }
 
     /**
@@ -260,10 +374,9 @@ class UI {
      */
     static clear(v) {
         // Store view
-        let view = UI.get(v);
+        let view = this.find(v);
         // Remove all views
-        while (view.firstChild) {
-            view.removeChild(view.firstChild);
-        }
+        view.innerHTML = undefined;
     }
-}
+
+};

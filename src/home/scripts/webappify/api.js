@@ -15,7 +15,7 @@ function webappify_load() {
                 let option = document.createElement("option");
                 option.innerText = result[t];
                 option.value = result[t];
-                UI.get("flavor").appendChild(option);
+                UI.find("flavor").appendChild(option);
             }
         }
     });
@@ -27,20 +27,20 @@ function webappify_load() {
  */
 function webappify_create() {
     API.send(WEBAPPIFY_API, "create", {
-        flavor: UI.get("flavor").value,
+        flavor: UI.find("flavor").value,
         configuration: {
-            name: UI.get("name-text").value,
-            description: UI.get("description-text").value,
-            color: UI.get("color-text").value,
-            layout: UI.get("layout-text").value,
-            style: UI.get("style-text").value,
-            code: UI.get("code-text").value,
-            load: UI.get("load-text").value
+            name: UI.find("name-text").value,
+            description: UI.find("description-text").value,
+            color: UI.find("color-text").value,
+            layout: UI.find("layout-text").value,
+            style: UI.find("style-text").value,
+            code: UI.find("code-text").value,
+            load: UI.find("load-text").value
         }
     }, (success, result) => {
         if (success) {
-            UI.get("open").onclick = () => window.location = "../apps/" + result.id + "/src/";
-            UI.get("sources").onclick = () => webappify_save("WebAppBundle.zip", result.sources, "application/zip", "base64");
+            UI.find("open").onclick = () => window.location = "../apps/" + result.id + "/src/";
+            UI.find("sources").onclick = () => webappify_save("WebAppBundle.zip", result.sources, "application/zip", "base64");
             UI.page("finish");
         } else {
             alert("An error occurred: " + result);
